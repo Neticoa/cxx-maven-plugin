@@ -1,0 +1,107 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+<!--keep following <parent> for codeHaus deployement -->
+  <parent>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>mojo-sandbox-parent</artifactId>
+    <version>8</version>
+  </parent>
+<!--Remove following <groupId> for codeHaus deployement -->
+<!--  <groupId>org.codehaus.mojo</groupId> -->
+  
+  <artifactId>cxx-maven-plugin</artifactId>
+  <packaging>maven-plugin</packaging>
+  <version>0.0.4-SNAPSHOT</version>
+  <name>cxx-maven-plugin Maven Mojo</name>
+  <description>A plugin to allow C++ code compilation and check under maven</description>
+  <url>http://mojo.codehaus.org/cxx-maven-plugin</url>
+  <inceptionYear>2010</inceptionYear>
+  
+  <developers>
+    <developer>
+      <id>franck</id>
+      <name>Franck Bonin</name>
+      <email>franck.bonin@neticoa.fr</email>
+      <organization>Neticoa SAS</organization>
+      <organizationUrl>http://www.neticoa.fr</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+  <contributors/>
+  
+  <licenses>
+    <license>
+      <name>Apache License 2</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  
+<!--Remove following <distributionManagement> for codeHaus deployement -->
+<!--  <distributionManagement>
+    <repository>
+      <id>neticoa-nexus</id>
+      <name>neticoa releases</name>
+      <url>http://hudson.neticoa.lan:8080/nexus/content/repositories/releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>neticoa-nexus</id>
+      <name>neticoa snapshots</name>
+      <url>http://hudson.neticoa.lan:8080/nexus/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement> -->
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+      <version>2.0</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.apache.commons</groupId>
+    	<artifactId>commons-exec</artifactId>
+    	<version>1.1</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.codehaus.plexus</groupId>
+    	<artifactId>plexus-utils</artifactId>
+    	<version>2.0.5</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.apache.maven</groupId>
+    	<artifactId>maven-toolchain</artifactId>
+    	<version>1.0</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.mod4j.org.apache.commons</groupId>
+    	<artifactId>lang</artifactId>
+    	<version>2.1.0</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.python</groupId>
+    	<artifactId>jython</artifactId>
+    	<version>2.5.0</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
+ </dependencies>
+</project>
