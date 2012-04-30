@@ -63,4 +63,16 @@ public class XUnitMojo extends LaunchMojo {
 		} catch (IOException e) {
 		}
     }
+    
+	/**
+     * The Xunit Skip feature.
+     * 
+     * @parameter expression="${xunit.skiptests}" default-value="false"
+     * @since 0.0.5
+     */
+    private boolean skiptests;
+    
+	protected boolean isSkip() {
+		return super.isSkip() || skiptests;
+	}
 }
