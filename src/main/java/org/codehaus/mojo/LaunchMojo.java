@@ -18,9 +18,16 @@
 package org.codehaus.mojo;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.rmi.CORBA.Util;
 
 
 /**
@@ -134,5 +141,113 @@ public class LaunchMojo extends AbstractLaunchMojo {
 			return (excludeOS.contains(sOsName) || !includeOS.contains(sOsName));
 		}
 	}
+	
+	/**
+     * The Report OutputStreamOut Location.
+     * 
+     * @parameter expression="${launch.outputStreamOut}" default-value=""
+     * @since 0.0.5
+     */
+    private File outputStreamOut;
+    protected OutputStream getOutputStreamOut(){
+    	String sOutputStreamOut = new String();
+    	if (null != outputStreamOut && !outputStreamOut.toString().isEmpty())
+    	{
+			if (outputStreamOut.isAbsolute()) {
+				sOutputStreamOut = outputStreamOut.getPath();
+			} else {
+				sOutputStreamOut = basedir.getAbsolutePath() + "/" + outputStreamOut.getPath();
+			}
+			
+			getLog().info( "Launch output location " + sOutputStreamOut );
+			 
+			OutputStream output = super.getOutputStreamOut();
+		    File file = new File(sOutputStreamOut);
+		    try {
+		    	new File(file.getParent()).mkdirs();
+				file.createNewFile();
+			    output = new FileOutputStream(file);
+			} catch (IOException e) {
+				getLog().error( "Launch report redirected to stout since " + sOutputStreamOut + " can't be opened" );
+		    }
+	    	return output;
+    	}
+    	else
+    	{
+    		return super.getOutputStreamOut();
+    	}
+    }
+    
+	/**
+     * The Report OutputStreamErr Location.
+     * 
+     * @parameter expression="${launch.outputStreamErr}" default-value=""
+     * @since 0.0.5
+     */
+    private File outputStreamErr;
+    protected OutputStream getOutputStreamErr(){
+    	String sOutputStreamErr = new String();
+    	if (null != outputStreamErr && !outputStreamErr.toString().isEmpty())
+    	{
+			if (outputStreamErr.isAbsolute()) {
+				sOutputStreamErr = outputStreamErr.getPath();
+			} else {
+				sOutputStreamErr = basedir.getAbsolutePath() + "/" + outputStreamErr.getPath();
+			}
+			
+			getLog().info( "Launch erroutput location " + sOutputStreamErr );
+			 
+			OutputStream output = super.getOutputStreamErr();
+		    File file = new File(sOutputStreamErr);
+		    try {
+		    	new File(file.getParent()).mkdirs();
+				file.createNewFile();
+			    output = new FileOutputStream(file);
+			} catch (IOException e) {
+				getLog().error( "Launch report redirected to stout since " + sOutputStreamErr + " can't be opened" );
+		    }
+	    	return output;
+    	}
+    	else
+    	{
+    		return super.getOutputStreamErr();
+    	}
+    }
+    
+	/**
+     * The Report InputStream Location.
+     * 
+     * @parameter expression="${launch.inputStream}" default-value=""
+     * @since 0.0.5
+     */
+    private File inputStream;
+    protected InputStream getInputStream(){
+    	String sInputStream = new String();
+    	if (null != inputStream && !inputStream.toString().isEmpty())
+    	{
+			if (inputStream.isAbsolute()) {
+				sInputStream = inputStream.getPath();
+			} else {
+				sInputStream = basedir.getAbsolutePath() + "/" + inputStream.getPath();
+			}
+			
+			getLog().info( "Launch input location " + sInputStream );
+			 
+			InputStream input = super.getInputStream();
+		    File file = new File(sInputStream);
+		    try {
+		    	new File(file.getParent()).mkdirs();
+				file.createNewFile();
+				input = new FileInputStream(file);
+			} catch (IOException e) {
+				getLog().error( "Launch report redirected to stout since " + sInputStream + " can't be opened" );
+		    }
+	    	return input;
+    	}
+    	else
+    	{
+    		return super.getInputStream();
+    	}
+    }
 
 }
