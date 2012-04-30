@@ -3,17 +3,19 @@
   <modelVersion>4.0.0</modelVersion>
 
 <!--keep following <parent> for codeHaus deployement -->
+<!--  
   <parent>
     <groupId>org.codehaus.mojo</groupId>
     <artifactId>mojo-sandbox-parent</artifactId>
     <version>8</version>
   </parent>
+-->
 <!--Remove following <groupId> for codeHaus deployement -->
-<!--  <groupId>org.codehaus.mojo</groupId> -->
+  <groupId>org.codehaus.mojo</groupId>
   
   <artifactId>cxx-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>0.0.4-SNAPSHOT</version>
+  <version>0.0.5-SNAPSHOT</version>
   <name>cxx-maven-plugin Maven Mojo</name>
   <description>A plugin to allow C++ code compilation and check under maven</description>
   <url>http://mojo.codehaus.org/cxx-maven-plugin</url>
