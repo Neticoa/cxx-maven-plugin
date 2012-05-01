@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<rss version="0.91">
+  <channel>
+    <title>cxx-maven-plugin Maven Mojo - Checkstyle report</title>
+    <link>https://github.com/franckbonin/cxx-maven-plugin</link>
+    <description>cxx-maven-plugin Maven Mojo - Checkstyle report</description>
+    <language>en-us</language>
+    <copyright>&#169;2010 - 2012 Codehaus</copyright>
+    <item>
+      <title>File: 11,
+             Errors: 841,
+             Warnings: 19,
+             Infos: 0
+      </title>
+            <link>https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html</link>
+      <description>
+        <p>Click <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html">here</a> for the full Checkstyle report.</p>
+
+        <table summary="Files" boder="1">
+          <thead>
+            <tr>
+              <th>Files</th>
+              <th style="width:30px;"><abbr title="Info">I</abbr></th>
+              <th style="width:30px;"><abbr title="Warning">W</abbr></th>
+              <th style="width:30px;"><abbr title="Error">E</abbr></th>
+            </tr>
+          </thead>
+          <tbody>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.CoverageMojo.java">org/codehaus/mojo/CoverageMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  82
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.AbstractLaunchMojo.java">org/codehaus/mojo/AbstractLaunchMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  17
+                </td>
+                <td>
+                  104
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.CMakeMojo.java">org/codehaus/mojo/CMakeMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  46
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.CppCheckMojo.java">org/codehaus/mojo/CppCheckMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  77
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.FileSetManager.java">org/codehaus/mojo/FileSetManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+                <td>
+                  59
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.VeraxxMojo.java">org/codehaus/mojo/VeraxxMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  162
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.CppNcssMojo.java">org/codehaus/mojo/CppNcssMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  63
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.XUnitMojo.java">org/codehaus/mojo/XUnitMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  23
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.ValgrindMojo.java">org/codehaus/mojo/ValgrindMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  62
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.MakeMojo.java">org/codehaus/mojo/MakeMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  43
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.LaunchMojo.java">org/codehaus/mojo/LaunchMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  120
+                </td>
+              </tr>
+                      </tbody>
+        </table>
+        
+      </description>
+    </item>
+  </channel>
+</rss>
+
