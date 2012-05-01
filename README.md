@@ -1,4 +1,21 @@
-cxx-maven-plugin
-================
+# Introduction to Cxx Maven Plugin
+* This plugin contains various small goals to assist C++ compilation with the Maven build lifecycle.
 
-a Maven Plugin for c++ life cycle
+## [Goals Overview](http://franckbonin.github.com/cxx-maven-plugin/plugin-info.html)
+* [cxx-maven-plugin:launch](http://franckbonin.github.com/cxx-maven-plugin/launch-mojo.html) generic command launch goal
+* [cxx-maven-plugin:cmake](http://franckbonin.github.com/cxx-maven-plugin/cmake-mojo.html) project generation goal using cmake tool.
+* [cxx-maven-plugin:make](http://franckbonin.github.com/cxx-maven-plugin/make-mojo.html) build goal using make tool.
+* [cxx-maven-plugin:xunit](http://franckbonin.github.com/cxx-maven-plugin/xunit-mojo.html) unit test report generic generation goal.
+* [cxx-maven-plugin:cppcheck](http://franckbonin.github.com/cxx-maven-plugin/cppcheck-mojo.html) cppcheck reports generation goal.
+* [cxx-maven-plugin:cppncss](http://franckbonin.github.com/cxx-maven-plugin/cppncss-mojo.html) cppncss reports generation goal.
+* [cxx-maven-plugin:veraxx](http://franckbonin.github.com/cxx-maven-plugin/veraxx-mojo.html) vera++ reports generation goal.
+* [cxx-maven-plugin:coverage](http://franckbonin.github.com/cxx-maven-plugin/coverage-mojo.html) gcov reports generation goal
+* [cxx-maven-plugin:valgrind](http://franckbonin.github.com/cxx-maven-plugin/valgrind-mojo.html) valgrind reports generation goal.
+
+## [Usage](http://franckbonin.github.com/cxx-maven-plugin/plugin-info.html)
+* Instructions on how to use the Cxx Maven Plugin can be found on the [usage page](http://franckbonin.github.com/cxx-maven-plugin/plugin-info.html)
+
+## Examples
+* [pom sample](http://franckbonin.github.com/cxx-maven-plugin/SAMPLE/pom.xml)
+
+* [complete sample](http://franckbonin.github.com/cxx-maven-plugin/SAMPLE/CXX_PROJECT_SAMPLE.tar)
