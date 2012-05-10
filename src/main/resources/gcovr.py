@@ -1,45 +1,60 @@
 #! /usr/bin/env python
-# 
+#
 # A report generator for gcov 3.4
 #
-# This routine generates a format that is similar to the format generated 
-# by the Python coverage.py module.  This code is similar to the 
+# This routine generates a format that is similar to the format generated
+# by the Python coverage.py module.  This code is similar to the
 # data processing performed by lcov's geninfo command.  However, we
 # don't worry about parsing the *.gcna files, and backwards compatibility for
 # older versions of gcov is not supported.
 #
-# Copyright (2008) Sandia Corporation. Under the terms of Contract
-# DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government
-# retains certain rights in this software.
-# Copyright (2010) Franck Bonin
-# 
 # Outstanding issues
 #   - verify that gcov 3.4 or newer is being used
 #   - verify support for symbolic links
 #
-#  _________________________________________________________________________
+# gcovr is a FAST project.  For documentation, bug reporting, and
+# updates, see https://software.sandia.gov/trac/fast/wiki/gcovr
 #
-#  FAST: Python tools for software testing.
-#  Copyright (c) 2008 Sandia Corporation.
-#  Copyright (c) 2010 Franck Bonin.
-#  This software is distributed under the BSD License.
-#  Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
-#  the U.S. Government retains certain rights in this software.
-#  For more information, see the FAST README.txt file.
-#  _________________________________________________________________________
+# _________________________________________________________________________
+#
+# FAST: Utilities for Agile Software Development
+# Copyright (c) 2008 Sandia Corporation.
+# This software is distributed under the BSD License.
+# Under the terms of Contract DE-AC04-94AL85000 with Sandia Corporation,
+# the U.S. Government retains certain rights in this software.
+# For more information, see the FAST README.txt file.
+#
+# $Revision: 2774 $
+# $Date: 2012-04-14 01:26:55 +0200 (Sat, 14 Apr 2012) $
+# _________________________________________________________________________
 #
 
-import sys
-from optparse import OptionParser
-import subprocess
+import copy
 import glob
 import os
 import re
-import copy
+import subprocess
+import sys
+import time
 import xml.dom.minidom
 
-__version__ = "2.0.prerelease"
+from optparse import OptionParser
+from string import Template
+from os.path import normpath
+
+__version__ = "2.5-prerelease"
+src_revision = "$Revision: 2774 $"
 gcov_cmd = "gcov"
+
+output_re = re.compile("[Cc]reating [`'](.*)'$")
+source_re = re.compile("cannot open (source|graph) file")
+
+def version_str():
+    ans = __version__
+    m = re.match('\$Revision:\s*(\S+)\s*\$', src_revision)
+    if m:
+        ans = ans + " (r%s)" % (m.group(1))
+    return ans
 
 #
 # Container object for coverage statistics
@@ -94,7 +109,6 @@ class CoverageData(object):
         last = None
         ranges=[]
         for item in tmp:
-            #print "HERE",item
             if last is None:
                 first=item
                 last=item
@@ -133,14 +147,12 @@ class CoverageData(object):
         percent = total and str(int(100.0*cover/total)) or "--"
         return (total, cover, percent)
 
-    def summary(self,prefix):
-        if prefix is not None:
-            if prefix[-1] == os.sep:
-                tmp = self.fname[len(prefix):]
-            else:
-                tmp = self.fname[(len(prefix)+1):]
-        else:
-            tmp=self.fname
+    def summary(self):
+        tmp = options.filter.sub('',self.fname)
+        if not self.fname.endswith(tmp):
+            # Do no truncation if the filter does not start matching at
+            # the beginning of the string
+            tmp = self.fname
         tmp = tmp.ljust(40)
         if len(tmp) > 40:
             tmp=tmp+"\n"+" "*40
@@ -151,49 +163,184 @@ class CoverageData(object):
                  percent.rjust(6) + "%   " + self.uncovered_str() )
 
 
-def search_file(expr, path=None, abspath=False, follow_links=False):
+def resolve_symlinks(orig_path):
+    """
+    Return the normalized absolute path name with all symbolic links resolved
+    """
+    drive,tmp = os.path.splitdrive(os.path.abspath(orig_path))
+    if not drive:
+        drive = os.path.sep
+    parts = tmp.split(os.path.sep)
+    actual_path = [drive]
+    while parts:
+        actual_path.append(parts.pop(0))
+        if not os.path.islink(os.path.join(*actual_path)):
+            continue
+        actual_path[-1] = os.readlink(os.path.join(*actual_path))
+        tmp_drive, tmp_path = os.path.splitdrive(
+            resolve_symlinks(os.path.join(*actual_path)) )
+        if tmp_drive:
+            drive = tmp_drive
+        actual_path = [drive] + tmp_path.split(os.path.sep)
+    return os.path.join(*actual_path)
+
+
+def path_startswith(path, base):
+    return path.startswith(base) and (
+        len(base) == len(path) or path[len(base)] == os.path.sep )
+
+
+class PathAliaser(object):
+    def __init__(self):
+        self.aliases = {}
+        self.master_targets = set()
+        self.preferred_name = {}
+
+    def master_path(self, path):
+        match_found = False
+        while True:
+            for base, alias in self.aliases.items():
+                if path_startswith(path, base):
+                    path = alias + path[len(base):]
+                    match_found = True
+                    break
+            for master_base in self.master_targets:
+                if path_startswith(path, master_base):
+                    return path, master_base, True
+            if match_found:
+                sys.stderr.write(
+                    "(ERROR) violating fundamental assumption while walking "
+                    "directory tree.\n\tPlease report this to the gcovr "
+                    "developers.\n" )
+            return path, None, match_found
+
+    def unalias_path(self, path):
+        path = resolve_symlinks(path)
+        path, master_base, known_path = self.master_path(path)
+        if not known_path:
+            return path
+        # Try and resolve the preferred name for this location
+        if master_base in self.preferred_name:
+            return self.preferred_name[master_base] + path[len(master_base):]
+        return path
+
+    def add_master_target(self, master):
+        self.master_targets.add(master)
+
+    def add_alias(self, target, master):
+        self.aliases[target] = master
+
+    def set_preferred(self, master, preferred):
+        self.preferred_name[master] = preferred
+
+aliases = PathAliaser()
+
+# This is UGLY.  Here's why: UNIX resolves symbolic links by walking the
+# entire directory structure.  What that means is that relative links
+# are always relative to the actual directory inode, and not the
+# "virtual" path that the user might have traversed (over symlinks) on
+# the way to that directory.  Here's the canonical example:
+#
+#   a / b / c / testfile
+#   a / d / e --> ../../a/b
+#   m / n --> /a
+#   x / y / z --> /m/n/d
+#
+# If we start in "y", we will see the following directory structure:
+#   y
+#   |-- z
+#       |-- e
+#           |-- c
+#               |-- testfile
+#
+# The problem is that using a simple traversal based on the Python
+# documentation:
+#
+#    (os.path.join(os.path.dirname(path), os.readlink(result)))
+#
+# will not work: we will see a link to /m/n/d from /x/y, but completely
+# miss the fact that n is itself a link.  If we then naively attempt to
+# apply the "c" relative link, we get an intermediate path that looks
+# like "/m/n/d/e/../../a/b", which would get normalized to "/m/n/a/b"; a
+# nonexistant path.  The solution is that we need to walk the original
+# path, along with the full path of all links 1 directory at a time and
+# check for embedded symlinks.
+#
+def link_walker(path):
+    targets = [os.path.abspath(path)]
+    while targets:
+        target_dir = targets.pop(0)
+        actual_dir = resolve_symlinks(target_dir)
+        #print "target dir: %s  (%s)" % (target_dir, actual_dir)
+        master_name, master_base, visited = aliases.master_path(actual_dir)
+        if visited:
+            #print "  ...root already visited as %s" % master_name
+            aliases.add_alias(target_dir, master_name)
+            continue
+        if master_name != target_dir:
+            aliases.set_preferred(master_name, target_dir)
+            aliases.add_alias(target_dir, master_name)
+        aliases.add_master_target(master_name)
+        #print "  ...master name = %s" % master_name
+        #print "  ...walking %s" % target_dir
+        for root, dirs, files in os.walk(target_dir, topdown=True):
+            #print "    ...reading %s" % root
+            for d in dirs:
+                tmp = os.path.abspath(os.path.join(root, d))
+                #print "    ...checking %s" % tmp
+                if os.path.islink(tmp):
+                    #print "      ...buffering link %s" % tmp
+                    targets.append(tmp)
+            yield root, dirs, files
+
+
+def search_file(expr, path):
     """
     Given a search path, recursively descend to find files that match a
     regular expression.
-
-    Can specify the following options:
-       path - The directory that is searched recursively
-       executable_extension - This string is used to see if there is an
-           implicit extension in the filename
-       executable - Test if the file is an executable (default=False)
-       isfile - Test if the file is file (default=True)
     """
     ans = []
     pattern = re.compile(expr)
     if path is None or path == ".":
         path = os.getcwd()
-    elif os.path.exists(path):
-        raise IOError, "Unknown directory '"+path+"'"
-    for root, dirs, files in os.walk(path, topdown=True):
+    elif not os.path.exists(path):
+        raise IOError("Unknown directory '"+path+"'")
+    for root, dirs, files in link_walker(path):
         for name in files:
-           if pattern.match(name):
+            if pattern.match(name):
                 name = os.path.join(root,name)
-                if follow_links and os.path.islink(name):
+                if os.path.islink(name):
                     ans.append( os.path.abspath(os.readlink(name)) )
-                elif abspath:
-                    ans.append( os.path.abspath(name) )
                 else:
-                    ans.append( name )
+                    ans.append( os.path.abspath(name) )
     return ans
 
 
 #
 # Get the list of datafiles in the directories specified by the user
 #
-def get_datafiles(flist, options, ext="gcda"):
+def get_datafiles(flist, options):
     allfiles=[]
     for dir in flist:
         if options.verbose:
-            print "Scanning directory "+dir+" for "+ext+" files..."
-        files = search_file(".*\."+ext, dir, abspath=True, follow_links=True)
+            sys.stdout.write( "Scanning directory %s for gcda/gcno files...\n"
+                              % (dir, ) )
+        files = search_file(".*\.gc(da|no)$", dir)
+        # gcno files will *only* produce uncovered results; however,
+        # that is useful information for the case where a compilation
+        # unit is never actually exercised by the test code.  So, we
+        # will process gcno files, but ONLY if there is no corresponding
+        # gcda file.
+        gcda_files = [file for file in files if file.endswith('gcda')]
+        tmp = set(gcda_files)
+        gcno_files = [ file for file in files if
+                       file.endswith('gcno') and file[:-2]+'da' not in tmp ]
         if options.verbose:
-            print "Found %d files " % len(files)
-        allfiles += files
+            sys.stdout.write(
+                "Found %d files (and will process %d)\n" %
+                ( len(files), len(gcda_files) + len(gcno_files) ) )
+        allfiles.extend(gcda_files)
+        allfiles.extend(gcno_files)
     return allfiles
 
 
@@ -203,27 +350,31 @@ def process_gcov_data(file, covdata, options):
     # Get the filename
     #
     line = INPUT.readline()
-    segments=line.split(":")
-    fname = (segments[-1]).strip()
-    if fname[0] != os.sep:
-        #line = INPUT.readline()
-        #segments=line.split(":")
-        #fname = os.path.dirname((segments[-1]).strip())+os.sep+fname
-        fname = os.path.abspath(fname)
+    segments=line.split(':',3)
+    if len(segments) != 4 or not segments[2].lower().strip().endswith('source'):
+        raise RuntimeError('Fatal error parsing gcov file, line 1: \n\t"%s"' % line.rstrip())
+    fname = aliases.unalias_path(os.path.abspath((segments[-1]).strip()))
+
+    fname = os.path.normpath(fname)
+    
+    if options.verbose:
+        sys.stdout.write("Parsing coverage data for file %s\n" % fname)
     #
     # Return if the filename does not match the filter
     #
-    if options.filter is not None and not options.filter.match(fname):
+    if not options.filter.match(fname):
         if options.verbose:
-            print "  Ignoring coverage data for file "+fname
+            sys.stdout.write("  Filtering coverage data for file %s\n" % fname)
         return
     #
     # Return if the filename matches the exclude pattern
     #
     for i in range(0,len(options.exclude)):
-        if options.exclude[i].match(fname):
+        if options.exclude[i].match(options.filter.sub('',fname)) or \
+               options.exclude[i].match(fname) or \
+               options.exclude[i].match(os.path.abspath(fname)):
             if options.verbose:
-                print "  Ignoring coverage data for file "+fname
+                sys.stdout.write("  Excluding coverage data for file %s\n" % fname)
             return
     #
     # Parse each line, and record the lines
@@ -236,12 +387,13 @@ def process_gcov_data(file, covdata, options):
     #first_record=True
     lineno = 0
     for line in INPUT:
-        segments=line.split(":")
+        segments=line.split(":",2)
         tmp = segments[0].strip()
-        try:
-            lineno = int(segments[1].strip())
-        except:
-            pass # keep previous line number!
+        if len(segments) > 1:
+            try:
+                lineno = int(segments[1].strip())
+            except:
+                pass # keep previous line number!
             
         if tmp[0] == '#':
             uncovered.add( lineno )
@@ -276,61 +428,191 @@ def process_gcov_data(file, covdata, options):
                     #uncovered.remove(prev)
             #prev = int(segments[1].strip())
             #first_record=True
-        #$FB print this only in verbose mode !
-        elif options.verbose:
-            print "UNKNOWN LINE DATA:",tmp
+        else:
+            sys.stderr.write(
+                "(WARNING) Unrecognized GCOV output: '%s'\n"
+                "\tThis is indicitive of a gcov output parse error.\n"
+                "\tPlease report this to the gcovr developers." % tmp )
     #
     # If the file is already in covdata, then we
     # remove lines that are covered here.  Otherwise,
     # initialize covdata
     #
-    #print "HERE",fname
-    #print "HERE uncovered",uncovered
-    #print "HERE   covered",covered
     if not fname in covdata:
         covdata[fname] = CoverageData(fname,uncovered,covered,branches,noncode)
     else:
-        #print "HERE B uncovered",covdata[fname].uncovered
-        #print "HERE B   covered",covdata[fname].covered
         covdata[fname].update(uncovered,covered,branches,noncode)
-        #print "HERE A uncovered",covdata[fname].uncovered
-        #print "HERE A   covered",covdata[fname].covered
     INPUT.close()
 
 #
-# Process a datafile and run gcov with the corresponding arguments
+# Process a datafile (generated by running the instrumented application)
+# and run gcov with the corresponding arguments
 #
-def process_datafile(file, covdata, options):
+# This is trickier than it sounds: The gcda/gcno files are stored in the
+# same directory as the object files; however, gcov must be run from the
+# same directory where gcc/g++ was run.  Normally, the user would know
+# where gcc/g++ was invoked from and could tell gcov the path to the
+# object (and gcda) files with the --object-directory command.
+# Unfortunately, we do everything backwards: gcovr looks for the gcda
+# files and then has to infer the original gcc working directory.
+#
+# In general, (but not always) we can assume that the gcda file is in a
+# subdirectory of the original gcc working directory, so we will first
+# try ".", and on error, move up the directory tree looking for the
+# correct working directory (letting gcov's own error codes dictate when
+# we hit the right directory).  This covers 90+% of the "normal" cases.
+# The exception to this is if gcc was invoked with "-o ../[...]" (i.e.,
+# the object directory was a peer (not a parent/child) of the cwd.  In
+# this case, things are really tough.  We accept an argument
+# (--object-directory) that SHOULD BE THE SAME as the one povided to
+# gcc.  We will then walk that path (backwards) in the hopes of
+# identifying the original gcc working directory (there is a bit of
+# trial-and-error here)
+#
+def process_datafile(filename, covdata, options):
     #
     # Launch gcov
     #
-    (dir,base) = os.path.split(file)
+    abs_filename = os.path.abspath(filename)
+    (dirname,fname) = os.path.split(abs_filename)
     #$FB take .gcda file directly since .gcda ext truncature can leeds to a unreachable .cpp file located elsewhere but next to gcda file
     #(name,ext) = os.path.splitext(base)
-    name = base
-    prevdir = os.getcwd()
-    os.chdir(dir)
-    (head, tail) = os.path.split(name)
+
+    potential_wd = []
+    starting_dir = os.getcwd()
+    errors=[]
+    Done = False
+
+    if options.objdir:
+        src_components = abs_filename.split(os.sep)
+        components = normpath(options.objdir).split(os.sep)
+        idx = 1
+        while idx <= len(components):
+            if idx > len(src_components):
+                break
+            if components[-1*idx] != src_components[-1*idx]:
+                break
+            idx += 1
+        if idx > len(components):
+            pass # a parent dir; the normal process will find it
+        elif components[-1*idx] == '..':
+            dirs = [ os.path.join(src_components[:len(src_components)-idx+1]) ]
+            while idx <= len(components) and components[-1*idx] == '..':
+                tmp = []
+                for d in dirs:
+                    for f in os.listdir(d):
+                        x = os.path.join(d,f)
+                        if os.path.isdir(x):
+                            tmp.append(x)
+                dirs = tmp
+                idx += 1
+            potential_wd = dirs
+        else:
+            if components[0] == '':
+                # absolute path
+                tmp = [ options.objdir ]
+            else:
+                # relative path: check relative to both the cwd and the
+                # gcda file
+                tmp = [ os.path.join(x, options.objdir) for x in
+                        [os.path.dirname(abs_filename), os.getcwd()] ]
+            potential_wd = [ testdir for testdir in tmp
+                             if os.path.isdir(testdir) ]
+            if len(potential_wd) == 0:
+                errors.append("ERROR: cannot identify the location where GCC "
+                              "was run using --object-directory=%s\n" %
+                              options.objdir)
+            # Revert to the normal 
+            #sys.exit(1)
+
+    # no objdir was specified (or it was a parent dir); walk up the dir tree
+    if len(potential_wd) == 0:
+        wd = os.path.split(abs_filename)[0]
+        while True:
+            potential_wd.append(wd)
+            wd = os.path.split(wd)[0]
+            if wd == potential_wd[-1]:
+                break
 #$FB --preserve-paths not usefull with out of source build
-#    cmd = gcov_cmd + \
-#          " --branch-counts --branch-probabilities --preserve-paths " + tail
-    cmd = gcov_cmd + \
-          " --branch-counts --branch-probabilities " + tail
-    output = subprocess.Popen( cmd.split(" "),
-                               stdout=subprocess.PIPE ).communicate()[0]
-    #output = subprocess.call(cmd)
-    #print "HERE",cmd
-    #print "X",output
-    #
-    # Process *.gcov files
-    #
-    for fname in glob.glob("*.gcov"):
-        process_gcov_data(fname, covdata, options)
+#    cmd = [ gcov_cmd, abs_filename,
+#            "--branch-counts", "--branch-probabilities", "--preserve-paths", 
+#            '--object-directory', dirname ]
+    cmd = [ gcov_cmd, abs_filename,
+            "--branch-counts", "--branch-probabilities", 
+            '--object-directory', dirname ]
+
+    # NB: We are lazy English speakers, so we will only parse English output
+    env = dict(os.environ)
+    env['LC_ALL'] = 'en_US'
+    
+
+    while len(potential_wd) > 0 and not Done:
+        # NB: either len(potential_wd) == 1, or all entires are absolute
+        # paths, so we don't have to chdir(starting_dir) at every
+        # iteration.
+        os.chdir(potential_wd.pop(0)) 
+        
+        
+        #if options.objdir:
+        #    cmd.extend(["--object-directory", Template(options.objdir).substitute(filename=filename, head=dirname, tail=base, root=name, ext=ext)])
+
+        if options.verbose:
+            sys.stdout.write("Running gcov: '%s' in '%s'\n" % ( ' '.join(cmd), os.getcwd() ))
+        (out, err) = subprocess.Popen( cmd, env=env,
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.PIPE ).communicate()
+        out=out.decode('utf-8')
+        err=err.decode('utf-8')
+
+        # find the files that gcov created
+        gcov_files = {'active':[], 'filter':[], 'exclude':[]}
+        for line in out.splitlines():
+            found = output_re.search(line.strip())
+            if found is not None:
+                fname = found.group(1)
+                if not options.gcov_filter.match(fname):
+                    if options.verbose:
+                        sys.stdout.write("Filtering gcov file %s\n" % fname)
+                    gcov_files['filter'].append(fname)
+                    continue
+                exclude=False
+                for i in range(0,len(options.gcov_exclude)):
+                    if options.gcov_exclude[i].match(options.gcov_filter.sub('',fname)) or \
+                           options.gcov_exclude[i].match(fname) or \
+                           options.gcov_exclude[i].match(os.path.abspath(fname)):
+                        exclude=True
+                        break
+                if not exclude:
+                    gcov_files['active'].append(fname)
+                elif options.verbose:
+                    sys.stdout.write("Excluding gcov file %s\n" % fname)
+                    gcov_files['exclude'].append(fname)
+
+        if source_re.search(err):
+            # gcov tossed errors: try the next potential_wd
+            errors.append(err)
+        else:
+            # Process *.gcov files
+            for fname in gcov_files['active']:
+                process_gcov_data(fname, covdata, options)
+            Done = True
+
         if not options.keep:
-            os.remove(fname)
-    os.chdir(prevdir)
+            for group in gcov_files.values():
+                for fname in group:
+                    os.remove(fname)
+
+    os.chdir(starting_dir)
     if options.delete:
-        os.remove(file)
+        if not abs_filename.endswith('gcno'):
+            os.remove(abs_filename)
+        
+    if not Done:
+        sys.stderr.write(
+            "(WARNING) GCOV produced the following errors processing %s:\n"
+            "\t   %s" 
+            "\t(gcovr could not infer a working directory that resolved it.)\n"
+            % ( filename, "\t   ".join(errors) ) )
 
 #
 # Produce the classic gcovr text report
@@ -348,69 +630,102 @@ def print_text_report(covdata):
     def _alpha(key):
         return key
 
+    if options.output:
+        OUTPUT = open(options.output,'w')
+    else:
+        OUTPUT = sys.stdout
     total_lines=0
     total_covered=0
     # Header
-    print "-"*78
+    OUTPUT.write("-"*78 + '\n')
     a = options.show_branch and "Branch" or "Lines"
     b = options.show_branch and "Taken" or "Exec"
-    print "File".ljust(40) + a.rjust(8) + b.rjust(8)+ "  Cover   Missing"
-    print "-"*78
+    OUTPUT.write("File".ljust(40) + a.rjust(8) + b.rjust(8)+ "  Cover   Missing\n")
+    OUTPUT.write("-"*78 + '\n')
 
     # Data
-    keys = covdata.keys()
+    keys = list(covdata.keys())
     keys.sort(key=options.sort_uncovered and _num_uncovered or \
               options.sort_percent and _percent_uncovered or _alpha)
     for key in keys:
-        (t, n, txt) = covdata[key].summary(options.root)
+        (t, n, txt) = covdata[key].summary()
         total_lines += t
         total_covered += n
-        print txt
+        OUTPUT.write(txt + '\n')
 
     # Footer & summary
-    print "-"*78
+    OUTPUT.write("-"*78 + '\n')
     percent = total_lines and str(int(100.0*total_covered/total_lines)) or "--"
-    print "TOTAL".ljust(40) + str(total_lines).rjust(8) + \
-          str(total_covered).rjust(8) + str(percent).rjust(6)+"%"
-    print "-"*78
+    OUTPUT.write("TOTAL".ljust(40) + str(total_lines).rjust(8) + \
+          str(total_covered).rjust(8) + str(percent).rjust(6)+"%" + '\n')
+    OUTPUT.write("-"*78 + '\n')
+
+    # Close logfile
+    if options.output:
+        OUTPUT.close()
 
 #
 # Produce an XML report in the Cobertura format
 #
 def print_xml_report(covdata):
+    branchTotal = 0
+    branchCovered = 0
+    lineTotal = 0
+    lineCovered = 0
 
-    if options.root is not None:
-        if options.root[-1] == os.sep:
-            prefix = len(options.root)
-        else:
-            prefix = len(options.root) + 1
-    else:
-        prefix = 0
+    options.show_branch = True
+    for key in covdata.keys():
+        (total, covered, percent) = covdata[key].coverage()
+        branchTotal += total
+        branchCovered += covered
 
+    options.show_branch = False
+    for key in covdata.keys():
+        (total, covered, percent) = covdata[key].coverage()
+        lineTotal += total
+        lineCovered += covered
+    
     impl = xml.dom.minidom.getDOMImplementation()
     docType = impl.createDocumentType(
         "coverage", None,
         "http://cobertura.sourceforge.net/xml/coverage-03.dtd" )
     doc = impl.createDocument(None, "coverage", docType)
     root = doc.documentElement
+    root.setAttribute( "line-rate", lineTotal == 0 and '0.0' or
+                       str(float(lineCovered) / lineTotal) )
+    root.setAttribute( "branch-rate", branchTotal == 0 and '0.0' or
+                       str(float(branchCovered) / branchTotal) )
+    root.setAttribute( "timestamp", str(int(time.time())) )
+    root.setAttribute( "version", "gcovr %s" % (version_str(),) )
 
-    if options.root is not None:
-        source = doc.createElement("source")
-        source.appendChild(doc.createTextNode(options.root))
-        sources = doc.createElement("sources")
-        sources.appendChild(source)
-        root.appendChild(sources)
+    # Generate the <sources> element: this is either the root directory
+    # (specified by --root), or the CWD.
+    sources = doc.createElement("sources")
+    root.appendChild(sources)
 
+    # Generate the coverage output (on a per-package basis)
     packageXml = doc.createElement("packages")
     root.appendChild(packageXml)
     packages = {}
+    source_dirs = set()
 
-    keys = covdata.keys()
+    keys = list(covdata.keys())
     keys.sort()
     for f in keys:
         data = covdata[f]
-        (dir, fname) = os.path.split(f)
-        dir = dir[prefix:]
+        dir = options.filter.sub('',f)
+        if f.endswith(dir):
+            src_path = f[:-1*len(dir)]
+            if len(src_path) > 0:
+                while dir.startswith(os.path.sep):
+                    src_path += os.path.sep
+                    dir = dir[len(os.path.sep):]
+                source_dirs.add(src_path)
+        else:
+            # Do no truncation if the filter does not start matching at
+            # the beginning of the string
+            dir = f
+        (dir, fname) = os.path.split(dir)
         
         package = packages.setdefault(
             dir, [ doc.createElement("package"), {},
@@ -458,7 +773,7 @@ def print_xml_report(covdata):
 
         className = fname.replace('.', '_')
         c.setAttribute("name", className)
-        c.setAttribute("filename", dir+os.sep+fname)
+        c.setAttribute("filename", os.path.join(dir, fname))
         c.setAttribute("line-rate", str(class_hits / (1.0*class_lines or 1.0)))
         c.setAttribute( "branch-rate",
                         str(class_branch_hits / (1.0*class_branches or 1.0)) )
@@ -475,7 +790,7 @@ def print_xml_report(covdata):
         packageXml.appendChild(package)
         classes = doc.createElement("classes")
         package.appendChild(classes)
-        classNames = packageData[1].keys()
+        classNames = list(packageData[1].keys())
         classNames.sort()
         for className in classNames:
             classes.appendChild(packageData[1][className])
@@ -485,9 +800,42 @@ def print_xml_report(covdata):
         package.setAttribute("complexity", "0.0")
 
 
+    # Populate the <sources> element: this is either the root directory
+    # (specified by --root), or relative directories based
+    # on the filter, or the CWD
+    if options.root is not None:
+        source = doc.createElement("source")
+        source.appendChild(doc.createTextNode(options.root))
+        sources.appendChild(source)
+    elif len(source_dirs) > 0:
+        cwd = os.getcwd()
+        for d in source_dirs:
+            source = doc.createElement("source")
+            if d.startswith(cwd):
+                reldir = d[len(cwd):].lstrip(os.path.sep)
+            elif cwd.startswith(d):
+                i = 1
+                while normpath(d) != \
+                          normpath(os.path.join(*tuple([cwd]+['..']*i))):
+                    i += 1
+                reldir = os.path.join(*tuple(['..']*i))
+            else:
+                reldir = d
+            source.appendChild(doc.createTextNode(reldir))
+            sources.appendChild(source)
+    else:
+        source = doc.createElement("source")
+        source.appendChild(doc.createTextNode('.'))
+        sources.appendChild(source)
+
     xmlString = doc.toprettyxml()
-    print xmlString
     #xml.dom.ext.PrettyPrint(doc)
+    if options.output is None:
+        sys.stdout.write(xmlString+'\n')
+    else:
+        OUTPUT = open(options.output, 'w')
+        OUTPUT.write(xmlString +'\n')
+        OUTPUT.close()
 
 
 ##
@@ -508,6 +856,11 @@ parser.add_option("-v","--verbose",
         action="store_true",
         dest="verbose",
         default=False)
+parser.add_option('--object-directory',
+        help="Specify the directory that contains the gcov data files.  gcovr must be able to identify the path between the *.gcda files and the directory where gcc was originally run.  Normally, gcovr can guess correctly.  This option overrides gcovr's normal path detection and can specify either the path from gcc to the gcda file (i.e. what was passed to gcc's '-o' option), or the path from the gcda file to gcc's original working directory.",
+        action="store",
+        dest="objdir",
+        default=None)
 parser.add_option("-o","--output",
         help="Print output to this filename",
         action="store",
@@ -532,6 +885,16 @@ parser.add_option("-e","--exclude",
         help="Exclude data files that match this regular expression",
         action="append",
         dest="exclude",
+        default=[])
+parser.add_option("--gcov-filter",
+        help="Keep only gcov data files that match this regular expression",
+        action="store",
+        dest="gcov_filter",
+        default=None)
+parser.add_option("--gcov-exclude",
+        help="Exclude gcov data files that match this regular expression",
+        action="append",
+        dest="gcov_exclude",
         default=[])
 parser.add_option("-r","--root",
         help="Defines the root directory.  This is used to filter the files, and to standardize the output.",
@@ -565,29 +928,47 @@ parser.description="A utility to run gcov and generate a simple report that summ
 #
 (options, args) = parser.parse_args(args=sys.argv)
 if options.version:
-    print "gcovr "+__version__
-    print ""
-    print "Copyright (2008) Sandia Corporation. Under the terms of Contract "
-    print "DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government "
-    print "retains certain rights in this software."
+    sys.stdout.write(
+        "gcovr %s\n"
+        "\n"
+        "Copyright (2008) Sandia Corporation. Under the terms of Contract\n"
+        "DE-AC04-94AL85000 with Sandia Corporation, the U.S. Government\n"
+        "retains certain rights in this software.\n"
+        % (version_str(),) )
     sys.exit(0)
+if options.objdir:
+    tmp = options.objdir.replace('/',os.sep).replace('\\',os.sep)
+    while os.sep+os.sep in tmp:
+        tmp = tmp.replace(os.sep+os.sep, os.sep)
+    if normpath(options.objdir) != tmp:
+        sys.stderr.write(
+            "(WARNING) relative referencing in --object-directory.\n"
+            "\tthis could cause strange errors when gcovr attempts to\n"
+            "\tidentify the original gcc working directory.\n")
 #
-# Setup filter
+# Setup filters
 #
 for i in range(0,len(options.exclude)):
     options.exclude[i] = re.compile(options.exclude[i])
 if options.filter is not None:
     options.filter = re.compile(options.filter)
 elif options.root is not None:
-    #if options.root[0] != os.sep:
-    #    dir=os.getcwd()+os.sep+options.root
-    #    dir=os.path.abspath(dir)
-    #    options.root=dir
-    #else:
-    #    options.root=os.path.abspath(options.root)
-    options.root=os.path.abspath(options.root)
-    #print "HERE",options.root
-    options.filter = re.compile(options.root.replace("\\","\\\\"))
+    if not options.root:
+        sys.stderr.write(
+            "(ERROR) empty --root option.\n"
+            "\tRoot specifies the path to the root directory of your project\n"
+            "\tand cannot be an empty string.\n")
+        sys.exit(1)
+    options.filter = re.compile(re.escape(os.path.abspath(options.root)+os.sep))
+if options.filter is None:
+    options.filter = re.compile('')
+#
+for i in range(0,len(options.gcov_exclude)):
+    options.gcov_exclude[i] = re.compile(options.gcov_exclude[i])
+if options.gcov_filter is not None:
+    options.gcov_filter = re.compile(options.gcov_filter)
+else:
+    options.gcov_filter = re.compile('')
 #
 # Get data files
 #
@@ -602,7 +983,7 @@ covdata = {}
 for file in datafiles:
     process_datafile(file,covdata,options)
 if options.verbose:
-    print "Gathered coveraged data for "+str(len(covdata))+" files"
+    sys.stdout.write("Gathered coveraged data for "+str(len(covdata))+" files\n")
 #
 # Print report
 #
