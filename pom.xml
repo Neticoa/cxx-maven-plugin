@@ -3,6 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
 <!--keep following <parent> for codeHaus deployement -->
+<!--use following <parent> for mvn site:site target to succeed -->
 <!--  
   <parent>
     <groupId>org.codehaus.mojo</groupId>
@@ -11,6 +12,7 @@
   </parent>
 -->
 <!--Remove following <groupId> for codeHaus deployement -->
+<!--Remove following <groupId> for mvn site:site target to succeed -->
   <groupId>org.codehaus.mojo</groupId>
   
   <artifactId>cxx-maven-plugin</artifactId>
