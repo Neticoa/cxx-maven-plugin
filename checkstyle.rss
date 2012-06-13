@@ -8,8 +8,8 @@
     <language>en-us</language>
     <copyright>&#169;2010 - 2012 Codehaus</copyright>
     <item>
-      <title>File: 11,
-             Errors: 841,
+      <title>File: 12,
+             Errors: 844,
              Warnings: 19,
              Infos: 0
       </title>
@@ -99,6 +99,20 @@
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.AddSourceMojo.java">org/codehaus/mojo/AddSourceMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.VeraxxMojo.java">org/codehaus/mojo/VeraxxMojo.java</a>
                 </td>
                 <td>
@@ -141,20 +155,6 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.ValgrindMojo.java">org/codehaus/mojo/ValgrindMojo.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  62
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.MakeMojo.java">org/codehaus/mojo/MakeMojo.java</a>
                 </td>
                 <td>
@@ -165,6 +165,20 @@
                 </td>
                 <td>
                   43
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.ValgrindMojo.java">org/codehaus/mojo/ValgrindMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  62
                 </td>
               </tr>
                           <tr>

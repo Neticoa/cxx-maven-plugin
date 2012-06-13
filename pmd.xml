@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pmd version="4.2.5" timestamp="2012-05-01T09:46:08.375">
-<file name="/Users/franckbonin/dev/cxx-maven-plugin/cxx-maven-plugin/src/main/java/org/codehaus/mojo/FileSetManager.java">
+<pmd version="4.2.5" timestamp="2012-06-13T17:15:58.724">
+<file name="/home/fbonin/CXX-Maven-GitHub-repo/cxx-maven-plugin/src/main/java/org/codehaus/mojo/FileSetManager.java">
 <violation beginline="54" endline="54" begincolumn="24" endcolumn="27" rule="UnconditionalIfStatement" ruleset="Basic Rules" package="org.codehaus.mojo" class="FileSetManager" method="scan" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#UnconditionalIfStatement" priority="3">
 Do not use if statements that are always true or always false
 </violation>
 </file>
-<file name="/Users/franckbonin/dev/cxx-maven-plugin/cxx-maven-plugin/src/main/java/org/codehaus/mojo/LaunchMojo.java">
+<file name="/home/fbonin/CXX-Maven-GitHub-repo/cxx-maven-plugin/src/main/java/org/codehaus/mojo/LaunchMojo.java">
 <violation beginline="30" endline="30" begincolumn="1" endcolumn="28" rule="UnusedImports" ruleset="Import Statement Rules" package="org.codehaus.mojo" externalInfoUrl="http://pmd.sourceforge.net/rules/imports.html#UnusedImports" priority="4">
 Avoid unused imports such as 'javax.rmi.CORBA.Util'
 </violation>
 </file>
-<file name="/Users/franckbonin/dev/cxx-maven-plugin/cxx-maven-plugin/src/main/java/org/codehaus/mojo/XUnitMojo.java">
+<file name="/home/fbonin/CXX-Maven-GitHub-repo/cxx-maven-plugin/src/main/java/org/codehaus/mojo/XUnitMojo.java">
 <violation beginline="63" endline="64" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.codehaus.mojo" class="XUnitMojo" method="preExecute" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
