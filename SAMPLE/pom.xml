@@ -23,7 +23,7 @@
             <plugin>
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>cxx-maven-plugin</artifactId>
-              <version>0.0.4-SNAPSHOT</version>
+              <version>0.0.5-SNAPSHOT</version>
             </plugin>
           </plugins>
         </pluginManagement>
@@ -42,6 +42,12 @@
                   <executable>rm</executable>
                   <commandArgs>-rf "${basedir}/builds/Unix Makefiles/RELEASE"</commandArgs>
                 </configuration>
+              </execution>
+              <execution>
+                <id>addsource</id>
+                <goals>
+                  <goal>addsource</goal>
+                </goals>
               </execution>
               <execution>
                 <id>cmake</id>
@@ -234,7 +240,7 @@
             <plugin>
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>cxx-maven-plugin</artifactId>
-              <version>0.0.4-SNAPSHOT</version>
+              <version>0.0.5-SNAPSHOT</version>
             </plugin>
           </plugins>
         </pluginManagement>
@@ -254,6 +260,12 @@
                   <executable>rm</executable>
                   <commandArgs>-rf "${basedir}/builds/Unix Makefiles/COVERAGE"</commandArgs>
                 </configuration>
+              </execution>
+              <execution>
+                <id>addsource</id>
+                <goals>
+                  <goal>addsource</goal>
+                </goals>
               </execution>
               <execution>
                 <id>cmake</id>
@@ -395,7 +407,7 @@
             <plugin>
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>cxx-maven-plugin</artifactId>
-              <version>0.0.4-SNAPSHOT</version>
+              <version>0.0.5-SNAPSHOT</version>
             </plugin>
           </plugins>
         </pluginManagement>
@@ -415,6 +427,12 @@
                   <executable>rm</executable>
                   <commandArgs>-rf "${basedir}/builds/Unix Makefiles/COVERAGE"</commandArgs>
                 </configuration>
+              </execution>
+              <execution>
+                <id>addsource</id>
+                <goals>
+                  <goal>addsource</goal>
+                </goals>
               </execution>
               <execution>
                 <id>cmake</id>
@@ -494,7 +512,7 @@
             <plugin>
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>cxx-maven-plugin</artifactId>
-              <version>0.0.4-SNAPSHOT</version>
+              <version>0.0.5-SNAPSHOT</version>
             </plugin>
           </plugins>
         </pluginManagement>
@@ -514,6 +532,12 @@
                   <executable>rm</executable>
                   <commandArgs>-rf "${basedir}/builds/Unix Makefiles/RELEASE"</commandArgs>
                 </configuration>
+              </execution>
+              <execution>
+                <id>addsource</id>
+                <goals>
+                  <goal>addsource</goal>
+                </goals>
               </execution>
               <execution>
                 <id>cmake</id>
