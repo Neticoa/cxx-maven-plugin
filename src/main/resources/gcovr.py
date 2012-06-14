@@ -534,12 +534,12 @@ def process_datafile(filename, covdata, options):
             if wd == potential_wd[-1]:
                 break
 #$FB --preserve-paths not usefull with out of source build
+#    --object-directory dirname NOT WORKING UNDER WINDOWS
 #    cmd = [ gcov_cmd, abs_filename,
 #            "--branch-counts", "--branch-probabilities", "--preserve-paths", 
 #            '--object-directory', dirname ]
     cmd = [ gcov_cmd, abs_filename,
-            "--branch-counts", "--branch-probabilities", 
-            '--object-directory', dirname ]
+            "--branch-counts", "--branch-probabilities" ]
 
     # NB: We are lazy English speakers, so we will only parse English output
     env = dict(os.environ)
@@ -550,7 +550,11 @@ def process_datafile(filename, covdata, options):
         # NB: either len(potential_wd) == 1, or all entires are absolute
         # paths, so we don't have to chdir(starting_dir) at every
         # iteration.
-        os.chdir(potential_wd.pop(0)) 
+        currentExecDir = potential_wd.pop(0)
+        # $FB under cygwin env we get a python exception if current dir is '/cygdrive'
+        if currentExecDir == '/cygdrive':
+            continue
+        os.chdir(currentExecDir) 
         
         
         #if options.objdir:

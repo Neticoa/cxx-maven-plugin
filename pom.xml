@@ -51,12 +51,12 @@
     <repository>
       <id>neticoa-nexus</id>
       <name>neticoa releases</name>
-      <url>http://nexus.neticoa.lan:8080/nexus/content/repositories/releases</url>
+      <url>http://nexus.neticoa.ovh:8080/nexus/content/repositories/releases</url>
     </repository>
     <snapshotRepository>
       <id>neticoa-nexus</id>
       <name>neticoa snapshots</name>
-      <url>http://nexus.neticoa.lan:8080/nexus/content/repositories/snapshots</url>
+      <url>http://nexus.neticoa.ovh:8080/nexus/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement> -->
 
