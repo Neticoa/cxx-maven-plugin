@@ -2,6 +2,7 @@
 * This plugin contains various small goals to assist C++ compilation with the Maven build lifecycle.
 
 ## [Goals Overview](http://franckbonin.github.com/cxx-maven-plugin/plugin-info.html)
+* [cxx-maven-plugin:addsource](http://franckbonin.github.com/cxx-maven-plugin/addsource-mojo.html) add multiple source tree to your project
 * [cxx-maven-plugin:launch](http://franckbonin.github.com/cxx-maven-plugin/launch-mojo.html) generic command launch goal
 * [cxx-maven-plugin:cmake](http://franckbonin.github.com/cxx-maven-plugin/cmake-mojo.html) project generation goal using cmake tool.
 * [cxx-maven-plugin:make](http://franckbonin.github.com/cxx-maven-plugin/make-mojo.html) build goal using make tool.
