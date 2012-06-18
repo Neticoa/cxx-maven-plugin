@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pmd version="4.2.5" timestamp="2012-06-13T17:15:58.724">
+<pmd version="4.2.5" timestamp="2012-06-18T17:43:35.825">
 <file name="/home/fbonin/CXX-Maven-GitHub-repo/cxx-maven-plugin/src/main/java/org/codehaus/mojo/FileSetManager.java">
 <violation beginline="54" endline="54" begincolumn="24" endcolumn="27" rule="UnconditionalIfStatement" ruleset="Basic Rules" package="org.codehaus.mojo" class="FileSetManager" method="scan" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#UnconditionalIfStatement" priority="3">
 Do not use if statements that are always true or always false

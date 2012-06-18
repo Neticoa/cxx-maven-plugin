@@ -8,8 +8,8 @@
     <language>en-us</language>
     <copyright>&#169;2010 - 2012 Codehaus</copyright>
     <item>
-      <title>File: 12,
-             Errors: 844,
+      <title>File: 13,
+             Errors: 909,
              Warnings: 19,
              Infos: 0
       </title>
@@ -27,20 +27,6 @@
             </tr>
           </thead>
           <tbody>
-                          <tr>
-                <td>
-                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.CoverageMojo.java">org/codehaus/mojo/CoverageMojo.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  82
-                </td>
-              </tr>
                           <tr>
                 <td>
                   <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.AbstractLaunchMojo.java">org/codehaus/mojo/AbstractLaunchMojo.java</a>
@@ -85,20 +71,6 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.FileSetManager.java">org/codehaus/mojo/FileSetManager.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  2
-                </td>
-                <td>
-                  59
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.AddSourceMojo.java">org/codehaus/mojo/AddSourceMojo.java</a>
                 </td>
                 <td>
@@ -113,7 +85,21 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.VeraxxMojo.java">org/codehaus/mojo/VeraxxMojo.java</a>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.FileSetManager.java">org/codehaus/mojo/FileSetManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+                <td>
+                  59
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.QMakeMojo.java">org/codehaus/mojo/QMakeMojo.java</a>
                 </td>
                 <td>
                   0
@@ -122,7 +108,7 @@
                   0
                 </td>
                 <td>
-                  162
+                  65
                 </td>
               </tr>
                           <tr>
@@ -155,7 +141,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.MakeMojo.java">org/codehaus/mojo/MakeMojo.java</a>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.LaunchMojo.java">org/codehaus/mojo/LaunchMojo.java</a>
                 </td>
                 <td>
                   0
@@ -164,7 +150,7 @@
                   0
                 </td>
                 <td>
-                  43
+                  120
                 </td>
               </tr>
                           <tr>
@@ -183,7 +169,7 @@
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.LaunchMojo.java">org/codehaus/mojo/LaunchMojo.java</a>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.CoverageMojo.java">org/codehaus/mojo/CoverageMojo.java</a>
                 </td>
                 <td>
                   0
@@ -192,7 +178,35 @@
                   0
                 </td>
                 <td>
-                  120
+                  82
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.VeraxxMojo.java">org/codehaus/mojo/VeraxxMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  162
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.MakeMojo.java">org/codehaus/mojo/MakeMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  43
                 </td>
               </tr>
                       </tbody>

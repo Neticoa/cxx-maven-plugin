@@ -4,7 +4,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>cxx-maven-plugin Maven Mojo - 
-    cxx:addsource</title>
+    cxx:qmake</title>
     <style type="text/css" media="all">
       @import url("./css/maven-base.css");
       @import url("./css/maven-theme.css");
@@ -73,16 +73,14 @@
       <div id="contentBox">
         
   
-    <div class="section"><h2>cxx:addsource<a name="cxx:addsource"></a></h2>
+    <div class="section"><h2>cxx:qmake<a name="cxx:qmake"></a></h2>
       <p><b>Full name</b>:</p>
-      <p>org.codehaus.mojo:cxx-maven-plugin:0.0.5-SNAPSHOT:addsource</p>
+      <p>org.codehaus.mojo:cxx-maven-plugin:0.0.5-SNAPSHOT:qmake</p>
       <p><b>Description</b>:</p>
-      <div>Add more source directories to the POM.</div>
+      <div>Goal which qmakes workspace.</div>
       <p><b>Attributes</b>:</p>
       <ul>
         <li>Requires a Maven 2.0 project to be executed.</li>
-        <li>The goal is thread-safe and supports parallel builds.</li>
-        <li>Since version: <tt>0.0.5</tt>.</li>
         <li>Binds by default to the lifecycle phase: <tt>initialize</tt>.</li>
       </ul>
       <div class="section"><h3>Optional Parameters<a name="Optional_Parameters"></a></h3>
@@ -94,6 +92,44 @@
             <th>Description</th>
           </tr>
           <tr class="b">
+            <td><b><a href="#commandArgs">commandArgs</a></b></td>
+            <td><tt>String</tt></td>
+            <td><tt>0.0.5</tt></td>
+            <td>Arguments for qmake program<br /></td>
+          </tr>
+          <tr class="a">
+            <td><b><a href="#environmentVariables">environmentVariables</a></b></td>
+            <td><tt>Map</tt></td>
+            <td><tt>0.0.5</tt></td>
+            <td>Environment variables passed to qmake program.<br /></td>
+          </tr>
+          <tr class="b">
+            <td><b><a href="#outsourceDir">outsourceDir</a></b></td>
+            <td><tt>File</tt></td>
+            <td><tt>0.0.5</tt></td>
+            <td>Out of source directory<br /></td>
+          </tr>
+          <tr class="a">
+            <td><b><a href="#project">project</a></b></td>
+            <td><tt>MavenProject</tt></td>
+            <td><tt>-</tt></td>
+            <td>Current Project<br /></td>
+          </tr>
+          <tr class="b">
+            <td><b><a href="#pros">pros</a></b></td>
+            <td><tt>List</tt></td>
+            <td><tt>0.0.5</tt></td>
+            <td>qmake project file list Can be empty, then sourceDirs will so be
+used. If sourceDirs is empty to, then basedir will be used.<br /></td>
+          </tr>
+          <tr class="a">
+            <td><b><a href="#qmakecommandPerOS">qmakecommandPerOS</a></b></td>
+            <td><tt>Map</tt></td>
+            <td><tt>0.0.5</tt></td>
+            <td>qmake commands names per OS name os name match is
+java.lang.System.getProperty(&quot;os.name&quot;)<br /></td>
+          </tr>
+          <tr class="b">
             <td><b><a href="#sourceDirs">sourceDirs</a></b></td>
             <td><tt>List</tt></td>
             <td><tt>0.0.4</tt></td>
@@ -102,7 +138,47 @@
         </table>
       </div>
       <div class="section"><h3>Parameter Details<a name="Parameter_Details"></a></h3>
-        <p><b><a name="sourceDirs">sourceDirs</a>:</b></p>
+        <p><b><a name="commandArgs">commandArgs</a>:</b></p>
+        <div>Arguments for qmake program</div>
+        <ul>
+          <li><b>Type</b>: <tt>java.lang.String</tt></li>
+          <li><b>Since</b>: <tt>0.0.5</tt></li>
+          <li><b>Required</b>: <tt>No</tt></li>
+          <li><b>Expression</b>: <tt>${qmake.args}</tt></li>
+        </ul><hr /><p><b><a name="environmentVariables">environmentVariables</a>:</b></p>
+        <div>Environment variables passed to qmake program.</div>
+        <ul>
+          <li><b>Type</b>: <tt>java.util.Map</tt></li>
+          <li><b>Since</b>: <tt>0.0.5</tt></li>
+          <li><b>Required</b>: <tt>No</tt></li>
+        </ul><hr /><p><b><a name="outsourceDir">outsourceDir</a>:</b></p>
+        <div>Out of source directory</div>
+        <ul>
+          <li><b>Type</b>: <tt>java.io.File</tt></li>
+          <li><b>Since</b>: <tt>0.0.5</tt></li>
+          <li><b>Required</b>: <tt>No</tt></li>
+          <li><b>Expression</b>: <tt>${qmake.outsourcedir}</tt></li>
+        </ul><hr /><p><b><a name="project">project</a>:</b></p>
+        <div>Current Project</div>
+        <ul>
+          <li><b>Type</b>: <tt>org.apache.maven.project.MavenProject</tt></li>
+          <li><b>Required</b>: <tt>No</tt></li>
+          <li><b>Expression</b>: <tt>${project}</tt></li>
+        </ul><hr /><p><b><a name="pros">pros</a>:</b></p>
+        <div>qmake project file list Can be empty, then sourceDirs will so be
+used. If sourceDirs is empty to, then basedir will be used.</div>
+        <ul>
+          <li><b>Type</b>: <tt>java.util.List</tt></li>
+          <li><b>Since</b>: <tt>0.0.5</tt></li>
+          <li><b>Required</b>: <tt>No</tt></li>
+        </ul><hr /><p><b><a name="qmakecommandPerOS">qmakecommandPerOS</a>:</b></p>
+        <div>qmake commands names per OS name os name match is
+java.lang.System.getProperty(&quot;os.name&quot;)</div>
+        <ul>
+          <li><b>Type</b>: <tt>java.util.Map</tt></li>
+          <li><b>Since</b>: <tt>0.0.5</tt></li>
+          <li><b>Required</b>: <tt>No</tt></li>
+        </ul><hr /><p><b><a name="sourceDirs">sourceDirs</a>:</b></p>
         <div>directory were sources are</div>
         <ul>
           <li><b>Type</b>: <tt>java.util.List</tt></li>
