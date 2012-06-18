@@ -20,4 +20,4 @@
 ## Examples
 * [pom sample](http://franckbonin.github.com/cxx-maven-plugin/SAMPLE/pom.xml)
 
-* [complete sample](http://franckbonin.github.com/cxx-maven-plugin/SAMPLE/CXX_PROJECT_SAMPLE.tar)
+* [complete sample](http://franckbonin.github.com/cxx-maven-plugin/SAMPLE/CXX_PROJECT_SAMPLE.tgz)
