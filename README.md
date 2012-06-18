@@ -5,6 +5,7 @@
 * [cxx-maven-plugin:addsource](http://franckbonin.github.com/cxx-maven-plugin/addsource-mojo.html) add multiple source tree to your project
 * [cxx-maven-plugin:launch](http://franckbonin.github.com/cxx-maven-plugin/launch-mojo.html) generic command launch goal
 * [cxx-maven-plugin:cmake](http://franckbonin.github.com/cxx-maven-plugin/cmake-mojo.html) project generation goal using cmake tool.
+* [cxx-maven-plugin:qmake](http://franckbonin.github.com/cxx-maven-plugin/qmake-mojo.html) project generation goal using qmake tool.
 * [cxx-maven-plugin:make](http://franckbonin.github.com/cxx-maven-plugin/make-mojo.html) build goal using make tool.
 * [cxx-maven-plugin:xunit](http://franckbonin.github.com/cxx-maven-plugin/xunit-mojo.html) unit test report generic generation goal.
 * [cxx-maven-plugin:cppcheck](http://franckbonin.github.com/cxx-maven-plugin/cppcheck-mojo.html) cppcheck reports generation goal.
