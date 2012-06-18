@@ -50,12 +50,13 @@ import org.apache.commons.lang.StringUtils;
 public abstract class AbstractLaunchMojo extends AbstractMojo
 {
 	/**
-	* Projet en cours de deploiement.
+	* Current Project
 	* @parameter expression="${project}"
 	*/
 	protected org.apache.maven.project.MavenProject project;
 
      /**
+     * Pom directory location
      * @parameter expression="${basedir}"
      * @required
      * @readonly

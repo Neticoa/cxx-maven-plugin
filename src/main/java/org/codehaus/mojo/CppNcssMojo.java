@@ -41,7 +41,7 @@ public class CppNcssMojo extends AbstractLaunchMojo {
 	}
 	
     /**
-     * directory were cppcheck should search for source files
+     * Directory where cppcheck should search for source files
      * 
      * @parameter
      * @since 0.0.4
@@ -58,7 +58,7 @@ public class CppNcssMojo extends AbstractLaunchMojo {
 
 
 	/**
-	 * The Report OutputFile Location.
+	 * The Report OutputFile name identifier.
 	 * 
 	 * @parameter expression="${cppncss.reportIdentifier}" default-value=""
 	 * @since 0.0.4
@@ -77,7 +77,7 @@ public class CppNcssMojo extends AbstractLaunchMojo {
     private Map definitions = new HashMap();
     
     /**
-     * macro definition substitution values (value can be empty).
+     * Macro definition substitution values (value can be empty).
      * 
      * @parameter
      * @since 0.0.4
@@ -86,7 +86,7 @@ public class CppNcssMojo extends AbstractLaunchMojo {
 	
 
     /**
-     * Arguments for the cppncss program. Shall be -r -v -x -k
+     * Arguments for cppncss program. Shall be -r -v -x -k
      * 
      * @parameter expression="${cppncss.args}" default-value="-r -v -x -k"
      */
@@ -143,7 +143,7 @@ public class CppNcssMojo extends AbstractLaunchMojo {
 	}
 
     /**
-     * Environment variables to pass to the executed program.
+     * Environment variables to pass to cppncss program.
      * 
      * @parameter
      * @since 0.0.4

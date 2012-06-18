@@ -52,7 +52,7 @@ public class VeraxxMojo extends AbstractLaunchMojo {
 	}
 
     /**
-     * Arguments for the vara++ program. Shall be -nodup -showrules 
+     * Arguments for vera++ program. Shall be -nodup -showrules 
      * 
      * @parameter expression="${veraxx.args}" default-value="-nodup -showrules"
      */
@@ -72,7 +72,7 @@ public class VeraxxMojo extends AbstractLaunchMojo {
 
 
 	/**
-	 * The Report OutputFile Location.
+	 * The Report OutputFile name identifier.
 	 * 
 	 * @parameter expression="${veraxx.reportIdentifier}" default-value=""
 	 * @since 0.0.4
@@ -182,7 +182,7 @@ public class VeraxxMojo extends AbstractLaunchMojo {
     }
     
     /**
-     * directory were vera++ should search for source files
+     * Directory where vera++ should search for source files
      * 
      * @parameter
      * @since 0.0.4
@@ -222,7 +222,7 @@ public class VeraxxMojo extends AbstractLaunchMojo {
 	}
 
     /**
-     * Environment variables to pass to the executed program.
+     * Environment variables passed to vera++ program.
      * 
      * @parameter
      * @since 0.0.4

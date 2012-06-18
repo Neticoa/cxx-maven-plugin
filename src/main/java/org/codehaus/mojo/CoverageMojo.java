@@ -53,7 +53,7 @@ public class CoverageMojo extends LaunchMojo {
 
 	
 	/**
-	 * The Report OutputFile Location.
+	 * The Report OutputFile name identifier.
 	 * 
 	 * @parameter expression="${gcovr.reportIdentifier}" default-value=""
 	 * @since 0.0.4

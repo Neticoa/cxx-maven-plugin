@@ -42,7 +42,7 @@ public class CppCheckMojo extends AbstractLaunchMojo {
 	}
 	
     /**
-     * directory were cppcheck should search for source files
+     * Directory where cppcheck should search for source files
      * 
      * @parameter
      * @since 0.0.4
@@ -50,7 +50,7 @@ public class CppCheckMojo extends AbstractLaunchMojo {
     private List sourceDirs = new ArrayList();
     
     /**
-     * directory were included file shall be found
+     * Directory where included file shall be found
      * 
      * @parameter
      * @since 0.0.4
@@ -66,7 +66,7 @@ public class CppCheckMojo extends AbstractLaunchMojo {
     private File reportsfileDir;
     
 	/**
-	 * The Report OutputFile Location.
+	 * The Report OutputFile name identifier.
 	 * 
 	 * @parameter expression="${cppcheck.reportIdentifier}" default-value=""
 	 * @since 0.0.4
@@ -132,7 +132,7 @@ public class CppCheckMojo extends AbstractLaunchMojo {
 	}
 
     /**
-     * Environment variables to pass to the executed program.
+     * Environment variables to pass to cppcheck program.
      * 
      * @parameter
      * @since 0.0.4

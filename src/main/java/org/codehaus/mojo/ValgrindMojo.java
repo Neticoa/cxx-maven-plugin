@@ -47,7 +47,7 @@ public class ValgrindMojo extends AbstractLaunchMojo {
 
 
 	/**
-	 * The Report OutputFile Location.
+	 * The Report OutputFile name identifier.
 	 * 
 	 * @parameter expression="${valgrind.reportIdentifier}" default-value=""
 	 * @since 0.0.4
@@ -57,7 +57,7 @@ public class ValgrindMojo extends AbstractLaunchMojo {
 		return "valgrind-result-" + reportIdentifier + ".xml";
 	}
     /**
-     * Arguments for the valgrind program. Shall be 
+     * Arguments for valgrind program. Shall be --leak-check=yes --demangle=yes --xml=yes
      * 
      * @parameter expression="${valgrind.args}" default-value="--leak-check=yes --demangle=yes --xml=yes"
      */
@@ -82,7 +82,7 @@ public class ValgrindMojo extends AbstractLaunchMojo {
 	}
 	
     /**
-     * Arguments 
+     * Path to executed (tested) program 
      * 
      * @parameter expression="${valgrind.instrumented}"
      * @required
@@ -90,7 +90,7 @@ public class ValgrindMojo extends AbstractLaunchMojo {
 	private String instrumentedExecutablePath;
 	
     /**
-     * Arguments 
+     * Arguments of executed program 
      * 
      * @parameter expression="${valgrind.instrumentedArgs}" default-value=" "
      */
@@ -102,7 +102,7 @@ public class ValgrindMojo extends AbstractLaunchMojo {
 	}
 
     /**
-     * Environment variables to pass to the executed program.
+     * Environment variables passed to valgrind program.
      * 
      * @parameter
      * @since 0.0.4

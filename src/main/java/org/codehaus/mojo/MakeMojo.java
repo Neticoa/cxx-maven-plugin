@@ -37,7 +37,7 @@ public class MakeMojo extends AbstractLaunchMojo {
 	}
 
     /**
-     * Arguments for the executed program
+     * Arguments for make program
      * 
      * @parameter expression="${make.args}"
      * @since 0.0.4
@@ -75,7 +75,7 @@ public class MakeMojo extends AbstractLaunchMojo {
 	}
 
     /**
-     * Environment variables to pass to the cmake program.
+     * Environment variables passed to make program.
      * 
      * @parameter
      * @since 0.0.4
@@ -90,7 +90,7 @@ public class MakeMojo extends AbstractLaunchMojo {
 	}
 
     /**
-     * directory location where make will execute
+     * Directory location where make will be executed
      * 
      * @parameter expression="${make.projectdir}"
      * @since 0.0.4

@@ -39,7 +39,7 @@ public class CMakeMojo extends AbstractLaunchMojo {
 	}
 
     /**
-     * Arguments for the executed program
+     * Directory location of main CMakeList.txt, argument for cmake command 
      * 
      * @parameter expression="${cmake.projectdir}"
      * @since 0.0.4
@@ -54,7 +54,7 @@ public class CMakeMojo extends AbstractLaunchMojo {
 	}
 	
     /**
-     * Arguments for the executed program
+     * Generator name, arguments for cmake command
      * 
      * @parameter expression="${cmake.generator}"
      * @required
