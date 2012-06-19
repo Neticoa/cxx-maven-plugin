@@ -599,6 +599,106 @@
       </build>
     </profile>
 
+
+    <profile>
+      <id>QUICK_QT_RELEASE</id>
+      <properties>
+        <OutSourceDir>${basedir}/builds/Unix Makefiles/QUICK_QT_RELEASE</OutSourceDir>
+      </properties>
+      <activation>
+        <property>
+          <name>quickqtrelease</name>
+        </property>
+      </activation>
+
+      <build>
+        <!-- To define the plugin version in your parent POM -->
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>cxx-maven-plugin</artifactId>
+              <version>0.0.5-SNAPSHOT</version>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+
+        <plugins>
+
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>sonar-maven-plugin</artifactId>
+            <!-- $FB impossible d'utiliser la dernière version pour le momment -->
+            <!--<version>2.0-beta-2</version>-->
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>cxx-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>clean</id>
+                <phase>clean</phase>
+                <goals>
+                  <goal>launch</goal>
+                </goals>
+                <configuration>
+                  <executable>rm</executable>
+                  <commandArgs>-rf "${OutSourceDir}"</commandArgs>
+                </configuration>
+              </execution>
+              <execution>
+                <id>addsource</id>
+                <goals>
+                  <goal>addsource</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>qmake</id>
+                <!--<phase>initialize</phase> -->
+                <!-- initialize is qmake goal default phase -->
+                <goals>
+                  <goal>qmake</goal>
+                </goals>
+                <configuration>
+                  <pros><pro>${basedir}/sources</pro></pros>
+                  <qmakecommandPerOS>
+                    <WindowsXP>qmake</WindowsXP>
+                    <Windows7>qmake</Windows7>
+                    <Linux>qmake-qt4</Linux>
+                  </qmakecommandPerOS>
+                  <!-- ${basedir} is qmake outsourceDir default value -->
+                  <outsourceDir>${OutSourceDir}</outsourceDir>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>make</id>
+                <!--<phase>compile</phase>-->
+                <!-- compile is make goal default phase -->
+                <goals>
+                  <goal>make</goal>
+                </goals>
+                <configuration>
+                  <projectDir>${OutSourceDir}</projectDir>
+                </configuration>
+              </execution>
+           
+            </executions>
+<!-- main configuration node is mainly used by sonar cxx sensor -->
+            <configuration>
+<!-- <sourceDirs> is used by addsource, qmake, cppcheck, cppncss and veraxx goal to identify source files -->
+<!-- <sourceDirs> is also used by sonar cxx sensor to identify source files -->
+              <sourceDirs>
+                <sourceDir>sources/utils</sourceDir>
+                <sourceDir>sources/application</sourceDir>
+                <sourceDir>sources/tests</sourceDir>
+              </sourceDirs>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
   </profiles>
   <build>
     <!-- We have our own <configuration><sourceDirs> node inside cxx plugin configuration -->

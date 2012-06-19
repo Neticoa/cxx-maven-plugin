@@ -107,11 +107,17 @@ ADD_EXECUTABLE(${SAMPLE_EXECUTABLE_NAME}
         ${SAMPLE_UIC_SRCS}
 )
 
+# Global dependencies
+ADD_DEPENDENCIES(${SAMPLE_EXECUTABLE_NAME}
+        Utils
+)
+
 ########################################################################################
 # LINK WITH OTHER LIBRARIES
 
 # SAMPLE depends on QT and ...
 TARGET_LINK_LIBRARIES( ${SAMPLE_EXECUTABLE_NAME}
         ${QT_LIBRARIES}
+        Utils
 )
 

@@ -115,10 +115,16 @@ ADD_EXECUTABLE(${SAMPLE_PROJECT_TESTS_EXECUTABLE_NAME}
         ${SAMPLE_PROJECT_TESTS_UIC_SRCS}
 )
 
+# Global dependencies
+ADD_DEPENDENCIES(${SAMPLE_PROJECT_TESTS_EXECUTABLE_NAME}
+        Utils
+)
+
 ########################################################################################
 # LINK WITH OTHER LIBRARIES
 
 # SAMPLE_PROJECT_TESTS depends on QT and ...
 TARGET_LINK_LIBRARIES( ${SAMPLE_PROJECT_TESTS_EXECUTABLE_NAME}
         ${QT_LIBRARIES}
+        Utils
 )
