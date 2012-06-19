@@ -59,9 +59,8 @@ public class QMakeMojo extends AbstractLaunchMojo {
     private List pros = new ArrayList();
 	
 	protected List getProjectList() {
-		
-        Iterator it = sourceDirs.iterator();
         if (pros.size() == 0) {
+        	Iterator it = sourceDirs.iterator();
 	        while(it.hasNext())
 	        {
 	        	pros.add(new File( (String) it.next() ).getAbsolutePath());
