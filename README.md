@@ -16,6 +16,7 @@
 
 ## [Usage](http://franckbonin.github.com/cxx-maven-plugin/plugin-info.html)
 * Instructions on how to use the Cxx Maven Plugin can be found on the [usage page](http://franckbonin.github.com/cxx-maven-plugin/plugin-info.html)
+* cxx-maven-plugin is intended to integrate seamlessly with [sonar-cxx-plugin](http://docs.codehaus.org/display/SONAR/CXX+Plugin)
 
 ## Examples
 * [pom sample](http://franckbonin.github.com/cxx-maven-plugin/SAMPLE/pom.xml)
