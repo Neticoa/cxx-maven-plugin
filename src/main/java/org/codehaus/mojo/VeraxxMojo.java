@@ -82,6 +82,14 @@ public class VeraxxMojo extends AbstractLaunchMojo {
 		return "vera++-result-" + reportIdentifier + ".xml";
 	}
 	
+    /**
+     *  Excludes files/folder from analysis 
+     *
+     *  @parameter expression="${veraxx.excludes}" default-value=""
+     *  @since 0.0.4
+     */
+     private String excludes;
+
     protected OutputStream getOutputStreamErr() {
     	
     	String OutputReportName = new String();
@@ -198,13 +206,14 @@ public class VeraxxMojo extends AbstractLaunchMojo {
 	    	afileSet.setDirectory(new File(dir).getAbsolutePath());
 	    	
 			afileSet.setIncludes(Arrays.asList(new String[]{"**/*.cpp", "**/*.h", "**/*.cxx", "**/*.hxx"}));
-			//afileSet.setExcludes(Arrays.asList(excludes));
+			afileSet.setExcludes(Arrays.asList(excludes.split(",")));
+                        getLog().debug("vera++ excludes are :" + Arrays.toString(afileSet.getExcludes().toArray()) );
 			
 			FileSetManager aFileSetManager = new FileSetManager();
 			String[] found = aFileSetManager.getIncludedFiles(afileSet);
 			
 			for (int i = 0; i < found.length; i++) {
-				sourceListString.append(dir + "/" + found[i] + " ");
+				sourceListString.append(dir + "/" + found[i] + "\n");
 			}
 		}
     	InputStream is = System.in;
