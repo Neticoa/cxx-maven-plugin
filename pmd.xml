@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pmd version="4.2.5" timestamp="2012-06-18T17:43:35.825">
+<pmd version="4.2.5" timestamp="2014-04-22T15:15:20.919">
 <file name="/home/fbonin/CXX-Maven-GitHub-repo/cxx-maven-plugin/src/main/java/org/codehaus/mojo/FileSetManager.java">
 <violation beginline="54" endline="54" begincolumn="24" endcolumn="27" rule="UnconditionalIfStatement" ruleset="Basic Rules" package="org.codehaus.mojo" class="FileSetManager" method="scan" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#UnconditionalIfStatement" priority="3">
 Do not use if statements that are always true or always false
@@ -8,6 +8,14 @@ Do not use if statements that are always true or always false
 <file name="/home/fbonin/CXX-Maven-GitHub-repo/cxx-maven-plugin/src/main/java/org/codehaus/mojo/LaunchMojo.java">
 <violation beginline="30" endline="30" begincolumn="1" endcolumn="28" rule="UnusedImports" ruleset="Import Statement Rules" package="org.codehaus.mojo" externalInfoUrl="http://pmd.sourceforge.net/rules/imports.html#UnusedImports" priority="4">
 Avoid unused imports such as 'javax.rmi.CORBA.Util'
+</violation>
+</file>
+<file name="/home/fbonin/CXX-Maven-GitHub-repo/cxx-maven-plugin/src/main/java/org/codehaus/mojo/VeraxxMojo.java">
+<violation beginline="61" endline="61" begincolumn="21" endcolumn="34" rule="UnusedPrivateField" ruleset="Unused Code Rules" package="org.codehaus.mojo" class="VeraxxMojo" variable="veraxx_version" externalInfoUrl="http://pmd.sourceforge.net/rules/unusedcode.html#UnusedPrivateField" priority="3">
+Avoid unused private fields such as 'veraxx_version'.
+</violation>
+<violation beginline="74" endline="74" begincolumn="17" endcolumn="19" rule="UnusedLocalVariable" ruleset="Unused Code Rules" package="org.codehaus.mojo" class="VeraxxMojo" method="preExecute" variable="res" externalInfoUrl="http://pmd.sourceforge.net/rules/unusedcode.html#UnusedLocalVariable" priority="3">
+Avoid unused local variables such as 'res'.
 </violation>
 </file>
 <file name="/home/fbonin/CXX-Maven-GitHub-repo/cxx-maven-plugin/src/main/java/org/codehaus/mojo/XUnitMojo.java">

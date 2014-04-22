@@ -6,11 +6,11 @@
     <link>https://github.com/franckbonin/cxx-maven-plugin</link>
     <description>cxx-maven-plugin Maven Mojo - Checkstyle report</description>
     <language>en-us</language>
-    <copyright>&#169;2010 - 2012 Codehaus</copyright>
+    <copyright>&#169;2010 - 2014 Codehaus</copyright>
     <item>
       <title>File: 13,
-             Errors: 909,
-             Warnings: 19,
+             Errors: 993,
+             Warnings: 21,
              Infos: 0
       </title>
             <link>https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html</link>
@@ -52,7 +52,7 @@
                   0
                 </td>
                 <td>
-                  46
+                  47
                 </td>
               </tr>
                           <tr>
@@ -66,7 +66,7 @@
                   0
                 </td>
                 <td>
-                  77
+                  102
                 </td>
               </tr>
                           <tr>
@@ -91,10 +91,10 @@
                   0
                 </td>
                 <td>
-                  2
+                  4
                 </td>
                 <td>
-                  59
+                  71
                 </td>
               </tr>
                           <tr>
@@ -108,7 +108,7 @@
                   0
                 </td>
                 <td>
-                  65
+                  66
                 </td>
               </tr>
                           <tr>
@@ -122,7 +122,7 @@
                   0
                 </td>
                 <td>
-                  63
+                  64
                 </td>
               </tr>
                           <tr>
@@ -136,7 +136,7 @@
                   0
                 </td>
                 <td>
-                  23
+                  24
                 </td>
               </tr>
                           <tr>
@@ -150,7 +150,7 @@
                   0
                 </td>
                 <td>
-                  120
+                  121
                 </td>
               </tr>
                           <tr>
@@ -164,7 +164,7 @@
                   0
                 </td>
                 <td>
-                  62
+                  63
                 </td>
               </tr>
                           <tr>
@@ -178,7 +178,7 @@
                   0
                 </td>
                 <td>
-                  82
+                  83
                 </td>
               </tr>
                           <tr>
@@ -192,7 +192,7 @@
                   0
                 </td>
                 <td>
-                  162
+                  201
                 </td>
               </tr>
                           <tr>
@@ -206,7 +206,7 @@
                   0
                 </td>
                 <td>
-                  43
+                  44
                 </td>
               </tr>
                       </tbody>
