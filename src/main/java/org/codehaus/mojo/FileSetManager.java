@@ -77,6 +77,18 @@ public class FileSetManager {
 	   
 	           return EMPTY_STRING_ARRAY;
 	       }
+	  
+	  public String[] getExcludedFiles( FileSet fileSet )
+      {
+           DirectoryScanner scanner = scan( fileSet );
+   
+           if ( scanner != null )
+           {
+               return scanner.getExcludedFiles();
+          }
+   
+           return EMPTY_STRING_ARRAY;
+       }
 
 	  public String[] getIncludedDirectories( FileSet fileSet )
 	  {
@@ -85,6 +97,18 @@ public class FileSetManager {
 		  if ( scanner != null )
 		  {
 			  return scanner.getIncludedDirectories();
+		  }
+
+		  return EMPTY_STRING_ARRAY;
+	  }
+	  
+	  public String[] getExcludedDirectories( FileSet fileSet )
+	  {
+		  DirectoryScanner scanner = scan( fileSet );
+
+		  if ( scanner != null )
+		  {
+			  return scanner.getExcludedDirectories();
 		  }
 
 		  return EMPTY_STRING_ARRAY;

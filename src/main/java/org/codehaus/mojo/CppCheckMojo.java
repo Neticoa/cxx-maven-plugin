@@ -22,10 +22,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.maven.model.FileSet;
 
 /**
  * Goal which cppcheck sources.
@@ -56,6 +59,14 @@ public class CppCheckMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private List includeDirs = new ArrayList();
+    
+    /**
+     *  Excludes files/folder from analysis (comma separated list of filter)
+     *
+     *  @parameter expression="${cppcheck.excludes}" default-value=""
+     *  @since 0.0.5
+     */
+    private String excludes;
     
    /**
      * The Report OutputFile Location.
@@ -88,11 +99,41 @@ public class CppCheckMojo extends AbstractLaunchMojo {
 		
 		Iterator it = includeDirs.iterator();
 		while(it.hasNext()) {
-			params += "-I\"" + it.next() + "\" ";
+			FileSet afileSet = new FileSet();
+			
+			String dir = it.next().toString();
+			params += "-I\"" + dir + "\" ";
+			
+	    	afileSet.setDirectory(new File(dir).getAbsolutePath());
+	    	
+			afileSet.setExcludes(Arrays.asList(excludes.split(",")));
+            getLog().debug("cppcheck excludes are :" + Arrays.toString(afileSet.getExcludes().toArray()) );
+            
+            FileSetManager aFileSetManager = new FileSetManager();
+			String[] found = aFileSetManager.getExcludedFiles(afileSet);
+			
+			for (int i = 0; i < found.length; i++) {
+				params += "-i\"" + found[i] + "\" ";
+			}
 		}
 		it = sourceDirs.iterator();
 		while(it.hasNext()) {
-			params += "-I\"" + it.next() + "\" ";
+			FileSet afileSet = new FileSet();
+			
+			String dir = it.next().toString();
+			params += "-I\"" + dir + "\" ";
+			
+	    	afileSet.setDirectory(new File(dir).getAbsolutePath());
+	    	
+			afileSet.setExcludes(Arrays.asList(excludes.split(",")));
+            getLog().debug("cppcheck excludes are :" + Arrays.toString(afileSet.getExcludes().toArray()) );
+            
+            FileSetManager aFileSetManager = new FileSetManager();
+			String[] found = aFileSetManager.getExcludedFiles(afileSet);
+			
+			for (int i = 0; i < found.length; i++) {
+				params += "-i\"" + found[i] + "\" ";
+			}
 		}
 		
 		it = sourceDirs.iterator();
