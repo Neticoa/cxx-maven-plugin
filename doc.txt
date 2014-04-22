@@ -1,1 +1,3 @@
+activate <parent> node in pom.xml
+then
 mvn site
