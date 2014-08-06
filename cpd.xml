@@ -1,3 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pmd-cpd>
+<duplication lines="20" tokens="146">
+<file line="110" path="/home/fbonin/Documents/NETICOA/cxx-maven-plugin_on_github.com_franckbonin/src/main/java/org/codehaus/mojo/CppCheckMojo.java"/>
+<file line="130" path="/home/fbonin/Documents/NETICOA/cxx-maven-plugin_on_github.com_franckbonin/src/main/java/org/codehaus/mojo/CppCheckMojo.java"/>
+<codefragment>
+<![CDATA[
+        Iterator it = includeDirs.iterator();
+        while( it.hasNext() )
+        {
+            FileSet afileSet = new FileSet();
+            
+            String dir = it.next().toString();
+            params += "-I\"" + dir + "\" ";
+            
+            if ( StringUtils.isNotEmpty( excludes ) )
+            {
+                afileSet.setDirectory( new File( dir ).getAbsolutePath() );
+                afileSet.setUseDefaultExcludes( false ); // $FB pour éviter d'avoir TROP de fichier excludes (inutiles) dans la boucle for ci-après
+                afileSet.setExcludes( Arrays.asList( excludes.split( "," ) ) );
+                getLog().debug( "cppcheck excludes are :" + Arrays.toString( afileSet.getExcludes().toArray() ) );
+                
+                FileSetManager aFileSetManager = new FileSetManager();
+                String[] found = aFileSetManager.getExcludedFiles( afileSet );
+                excudedSet.addAll( new HashSet<String>( Arrays.asList( found ) ));
+            }
+        }
+]]>
+</codefragment>
+</duplication>
 </pmd-cpd>

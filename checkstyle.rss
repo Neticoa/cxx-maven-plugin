@@ -6,11 +6,11 @@
     <link>https://github.com/franckbonin/cxx-maven-plugin</link>
     <description>cxx-maven-plugin Maven Mojo - Checkstyle report</description>
     <language>en-us</language>
-    <copyright>&#169;2010 - 2014 Codehaus</copyright>
+    <copyright>&#169;2010 - 2014 Neticoa SAS</copyright>
     <item>
       <title>File: 13,
-             Errors: 993,
-             Warnings: 21,
+             Errors: 85,
+             Warnings: 91,
              Infos: 0
       </title>
             <link>https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html</link>
@@ -38,7 +38,21 @@
                   17
                 </td>
                 <td>
-                  104
+                  11
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.CoverageMojo.java">org/codehaus/mojo/CoverageMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+                <td>
+                  13
                 </td>
               </tr>
                           <tr>
@@ -49,10 +63,10 @@
                   0
                 </td>
                 <td>
-                  0
+                  8
                 </td>
                 <td>
-                  47
+                  3
                 </td>
               </tr>
                           <tr>
@@ -63,24 +77,10 @@
                   0
                 </td>
                 <td>
-                  0
+                  8
                 </td>
                 <td>
-                  102
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.AddSourceMojo.java">org/codehaus/mojo/AddSourceMojo.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  3
+                  12
                 </td>
               </tr>
                           <tr>
@@ -94,7 +94,21 @@
                   4
                 </td>
                 <td>
-                  71
+                  6
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.AddSourceMojo.java">org/codehaus/mojo/AddSourceMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+                <td>
+                  3
                 </td>
               </tr>
                           <tr>
@@ -105,80 +119,10 @@
                   0
                 </td>
                 <td>
-                  0
+                  8
                 </td>
                 <td>
-                  66
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.CppNcssMojo.java">org/codehaus/mojo/CppNcssMojo.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  64
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.XUnitMojo.java">org/codehaus/mojo/XUnitMojo.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  24
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.LaunchMojo.java">org/codehaus/mojo/LaunchMojo.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  121
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.ValgrindMojo.java">org/codehaus/mojo/ValgrindMojo.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  63
-                </td>
-              </tr>
-                          <tr>
-                <td>
-                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.CoverageMojo.java">org/codehaus/mojo/CoverageMojo.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  83
+                  3
                 </td>
               </tr>
                           <tr>
@@ -189,10 +133,52 @@
                   0
                 </td>
                 <td>
+                  10
+                </td>
+                <td>
+                  13
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.CppNcssMojo.java">org/codehaus/mojo/CppNcssMojo.java</a>
+                </td>
+                <td>
                   0
                 </td>
                 <td>
-                  201
+                  7
+                </td>
+                <td>
+                  5
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.XUnitMojo.java">org/codehaus/mojo/XUnitMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+                <td>
+                  11
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.LaunchMojo.java">org/codehaus/mojo/LaunchMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  10
+                </td>
+                <td>
+                  2
                 </td>
               </tr>
                           <tr>
@@ -203,10 +189,24 @@
                   0
                 </td>
                 <td>
+                  7
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.mojo.ValgrindMojo.java">org/codehaus/mojo/ValgrindMojo.java</a>
+                </td>
+                <td>
                   0
                 </td>
                 <td>
-                  44
+                  7
+                </td>
+                <td>
+                  2
                 </td>
               </tr>
                       </tbody>

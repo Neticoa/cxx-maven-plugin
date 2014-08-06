@@ -67,7 +67,7 @@
 <a class="jxr_linenumber" name="57" href="#57">57</a>      {   
 <a class="jxr_linenumber" name="58" href="#58">58</a>          getLog().info( <span class="jxr_string">"Cxx Maven Plugin AddSource "</span> );
 <a class="jxr_linenumber" name="59" href="#59">59</a>          Iterator it = sourceDirs.iterator();
-<a class="jxr_linenumber" name="60" href="#60">60</a>          <strong class="jxr_keyword">while</strong>(it.hasNext())
+<a class="jxr_linenumber" name="60" href="#60">60</a>          <strong class="jxr_keyword">while</strong>( it.hasNext() )
 <a class="jxr_linenumber" name="61" href="#61">61</a>          {
 <a class="jxr_linenumber" name="62" href="#62">62</a>              File source = <strong class="jxr_keyword">new</strong> File( (String) it.next() );
 <a class="jxr_linenumber" name="63" href="#63">63</a>              <strong class="jxr_keyword">this</strong>.project.addCompileSourceRoot( source.getAbsolutePath() );
