@@ -36,10 +36,10 @@ import org.apache.commons.lang.StringUtils;
  */
 public class QMakeMojo extends AbstractLaunchMojo {
 
-	protected List getArgsList() {
-		return null;
-	}
-	
+    protected List getArgsList() {
+        return null;
+    }
+    
     /**
      * directory were sources are
      * 
@@ -57,21 +57,21 @@ public class QMakeMojo extends AbstractLaunchMojo {
      * @since 0.0.5
      */
     private List pros = new ArrayList();
-	
-	protected List getProjectList() {
+    
+    protected List getProjectList() {
         if (pros.size() == 0) {
-        	Iterator it = sourceDirs.iterator();
-	        while(it.hasNext())
-	        {
-	        	pros.add(new File( (String) it.next() ).getAbsolutePath());
-	        }
+            Iterator it = sourceDirs.iterator();
+            while(it.hasNext())
+            {
+                pros.add(new File( (String) it.next() ).getAbsolutePath());
+            }
         }
-		if (pros.size() == 0) {
-			pros.add(new String(basedir.getAbsolutePath()));
-		}
-		return pros;
-	}
-	
+        if (pros.size() == 0) {
+            pros.add(new String(basedir.getAbsolutePath()));
+        }
+        return pros;
+    }
+    
     /**
      * Arguments for qmake program
      * 
@@ -79,22 +79,22 @@ public class QMakeMojo extends AbstractLaunchMojo {
      * 
      * @since 0.0.5
      */
-	private String commandArgs;
-	
-	protected String getCommandArgs() {
-		String result = new String("-makefile ");
-		if (!StringUtils.isEmpty(commandArgs)) {
-			result += commandArgs + " ";
-		}
-		List proList = getProjectList();
+    private String commandArgs;
+    
+    protected String getCommandArgs() {
+        String result = new String("-makefile ");
+        if (!StringUtils.isEmpty(commandArgs)) {
+            result += commandArgs + " ";
+        }
+        List proList = getProjectList();
         Iterator it = proList.iterator();
         while(it.hasNext())
         {
-        	result += "\"" + (String) it.next() + "\" ";
+            result += "\"" + (String) it.next() + "\" ";
         }
-		return result;
-	}
-	
+        return result;
+    }
+    
     /**
      * qmake commands names per OS name
      * os name match is java.lang.System.getProperty("os.name")
@@ -103,25 +103,25 @@ public class QMakeMojo extends AbstractLaunchMojo {
      * @since 0.0.5
      */
     private Map qmakecommandPerOS = new HashMap();
-	
-	protected String getExecutable() {
-		String sOsName = System.getProperty("os.name");
-		sOsName = sOsName.replace(" ", "");
-		getLog().info( "os.name is \"" + sOsName + "\"" );
-		if (qmakecommandPerOS == null)
-		{
-			return "qmake";
-		}
-		else
-		{
-			if (qmakecommandPerOS.containsKey(sOsName)) {
-				return (String) qmakecommandPerOS.get(sOsName);
-			} else {
-				return "qmake";
-			}
-		}
-	}
-	
+    
+    protected String getExecutable() {
+        String sOsName = System.getProperty("os.name");
+        sOsName = sOsName.replace(" ", "");
+        getLog().info( "os.name is \"" + sOsName + "\"" );
+        if (qmakecommandPerOS == null)
+        {
+            return "qmake";
+        }
+        else
+        {
+            if (qmakecommandPerOS.containsKey(sOsName)) {
+                return (String) qmakecommandPerOS.get(sOsName);
+            } else {
+                return "qmake";
+            }
+        }
+    }
+    
     /**
      * Environment variables passed to qmake program.
      * 
@@ -129,13 +129,13 @@ public class QMakeMojo extends AbstractLaunchMojo {
      * @since 0.0.5
      */
     private Map environmentVariables = new HashMap();
-	protected Map getMoreEnvironmentVariables() {
-		return environmentVariables;
-	}
+    protected Map getMoreEnvironmentVariables() {
+        return environmentVariables;
+    }
 
-	protected List getSuccesCode() {
-		return null;
-	}
+    protected List getSuccesCode() {
+        return null;
+    }
 
     /**
      * Out of source directory
@@ -145,15 +145,15 @@ public class QMakeMojo extends AbstractLaunchMojo {
      */
     private File outsourceDir;
     
-	protected File getWorkingDir() {
-		if (null == outsourceDir) {
-			outsourceDir = new File(basedir.getPath());
-		}
-		return outsourceDir;
-	}
+    protected File getWorkingDir() {
+        if (null == outsourceDir) {
+            outsourceDir = new File(basedir.getPath());
+        }
+        return outsourceDir;
+    }
 
-	public boolean isSkip() {
-		return false;
-	}
+    public boolean isSkip() {
+        return false;
+    }
 
 }

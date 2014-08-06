@@ -32,12 +32,12 @@ import java.util.Map;
  */
 public class ValgrindMojo extends AbstractLaunchMojo {
 
-	protected List getArgsList() {
-		return null;
-	}
+    protected List getArgsList() {
+        return null;
+    }
 
-	
-	/**
+    
+    /**
      * The Report OutputFile Location.
      * 
      * @parameter expression="${valgrind.reportsfilePath}" default-value="valgrind-reports"
@@ -46,60 +46,60 @@ public class ValgrindMojo extends AbstractLaunchMojo {
     private File reportsfileDir;
 
 
-	/**
-	 * The Report OutputFile name identifier.
-	 * 
-	 * @parameter expression="${valgrind.reportIdentifier}" default-value=""
-	 * @since 0.0.4
-	 */
-	private String reportIdentifier;
-	private String getReportFileName() {
-		return "valgrind-result-" + reportIdentifier + ".xml";
-	}
+    /**
+     * The Report OutputFile name identifier.
+     * 
+     * @parameter expression="${valgrind.reportIdentifier}" default-value=""
+     * @since 0.0.4
+     */
+    private String reportIdentifier;
+    private String getReportFileName() {
+        return "valgrind-result-" + reportIdentifier + ".xml";
+    }
     /**
      * Arguments for valgrind program. Shall be --leak-check=yes --demangle=yes --xml=yes
      * 
      * @parameter expression="${valgrind.args}" default-value="--leak-check=yes --demangle=yes --xml=yes"
      */
-	private String commandArgs;
-	
-	protected String getCommandArgs() {
-		String params = commandArgs + " ";
-    	String OutputReportName = new String();
-		if (reportsfileDir.isAbsolute()) {
-			OutputReportName = reportsfileDir.getAbsolutePath() + "/" + getReportFileName();
-		} else {
-			OutputReportName = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath() + "/" + getReportFileName();
-		}
-	    File file = new File(OutputReportName);
-	    new File(file.getParent()).mkdirs();
-		
-		params += "--xml-file=\"" + OutputReportName + "\" ";
-		
-		params += "\"" + instrumentedExecutablePath + "\" " + instrumentedExecutableArgs;
-				
-		return params;
-	}
-	
+    private String commandArgs;
+    
+    protected String getCommandArgs() {
+        String params = commandArgs + " ";
+        String OutputReportName = new String();
+        if (reportsfileDir.isAbsolute()) {
+            OutputReportName = reportsfileDir.getAbsolutePath() + "/" + getReportFileName();
+        } else {
+            OutputReportName = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath() + "/" + getReportFileName();
+        }
+        File file = new File(OutputReportName);
+        new File(file.getParent()).mkdirs();
+        
+        params += "--xml-file=\"" + OutputReportName + "\" ";
+        
+        params += "\"" + instrumentedExecutablePath + "\" " + instrumentedExecutableArgs;
+                
+        return params;
+    }
+    
     /**
      * Path to executed (tested) program 
      * 
      * @parameter expression="${valgrind.instrumented}"
      * @required
      */
-	private String instrumentedExecutablePath;
-	
+    private String instrumentedExecutablePath;
+    
     /**
      * Arguments of executed program 
      * 
      * @parameter expression="${valgrind.instrumentedArgs}" default-value=" "
      */
-	private String instrumentedExecutableArgs;
-	
-	
-	protected String getExecutable() {
-		return "valgrind";
-	}
+    private String instrumentedExecutableArgs;
+    
+    
+    protected String getExecutable() {
+        return "valgrind";
+    }
 
     /**
      * Environment variables passed to valgrind program.
@@ -108,13 +108,13 @@ public class ValgrindMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private Map environmentVariables = new HashMap();
-	protected Map getMoreEnvironmentVariables() {
-		return environmentVariables;
-	}
+    protected Map getMoreEnvironmentVariables() {
+        return environmentVariables;
+    }
 
-	protected List getSuccesCode() {
-		return null;
-	}
+    protected List getSuccesCode() {
+        return null;
+    }
 
     /**
      * The current working directory. Optional. If not specified, basedir will be used.
@@ -123,17 +123,17 @@ public class ValgrindMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private File workingDir;
-	protected File getWorkingDir() {
-		if (null == workingDir) {
-			workingDir = new File(basedir.getPath());
-		}
-		return workingDir;
-	}
+    protected File getWorkingDir() {
+        if (null == workingDir) {
+            workingDir = new File(basedir.getPath());
+        }
+        return workingDir;
+    }
 
-	protected boolean isSkip() {
-		String sOsName = System.getProperty("os.name");
-		// vilgrind will work on linux, macos, everything but windows
-		return sOsName.contains("windows");
-	}
+    protected boolean isSkip() {
+        String sOsName = System.getProperty("os.name");
+        // vilgrind will work on linux, macos, everything but windows
+        return sOsName.contains("windows");
+    }
 
 }

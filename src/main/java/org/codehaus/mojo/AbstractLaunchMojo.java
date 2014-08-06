@@ -49,11 +49,11 @@ import org.apache.commons.lang.StringUtils;
 
 public abstract class AbstractLaunchMojo extends AbstractMojo
 {
-	/**
-	* Current Project
-	* @parameter expression="${project}"
-	*/
-	protected org.apache.maven.project.MavenProject project;
+    /**
+    * Current Project
+    * @parameter expression="${project}"
+    */
+    protected org.apache.maven.project.MavenProject project;
 
      /**
      * Pom directory location
@@ -68,35 +68,35 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
     protected abstract String getCommandArgs();
     private List getCommandLineArgs() throws MojoExecutionException
     {
-    	List commandArguments = new ArrayList();
-    	
-	    if ( getCommandArgs() != null )
-	    {
-	        String[] args = parseCommandlineArgs(getCommandArgs());
-	        for ( int i = 0; i < args.length; i++ )
-	        {
-	             commandArguments.add( args[i] );
-	        }
-	    }
-	    else if ( getArgsList() != null )
-	    {
-	        for ( int i = 0; i < getArgsList().size(); i++ )
-	        {
-	            Object argument = getArgsList().get( i );
-	            String arg;
-	            if ( argument == null )
-	            {
-	                throw new MojoExecutionException( "Misconfigured argument, value is null. "
-	                    + "Set the argument to an empty value if this is the required behaviour." );
-	            }
-	            else
-	            {
-	                arg = argument.toString();
-	                commandArguments.add( arg );
-	            }
-	        }
-	    }
-	    return commandArguments;
+        List commandArguments = new ArrayList();
+        
+        if ( getCommandArgs() != null )
+        {
+            String[] args = parseCommandlineArgs(getCommandArgs());
+            for ( int i = 0; i < args.length; i++ )
+            {
+                 commandArguments.add( args[i] );
+            }
+        }
+        else if ( getArgsList() != null )
+        {
+            for ( int i = 0; i < getArgsList().size(); i++ )
+            {
+                Object argument = getArgsList().get( i );
+                String arg;
+                if ( argument == null )
+                {
+                    throw new MojoExecutionException( "Misconfigured argument, value is null. "
+                        + "Set the argument to an empty value if this is the required behaviour." );
+                }
+                else
+                {
+                    arg = argument.toString();
+                    commandArguments.add( arg );
+                }
+            }
+        }
+        return commandArguments;
     }
 
     /**
@@ -130,43 +130,43 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
     protected abstract Map getMoreEnvironmentVariables();
     protected Map getEnvs()
     {
-	    Map enviro = new HashMap();
-	    try
-	    {
-	        Properties systemEnvVars = CommandLineUtils.getSystemEnvVars();
-	        enviro.putAll( systemEnvVars );
-	    }
-	    catch ( IOException x )
-	    {
-	        getLog().error( "Could not assign default system enviroment variables.", x );
-	    }
-	
-	    if ( getMoreEnvironmentVariables() != null )
-	    {
-	        Iterator iter = getMoreEnvironmentVariables().keySet().iterator();
-	        while ( iter.hasNext() )
-	        {
-	            String key = (String) iter.next();
-	            String value = (String) getMoreEnvironmentVariables().get( key );
-	            enviro.put( key, value );
-	        }
-	    }
-	    return enviro;
+        Map enviro = new HashMap();
+        try
+        {
+            Properties systemEnvVars = CommandLineUtils.getSystemEnvVars();
+            enviro.putAll( systemEnvVars );
+        }
+        catch ( IOException x )
+        {
+            getLog().error( "Could not assign default system enviroment variables.", x );
+        }
+    
+        if ( getMoreEnvironmentVariables() != null )
+        {
+            Iterator iter = getMoreEnvironmentVariables().keySet().iterator();
+            while ( iter.hasNext() )
+            {
+                String key = (String) iter.next();
+                String value = (String) getMoreEnvironmentVariables().get( key );
+                enviro.put( key, value );
+            }
+        }
+        return enviro;
     }
     
 
     protected abstract File getWorkingDir();
     private void EnsureExistWorkingDirectory() throws MojoExecutionException
     {
-	    if ( !getWorkingDir().exists() )
-	    {
-	        getLog().info( "Making working directory '" + getWorkingDir().getAbsolutePath() + "'." );
-	        if ( !getWorkingDir().mkdirs() )
-	        {
-	            throw new MojoExecutionException( "Could not make working directory: '"
-	                + getWorkingDir().getAbsolutePath() + "'" );
-	        }
-	    }
+        if ( !getWorkingDir().exists() )
+        {
+            getLog().info( "Making working directory '" + getWorkingDir().getAbsolutePath() + "'." );
+            if ( !getWorkingDir().mkdirs() )
+            {
+                throw new MojoExecutionException( "Could not make working directory: '"
+                    + getWorkingDir().getAbsolutePath() + "'" );
+            }
+        }
     }
     
     /**
@@ -241,11 +241,11 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
     }
         
     protected int executeCommandLine( Executor exec, CommandLine commandLine, Map enviro, OutputStream out,
-            OutputStream err,  InputStream in )	throws ExecuteException, IOException
-	{
-    	exec.setStreamHandler( new PumpStreamHandler( out, err, in ) );
-    	return exec.execute( commandLine, enviro );
-	}
+            OutputStream err,  InputStream in ) throws ExecuteException, IOException
+    {
+        exec.setStreamHandler( new PumpStreamHandler( out, err, in ) );
+        return exec.execute( commandLine, enviro );
+    }
     
     
     protected abstract List getSuccesCode();
@@ -270,15 +270,15 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
     protected abstract boolean isSkip();
     
     protected OutputStream getOutputStreamOut(){
-    	return System.out;
+        return System.out;
     }
     
     protected OutputStream getOutputStreamErr(){
-    	return System.err;
+        return System.err;
     }
     
     protected InputStream getInputStream(){
-    	return System.in;
+        return System.in;
     }
     
     

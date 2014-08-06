@@ -38,7 +38,7 @@ import org.apache.maven.plugin.MojoExecutionException;
  */
 public class XUnitMojo extends LaunchMojo {
 
-	/**
+    /**
      * The Report OutputFile Location.
      * 
      * @parameter expression="${xunit.reportsfilePath}" default-value="xunit-reports"
@@ -46,25 +46,26 @@ public class XUnitMojo extends LaunchMojo {
      */
     private File reportsfileDir;
     
-    protected void preExecute(Executor exec, CommandLine commandLine, Map enviro) throws MojoExecutionException{
-    	// this
-    	String OutputReportDir = new String();
-		if (reportsfileDir.isAbsolute()) {
-			OutputReportDir = reportsfileDir.getAbsolutePath();
-		} else {
-			OutputReportDir = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath();
-		}
-    	new File(OutputReportDir).mkdirs();
-		getLog().info("You shall produce a xUnit report called \""+ OutputReportDir + "/xunit-result-*.xml\" within this xunit goal" );
-	    File file = new File(OutputReportDir + "/Readme.txt");
-		try {
-			DataOutputStream out = new DataOutputStream(new FileOutputStream(file));
-			out.writeBytes("You shall produce xUnit reports called \"xunit-result-*.xml\" within this directory.\n");
-		} catch (IOException e) {
-		}
+    protected void preExecute(Executor exec, CommandLine commandLine, Map enviro) throws MojoExecutionException
+    {
+        // this
+        String OutputReportDir = new String();
+        if (reportsfileDir.isAbsolute()) {
+            OutputReportDir = reportsfileDir.getAbsolutePath();
+        } else {
+            OutputReportDir = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath();
+        }
+        new File(OutputReportDir).mkdirs();
+        getLog().info("You shall produce a xUnit report called \""+ OutputReportDir + "/xunit-result-*.xml\" within this xunit goal" );
+        File file = new File(OutputReportDir + "/Readme.txt");
+        try {
+            DataOutputStream out = new DataOutputStream(new FileOutputStream(file));
+            out.writeBytes("You shall produce xUnit reports called \"xunit-result-*.xml\" within this directory.\n");
+        } catch (IOException e) {
+        }
     }
     
-	/**
+    /**
      * The Xunit Skip feature.
      * 
      * @parameter expression="${xunit.skiptests}" default-value="false"
@@ -72,7 +73,7 @@ public class XUnitMojo extends LaunchMojo {
      */
     private boolean skiptests;
     
-	protected boolean isSkip() {
-		return super.isSkip() || skiptests;
-	}
+    protected boolean isSkip() {
+        return super.isSkip() || skiptests;
+    }
 }

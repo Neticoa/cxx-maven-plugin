@@ -34,9 +34,9 @@ import org.apache.commons.lang.StringUtils;
  */
 public class CMakeMojo extends AbstractLaunchMojo {
 
-	protected List getArgsList() {
-		return null;
-	}
+    protected List getArgsList() {
+        return null;
+    }
 
     /**
      * Directory location of main CMakeList.txt, argument for cmake command 
@@ -44,15 +44,15 @@ public class CMakeMojo extends AbstractLaunchMojo {
      * @parameter expression="${cmake.projectdir}"
      * @since 0.0.4
      */
-	private String projectDir;
-	
-	protected String getProjectDir() {
-		if (null == projectDir) {
-			projectDir = new String(basedir.getAbsolutePath());
-		}
-		return projectDir;
-	}
-	
+    private String projectDir;
+    
+    protected String getProjectDir() {
+        if (null == projectDir) {
+            projectDir = new String(basedir.getAbsolutePath());
+        }
+        return projectDir;
+    }
+    
     /**
      * Generator name, arguments for cmake command
      * 
@@ -60,32 +60,32 @@ public class CMakeMojo extends AbstractLaunchMojo {
      * @required
      * @since 0.0.4
      */
-	private String generator;
-	
+    private String generator;
+    
     /**
      * Arguments for the executed program
      * 
      * @parameter expression="${cmake.args}"
      * @since 0.0.4
      */
-	private String commandArgs;
-	
-	protected String getCommandArgs() {
-		String result = new String();
-		if (!StringUtils.isEmpty(commandArgs)) {
-			result = commandArgs + " ";
-		}
-		result += "\"" + getProjectDir() + "\" -G " + generator;
-		return result;
-	}
-	
+    private String commandArgs;
+    
+    protected String getCommandArgs() {
+        String result = new String();
+        if (!StringUtils.isEmpty(commandArgs)) {
+            result = commandArgs + " ";
+        }
+        result += "\"" + getProjectDir() + "\" -G " + generator;
+        return result;
+    }
+    
 
 
-	protected String getExecutable() {
-		return "cmake";
-	}
+    protected String getExecutable() {
+        return "cmake";
+    }
 
-	
+    
     /**
      * Environment variables to pass to the cmake program.
      * 
@@ -93,13 +93,13 @@ public class CMakeMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private Map environmentVariables = new HashMap();
-	protected Map getMoreEnvironmentVariables() {
-		return environmentVariables;
-	}
+    protected Map getMoreEnvironmentVariables() {
+        return environmentVariables;
+    }
 
-	protected List getSuccesCode() {
-		return null;
-	}
+    protected List getSuccesCode() {
+        return null;
+    }
 
     /**
      * Out of source directory
@@ -109,15 +109,15 @@ public class CMakeMojo extends AbstractLaunchMojo {
      */
     private File outsourceDir;
     
-	protected File getWorkingDir() {
-		if (null == outsourceDir) {
-			outsourceDir = new File(basedir.getPath());
-		}
-		return outsourceDir;
-	}
+    protected File getWorkingDir() {
+        if (null == outsourceDir) {
+            outsourceDir = new File(basedir.getPath());
+        }
+        return outsourceDir;
+    }
 
-	public boolean isSkip() {
-		return false;
-	}
+    public boolean isSkip() {
+        return false;
+    }
 
 }

@@ -32,9 +32,9 @@ import java.util.Map;
  */
 public class MakeMojo extends AbstractLaunchMojo {
 
-	protected List getArgsList() {
-		return null;
-	}
+    protected List getArgsList() {
+        return null;
+    }
 
     /**
      * Arguments for make program
@@ -42,10 +42,10 @@ public class MakeMojo extends AbstractLaunchMojo {
      * @parameter expression="${make.args}"
      * @since 0.0.4
      */
-	private String commandArgs;
-	protected String getCommandArgs() {
-		return commandArgs;
-	}
+    private String commandArgs;
+    protected String getCommandArgs() {
+        return commandArgs;
+    }
 
     /**
      * make commands names per OS name
@@ -55,24 +55,24 @@ public class MakeMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private Map makecommandPerOS = new HashMap();
-	
-	protected String getExecutable() {
-		String sOsName = System.getProperty("os.name");
-		sOsName = sOsName.replace(" ", "");
-		getLog().info( "os.name is \"" + sOsName + "\"" );
-		if (makecommandPerOS == null)
-		{
-			return "make";
-		}
-		else
-		{
-			if (makecommandPerOS.containsKey(sOsName)) {
-				return (String) makecommandPerOS.get(sOsName);
-			} else {
-				return "make";
-			}
-		}
-	}
+    
+    protected String getExecutable() {
+        String sOsName = System.getProperty("os.name");
+        sOsName = sOsName.replace(" ", "");
+        getLog().info( "os.name is \"" + sOsName + "\"" );
+        if (makecommandPerOS == null)
+        {
+            return "make";
+        }
+        else
+        {
+            if (makecommandPerOS.containsKey(sOsName)) {
+                return (String) makecommandPerOS.get(sOsName);
+            } else {
+                return "make";
+            }
+        }
+    }
 
     /**
      * Environment variables passed to make program.
@@ -81,13 +81,13 @@ public class MakeMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private Map environmentVariables = new HashMap();
-	protected Map getMoreEnvironmentVariables() {
-		return environmentVariables;
-	}
+    protected Map getMoreEnvironmentVariables() {
+        return environmentVariables;
+    }
 
-	protected List getSuccesCode() {
-		return null;
-	}
+    protected List getSuccesCode() {
+        return null;
+    }
 
     /**
      * Directory location where make will be executed
@@ -97,15 +97,15 @@ public class MakeMojo extends AbstractLaunchMojo {
      */
     private File projectDir;
     
-	protected File getWorkingDir() {
-		if (null == projectDir) {
-			projectDir = new File(basedir.getPath());
-		}
-		return projectDir;
-	}
-	
-	public boolean isSkip() {
-		return false;
-	}
+    protected File getWorkingDir() {
+        if (null == projectDir) {
+            projectDir = new File(basedir.getPath());
+        }
+        return projectDir;
+    }
+    
+    public boolean isSkip() {
+        return false;
+    }
 
 }

@@ -29,9 +29,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashSet;
 
+import org.apache.commons.lang.StringUtils;
+
+/* Use enhanced FileSet and FileManager (not the one provided in this project)*/
 import org.apache.maven.shared.model.fileset.FileSet;
 import org.apache.maven.shared.model.fileset.util.FileSetManager;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Goal which cppcheck sources.

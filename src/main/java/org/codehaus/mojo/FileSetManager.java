@@ -22,95 +22,101 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.maven.model.FileSet;
+
 import org.codehaus.plexus.util.DirectoryScanner;
 
+/**
+ * This FileSetManager always exclude default files (.svn, etc.) and scan symlinks.
+ *
+ * @author Franck Bonin 
+ * 
+ */
 public class FileSetManager {
 
-	
-	private DirectoryScanner scan( FileSet fileSet )
-	  {
-		  File basedir = new File( fileSet.getDirectory() );
+    private DirectoryScanner scan( FileSet fileSet )
+    {
+        File basedir = new File( fileSet.getDirectory() );
 
-		  if ( !basedir.exists() || !basedir.isDirectory() )
-		  {
-			  return null;
-		  }
+        if ( !basedir.exists() || !basedir.isDirectory() )
+        {
+             return null;
+        }
 
-		  DirectoryScanner scanner = new DirectoryScanner();
+        DirectoryScanner scanner = new DirectoryScanner();
 
-		  List includesList = fileSet.getIncludes();
-		  List excludesList = fileSet.getExcludes();
+        List includesList = fileSet.getIncludes();
+        List excludesList = fileSet.getExcludes();
 
-		  if ( includesList.size() > 0 )
-		  {
-			  scanner.setIncludes( (String[]) includesList.toArray(new String[0]) );
-		  }
+        if ( includesList.size() > 0 )
+        {
+             scanner.setIncludes( (String[]) includesList.toArray(new String[0]) );
+        }
 
-		  if ( excludesList.size() > 0 )
-		  {
-			  scanner.setExcludes( (String[]) excludesList.toArray(new String[0]) );
-		  }
+        if ( excludesList.size() > 0 )
+        {
+             scanner.setExcludes( (String[]) excludesList.toArray(new String[0]) );
+        }
 
-		  if ( true)//fileSet.isUseDefaultExcludes() )
-		  {
-			  scanner.addDefaultExcludes();
-		  }
+        if ( true )//fileSet.isUseDefaultExcludes() )
+        {
+             scanner.addDefaultExcludes();
+        }
 
-		  scanner.setBasedir( basedir );
-		  scanner.setFollowSymlinks( true );//fileSet.isFollowSymlinks() );
+        scanner.setBasedir( basedir );
+        scanner.setFollowSymlinks( true );//fileSet.isFollowSymlinks() );
 
-		  scanner.scan();
+        scanner.scan();
 
-		  return scanner;
-	  }
-	  
-	  private static final String[] EMPTY_STRING_ARRAY = new String[0];
+        return scanner;
+    }
+    
+    private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
-	  public String[] getIncludedFiles( FileSet fileSet )
-	      {
-	           DirectoryScanner scanner = scan( fileSet );
-	   
-	           if ( scanner != null )
-	           {
-	               return scanner.getIncludedFiles();
-	          }
-	   
-	           return EMPTY_STRING_ARRAY;
-	       }
-	  
-	  public String[] getExcludedFiles( FileSet fileSet )
-      {
-           DirectoryScanner scanner = scan( fileSet );
+    public String[] getIncludedFiles( FileSet fileSet )
+    {
+        DirectoryScanner scanner = scan( fileSet );
+     
+        if ( scanner != null )
+        {
+            return scanner.getIncludedFiles();
+        }
+     
+        return EMPTY_STRING_ARRAY;
+    }
+    
+    public String[] getExcludedFiles( FileSet fileSet )
+    {
+         DirectoryScanner scanner = scan( fileSet );
    
-           if ( scanner != null )
-           {
-               return scanner.getExcludedFiles();
-          }
+         if ( scanner != null )
+         {
+           return scanner.getExcludedFiles();
+         }
    
-           return EMPTY_STRING_ARRAY;
-       }
+         return EMPTY_STRING_ARRAY;
+     }
 
-	  public String[] getIncludedDirectories( FileSet fileSet )
-	  {
-		  DirectoryScanner scanner = scan( fileSet );
+    public String[] getIncludedDirectories( FileSet fileSet )
+    {
+        DirectoryScanner scanner = scan( fileSet );
 
-		  if ( scanner != null )
-		  {
-			  return scanner.getIncludedDirectories();
-		  }
+        if ( scanner != null )
+        {
+          return scanner.getIncludedDirectories();
+        }
 
-		  return EMPTY_STRING_ARRAY;
-	  }
-	  
-	  public String[] getExcludedDirectories( FileSet fileSet )
-	  {
-		  DirectoryScanner scanner = scan( fileSet );
+        return EMPTY_STRING_ARRAY;
+    }
+    
+    public String[] getExcludedDirectories( FileSet fileSet )
+    {
+        DirectoryScanner scanner = scan( fileSet );
 
-		  if ( scanner != null )
-		  {
-			  return scanner.getExcludedDirectories();
-		  }
+        if ( scanner != null )
+        {
+          return scanner.getExcludedDirectories();
+        }
 
-		  return EMPTY_STRING_ARRAY;
-	  }
+        return EMPTY_STRING_ARRAY;
+    }
 }

@@ -41,8 +41,11 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.model.FileSet;
+
 import org.apache.maven.plugin.MojoExecutionException;
+
+/* Use FileSet and the FileManager provided in this project*/
+import org.apache.maven.model.FileSet;
 
 /**
  * Goal which vera++ check sources.
@@ -272,33 +275,33 @@ public class VeraxxMojo extends AbstractLaunchMojo {
     private List sourceDirs = new ArrayList();
     
     protected InputStream getInputStream() {
-    StringBuilder sourceListString = new StringBuilder();
+        StringBuilder sourceListString = new StringBuilder();
         Iterator it = sourceDirs.iterator();
-    while(it.hasNext()) {
+        while(it.hasNext()) {
             FileSet afileSet = new FileSet();
             String dir = it.next().toString();
             afileSet.setDirectory(new File(dir).getAbsolutePath());
             
-        afileSet.setIncludes(Arrays.asList(new String[]{"**/*.cpp", "**/*.h", "**/*.cxx", "**/*.hxx"}));
-        if (StringUtils.isNotEmpty(excludes)) {
-            afileSet.setExcludes(Arrays.asList(excludes.split(",")));
-        }
-        getLog().debug("vera++ excludes are :" + Arrays.toString(afileSet.getExcludes().toArray()) );
+            afileSet.setIncludes(Arrays.asList(new String[]{"**/*.cpp", "**/*.h", "**/*.cxx", "**/*.hxx"}));
+            if (StringUtils.isNotEmpty(excludes)) {
+                afileSet.setExcludes(Arrays.asList(excludes.split(",")));
+            }
+            getLog().debug("vera++ excludes are :" + Arrays.toString(afileSet.getExcludes().toArray()) );
             
-        FileSetManager aFileSetManager = new FileSetManager();
-        String[] found = aFileSetManager.getIncludedFiles(afileSet);
+            FileSetManager aFileSetManager = new FileSetManager();
+            String[] found = aFileSetManager.getIncludedFiles(afileSet);
             
-        for (int i = 0; i < found.length; i++) {
-            sourceListString.append(dir + "/" + found[i] + "\n");
+            for (int i = 0; i < found.length; i++) {
+                sourceListString.append(dir + "/" + found[i] + "\n");
+            }
         }
-    }
         InputStream is = System.in;
-    try {
-        getLog().debug("vera++ sources are :" + sourceListString );
-        is = new ByteArrayInputStream(sourceListString.toString().getBytes("UTF-8"));
-    } catch (UnsupportedEncodingException e) {
-        getLog().error("vera++ source list from stdin failure" );
-    }
+        try {
+            getLog().debug("vera++ sources are :" + sourceListString );
+            is = new ByteArrayInputStream(sourceListString.toString().getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            getLog().error("vera++ source list from stdin failure" );
+        }
         return is;
     }
 
