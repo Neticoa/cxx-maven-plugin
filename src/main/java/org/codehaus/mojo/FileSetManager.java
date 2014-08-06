@@ -31,8 +31,8 @@ import org.codehaus.plexus.util.DirectoryScanner;
  * @author Franck Bonin 
  * 
  */
-public class FileSetManager {
-
+public class FileSetManager
+{
     private DirectoryScanner scan( FileSet fileSet )
     {
         File basedir = new File( fileSet.getDirectory() );
@@ -90,7 +90,7 @@ public class FileSetManager {
    
          if ( scanner != null )
          {
-           return scanner.getExcludedFiles();
+             return scanner.getExcludedFiles();
          }
    
          return EMPTY_STRING_ARRAY;
@@ -102,7 +102,7 @@ public class FileSetManager {
 
         if ( scanner != null )
         {
-          return scanner.getIncludedDirectories();
+            return scanner.getIncludedDirectories();
         }
 
         return EMPTY_STRING_ARRAY;
@@ -114,7 +114,7 @@ public class FileSetManager {
 
         if ( scanner != null )
         {
-          return scanner.getExcludedDirectories();
+            return scanner.getExcludedDirectories();
         }
 
         return EMPTY_STRING_ARRAY;

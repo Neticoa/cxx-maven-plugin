@@ -43,9 +43,10 @@ import org.apache.maven.shared.model.fileset.util.FileSetManager;
  * @phase test
  * 
  */
-public class CppCheckMojo extends AbstractLaunchMojo {
-
-    protected List getArgsList() {
+public class CppCheckMojo extends AbstractLaunchMojo
+{
+    protected List getArgsList()
+    {
         return null;
     }
     
@@ -88,7 +89,9 @@ public class CppCheckMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private String reportIdentifier;
-    private String getReportFileName() {
+    
+    private String getReportFileName()
+    {
         return "cppcheck-result-" + reportIdentifier + ".xml";
     }
     
@@ -99,57 +102,65 @@ public class CppCheckMojo extends AbstractLaunchMojo {
      */
     private String commandArgs;
 
-    protected String getCommandArgs() {
+    protected String getCommandArgs()
+    {
         String params = commandArgs + " ";
         HashSet<String> excudedSet = new HashSet<String>();
         
         Iterator it = includeDirs.iterator();
-        while(it.hasNext()) {
+        while( it.hasNext() )
+        {
             FileSet afileSet = new FileSet();
             
             String dir = it.next().toString();
             params += "-I\"" + dir + "\" ";
             
-            if (StringUtils.isNotEmpty(excludes)) {
-                afileSet.setDirectory(new File(dir).getAbsolutePath());
-                afileSet.setUseDefaultExcludes(false); // $FB pour éviter d'avoir TROP de fichier excludes (inutiles) dans la boucle for ci-après
-                afileSet.setExcludes(Arrays.asList(excludes.split(",")));
-                getLog().debug("cppcheck excludes are :" + Arrays.toString(afileSet.getExcludes().toArray()) );
+            if ( StringUtils.isNotEmpty( excludes ) )
+            {
+                afileSet.setDirectory( new File( dir ).getAbsolutePath() );
+                afileSet.setUseDefaultExcludes( false ); // $FB pour éviter d'avoir TROP de fichier excludes (inutiles) dans la boucle for ci-après
+                afileSet.setExcludes( Arrays.asList( excludes.split( "," ) ) );
+                getLog().debug( "cppcheck excludes are :" + Arrays.toString( afileSet.getExcludes().toArray() ) );
                 
                 FileSetManager aFileSetManager = new FileSetManager();
-                String[] found = aFileSetManager.getExcludedFiles(afileSet);
-                excudedSet.addAll(new HashSet<String>(Arrays.asList(found)));
+                String[] found = aFileSetManager.getExcludedFiles( afileSet );
+                excudedSet.addAll( new HashSet<String>( Arrays.asList( found ) ));
             }
         }
         it = sourceDirs.iterator();
-        while(it.hasNext()) {
+        while( it.hasNext() )
+        {
             FileSet afileSet = new FileSet();
             
             String dir = it.next().toString();
             params += "-I\"" + dir + "\" ";
             
-            if (StringUtils.isNotEmpty(excludes)) {
-                afileSet.setDirectory(new File(dir).getAbsolutePath());
-                afileSet.setUseDefaultExcludes(false); // $FB pour éviter d'avoir TROP de fichiers exclude (inutile) dans la boucle for ci-après
-                afileSet.setExcludes(Arrays.asList(excludes.split(",")));
-                getLog().debug("cppcheck excludes are :" + Arrays.toString(afileSet.getExcludes().toArray()) );
+            if ( StringUtils.isNotEmpty( excludes ) )
+            {
+                afileSet.setDirectory( new File( dir ).getAbsolutePath() );
+                afileSet.setUseDefaultExcludes( false ); // $FB pour éviter d'avoir TROP de fichiers exclude (inutile) dans la boucle for ci-après
+                afileSet.setExcludes( Arrays.asList( excludes.split( "," ) ) );
+                getLog().debug( "cppcheck excludes are :" + Arrays.toString( afileSet.getExcludes().toArray() ) );
                 
                 FileSetManager aFileSetManager = new FileSetManager();
-                String[] found = aFileSetManager.getExcludedFiles(afileSet);
-                excudedSet.addAll(new HashSet<String>(Arrays.asList(found)));
+                String[] found = aFileSetManager.getExcludedFiles( afileSet);
+                excudedSet.addAll( new HashSet<String>( Arrays.asList( found) ));
             }
         }
-        for (Iterator<String> iter = excudedSet.iterator(); iter.hasNext(); ) {
+        for ( Iterator<String> iter = excudedSet.iterator(); iter.hasNext(); )
+        {
             String s = iter.next();
             //cppcheck only check *.cpp, *.cxx, *.cc, *.c++, *.c, *.tpp, and *.txx files
             // so remove unneeded exclusions
-            if (s.matches("(.+\\.cpp)|(.+\\.cxx)|(.+\\.cc)|(.+\\.c\\+\\+)|(.+\\.c)|(.+\\.tpp)|(.+\\.txx)")) {
+            if (s.matches( "(.+\\.cpp)|(.+\\.cxx)|(.+\\.cc)|(.+\\.c\\+\\+)|(.+\\.c)|(.+\\.tpp)|(.+\\.txx)" ) )
+            {
                 params += "-i\"" + s + "\" ";
             }
         }
         
         it = sourceDirs.iterator();
-        while(it.hasNext()) {
+        while( it.hasNext() )
+        {
             params += "\"" + it.next() + "\" ";
         }
         
@@ -157,30 +168,38 @@ public class CppCheckMojo extends AbstractLaunchMojo {
     }
     
     //override
-    protected OutputStream getOutputStreamErr() {
+    protected OutputStream getOutputStreamErr()
+    {
         String OutputReportName = new String();
-        if (reportsfileDir.isAbsolute()) {
+        if ( reportsfileDir.isAbsolute() )
+        {
             OutputReportName = reportsfileDir.getAbsolutePath() + "/" + getReportFileName();
-        } else {
+        }
+        else
+        {
             OutputReportName = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath() + "/" + getReportFileName();
         }
         
         getLog().info( "Cppcheck report location " + OutputReportName );
          
         OutputStream output = System.err;
-        File file = new File(OutputReportName);
-        try {
-            new File(file.getParent()).mkdirs();
+        File file = new File( OutputReportName );
+        try
+        {
+            new File( file.getParent() ).mkdirs();
             file.createNewFile();
-            output = new FileOutputStream(file);
-        } catch (IOException e) {
+            output = new FileOutputStream( file );
+        }
+        catch ( IOException e )
+        {
             getLog().error( "Cppcheck report redirected to stderr since " + OutputReportName + " can't be opened" );
         }
 
         return output;
     }
 
-    protected String getExecutable() {
+    protected String getExecutable()
+    {
         return "cppcheck";
     }
 
@@ -191,11 +210,14 @@ public class CppCheckMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private Map environmentVariables = new HashMap();
-    protected Map getMoreEnvironmentVariables() {
+    
+    protected Map getMoreEnvironmentVariables()
+    {
         return environmentVariables;
     }
 
-    protected List getSuccesCode() {
+    protected List getSuccesCode()
+    {
         return null;
     }
 
@@ -206,14 +228,18 @@ public class CppCheckMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private File workingDir;
-    protected File getWorkingDir() {
-        if (null == workingDir) {
-            workingDir = new File(basedir.getPath());
+    
+    protected File getWorkingDir()
+    {
+        if ( null == workingDir )
+        {
+            workingDir = new File( basedir.getPath() );
         }
         return workingDir;
     }
     
-    public boolean isSkip() {
+    public boolean isSkip()
+    {
         return false;
     }
 

@@ -34,9 +34,10 @@ import org.apache.commons.lang.StringUtils;
  * @phase test
  * 
  */
-public class CppNcssMojo extends AbstractLaunchMojo {
-
-    protected List getArgsList() {
+public class CppNcssMojo extends AbstractLaunchMojo
+{
+    protected List getArgsList()
+    {
         return null;
     }
     
@@ -64,7 +65,9 @@ public class CppNcssMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private String reportIdentifier;
-    private String getReportFileName() {
+    
+    private String getReportFileName()
+    {
         return "cppncss-result-" + reportIdentifier + ".xml";
     }
 
@@ -92,17 +95,21 @@ public class CppNcssMojo extends AbstractLaunchMojo {
      */
     private String commandArgs;
     
-    protected String getCommandArgs() {
+    protected String getCommandArgs()
+    {
         String params = commandArgs + " ";
         
         String OutputReportName = new String();
-        if (reportsfileDir.isAbsolute()) {
+        if ( reportsfileDir.isAbsolute() )
+        {
             OutputReportName = reportsfileDir.getAbsolutePath() + "/" + getReportFileName();
-        } else {
+        }
+        else
+        {
             OutputReportName = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath() + "/" + getReportFileName();
         }
-        File file = new File(OutputReportName);
-        new File(file.getParent()).mkdirs();
+        File file = new File( OutputReportName );
+        new File( file.getParent() ).mkdirs();
         
         params += "-f=\"" + OutputReportName + "\" ";
         
@@ -111,9 +118,12 @@ public class CppNcssMojo extends AbstractLaunchMojo {
         {
             String key = (String) it.next();
             String value = (String) macros.get( key );
-            if (StringUtils.isEmpty(value)) {
+            if ( StringUtils.isEmpty(value) )
+            {
                 params += "-M" + key + " ";
-            } else {
+            }
+            else
+            {
                 params += "-M" + key + "=\"" + value + "\" ";
             }
         }
@@ -123,22 +133,27 @@ public class CppNcssMojo extends AbstractLaunchMojo {
         {
             String key = (String) it.next();
             String value = (String) definitions.get( key );
-            if (StringUtils.isEmpty(value)) {
+            if ( StringUtils.isEmpty( value ) )
+            {
                 params += "-D" + key + " ";
-            } else {
+            }
+            else
+            {
                 params += "-D" + key + "=\"" + value + "\" ";
             }
         }
         
         it = sourceDirs.iterator();
-        while(it.hasNext()) {
+        while( it.hasNext() )
+        {
             params += "\"" + it.next() + "\" ";
         }
         
         return params;
     }
 
-    protected String getExecutable() {
+    protected String getExecutable()
+    {
         return "cppncss";
     }
 
@@ -149,11 +164,14 @@ public class CppNcssMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private Map environmentVariables = new HashMap();
-    protected Map getMoreEnvironmentVariables() {
+    
+    protected Map getMoreEnvironmentVariables()
+    {
         return environmentVariables;
     }
 
-    protected List getSuccesCode() {
+    protected List getSuccesCode()
+    {
         return null;
     }
 
@@ -164,15 +182,18 @@ public class CppNcssMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private File workingDir;
-    protected File getWorkingDir() {
-        if (null == workingDir) {
-            workingDir = new File(basedir.getPath());
+    
+    protected File getWorkingDir()
+    {
+        if ( null == workingDir )
+        {
+            workingDir = new File( basedir.getPath() );
         }
         return workingDir;
     }
 
-    protected boolean isSkip() {
+    protected boolean isSkip()
+    {
         return false;
     }
-
 }

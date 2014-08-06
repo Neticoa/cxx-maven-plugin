@@ -36,8 +36,8 @@ import org.apache.maven.plugin.MojoExecutionException;
  * @phase test
  * 
  */
-public class XUnitMojo extends LaunchMojo {
-
+public class XUnitMojo extends LaunchMojo
+{
     /**
      * The Report OutputFile Location.
      * 
@@ -50,18 +50,25 @@ public class XUnitMojo extends LaunchMojo {
     {
         // this
         String OutputReportDir = new String();
-        if (reportsfileDir.isAbsolute()) {
+        if ( reportsfileDir.isAbsolute() )
+        {
             OutputReportDir = reportsfileDir.getAbsolutePath();
-        } else {
+        }
+        else
+        {
             OutputReportDir = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath();
         }
-        new File(OutputReportDir).mkdirs();
-        getLog().info("You shall produce a xUnit report called \""+ OutputReportDir + "/xunit-result-*.xml\" within this xunit goal" );
-        File file = new File(OutputReportDir + "/Readme.txt");
-        try {
-            DataOutputStream out = new DataOutputStream(new FileOutputStream(file));
-            out.writeBytes("You shall produce xUnit reports called \"xunit-result-*.xml\" within this directory.\n");
-        } catch (IOException e) {
+        new File( OutputReportDir ).mkdirs();
+        getLog().info( "You shall produce a xUnit report called \"" + OutputReportDir + "/xunit-result-*.xml\" within this xunit goal" );
+        File file = new File( OutputReportDir + "/Readme.txt" );
+        try
+        {
+            DataOutputStream out = new DataOutputStream( new FileOutputStream(file) );
+            out.writeBytes( "You shall produce xUnit reports called \"xunit-result-*.xml\" within this directory.\n");
+        }
+        catch (IOException e)
+        {
+			 getLog().info( "Could not write to " + OutputReportDir + "/Readme.txt" );
         }
     }
     
@@ -73,7 +80,8 @@ public class XUnitMojo extends LaunchMojo {
      */
     private boolean skiptests;
     
-    protected boolean isSkip() {
+    protected boolean isSkip()
+    {
         return super.isSkip() || skiptests;
     }
 }

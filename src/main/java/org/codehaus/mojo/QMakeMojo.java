@@ -34,9 +34,11 @@ import org.apache.commons.lang.StringUtils;
  * @phase initialize
  * 
  */
-public class QMakeMojo extends AbstractLaunchMojo {
+public class QMakeMojo extends AbstractLaunchMojo
+{
 
-    protected List getArgsList() {
+    protected List getArgsList()
+    {
         return null;
     }
     
@@ -58,16 +60,19 @@ public class QMakeMojo extends AbstractLaunchMojo {
      */
     private List pros = new ArrayList();
     
-    protected List getProjectList() {
-        if (pros.size() == 0) {
+    protected List getProjectList()
+    {
+        if ( pros.size() == 0 )
+        {
             Iterator it = sourceDirs.iterator();
-            while(it.hasNext())
+            while( it.hasNext() )
             {
-                pros.add(new File( (String) it.next() ).getAbsolutePath());
+                pros.add( new File( (String) it.next() ).getAbsolutePath() );
             }
         }
-        if (pros.size() == 0) {
-            pros.add(new String(basedir.getAbsolutePath()));
+        if ( pros.size() == 0 )
+        {
+            pros.add( new String( basedir.getAbsolutePath() ) );
         }
         return pros;
     }
@@ -81,14 +86,16 @@ public class QMakeMojo extends AbstractLaunchMojo {
      */
     private String commandArgs;
     
-    protected String getCommandArgs() {
-        String result = new String("-makefile ");
-        if (!StringUtils.isEmpty(commandArgs)) {
+    protected String getCommandArgs()
+    {
+        String result = new String( "-makefile " );
+        if ( !StringUtils.isEmpty( commandArgs ) )
+        {
             result += commandArgs + " ";
         }
         List proList = getProjectList();
         Iterator it = proList.iterator();
-        while(it.hasNext())
+        while( it.hasNext() )
         {
             result += "\"" + (String) it.next() + "\" ";
         }
@@ -97,26 +104,30 @@ public class QMakeMojo extends AbstractLaunchMojo {
     
     /**
      * qmake commands names per OS name
-     * os name match is java.lang.System.getProperty("os.name")
+     * os name match is java.lang.System.getProperty( "os.name" )
      * 
      * @parameter
      * @since 0.0.5
      */
     private Map qmakecommandPerOS = new HashMap();
     
-    protected String getExecutable() {
-        String sOsName = System.getProperty("os.name");
-        sOsName = sOsName.replace(" ", "");
+    protected String getExecutable()
+    {
+        String sOsName = System.getProperty( "os.name" );
+        sOsName = sOsName.replace( " ", "" );
         getLog().info( "os.name is \"" + sOsName + "\"" );
-        if (qmakecommandPerOS == null)
+        if ( qmakecommandPerOS == null )
         {
             return "qmake";
         }
         else
         {
-            if (qmakecommandPerOS.containsKey(sOsName)) {
-                return (String) qmakecommandPerOS.get(sOsName);
-            } else {
+            if ( qmakecommandPerOS.containsKey( sOsName ) )
+            {
+                return (String) qmakecommandPerOS.get( sOsName );
+            }
+            else
+            {
                 return "qmake";
             }
         }
@@ -129,11 +140,14 @@ public class QMakeMojo extends AbstractLaunchMojo {
      * @since 0.0.5
      */
     private Map environmentVariables = new HashMap();
-    protected Map getMoreEnvironmentVariables() {
+    
+    protected Map getMoreEnvironmentVariables()
+    {
         return environmentVariables;
     }
 
-    protected List getSuccesCode() {
+    protected List getSuccesCode()
+    {
         return null;
     }
 
@@ -145,14 +159,17 @@ public class QMakeMojo extends AbstractLaunchMojo {
      */
     private File outsourceDir;
     
-    protected File getWorkingDir() {
-        if (null == outsourceDir) {
-            outsourceDir = new File(basedir.getPath());
+    protected File getWorkingDir()
+    {
+        if ( null == outsourceDir )
+        {
+            outsourceDir = new File( basedir.getPath() );
         }
         return outsourceDir;
     }
 
-    public boolean isSkip() {
+    public boolean isSkip()
+    {
         return false;
     }
 

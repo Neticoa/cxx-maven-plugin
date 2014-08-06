@@ -30,13 +30,13 @@ import java.util.Map;
  * @phase test
  * 
  */
-public class ValgrindMojo extends AbstractLaunchMojo {
-
-    protected List getArgsList() {
+public class ValgrindMojo extends AbstractLaunchMojo
+{
+    protected List getArgsList()
+    {
         return null;
     }
 
-    
     /**
      * The Report OutputFile Location.
      * 
@@ -45,7 +45,6 @@ public class ValgrindMojo extends AbstractLaunchMojo {
      */
     private File reportsfileDir;
 
-
     /**
      * The Report OutputFile name identifier.
      * 
@@ -53,7 +52,9 @@ public class ValgrindMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private String reportIdentifier;
-    private String getReportFileName() {
+    
+    private String getReportFileName()
+    {
         return "valgrind-result-" + reportIdentifier + ".xml";
     }
     /**
@@ -63,16 +64,20 @@ public class ValgrindMojo extends AbstractLaunchMojo {
      */
     private String commandArgs;
     
-    protected String getCommandArgs() {
+    protected String getCommandArgs()
+    {
         String params = commandArgs + " ";
         String OutputReportName = new String();
-        if (reportsfileDir.isAbsolute()) {
+        if ( reportsfileDir.isAbsolute() )
+        {
             OutputReportName = reportsfileDir.getAbsolutePath() + "/" + getReportFileName();
-        } else {
+        }
+        else
+        {
             OutputReportName = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath() + "/" + getReportFileName();
         }
-        File file = new File(OutputReportName);
-        new File(file.getParent()).mkdirs();
+        File file = new File( OutputReportName );
+        new File( file.getParent() ).mkdirs();
         
         params += "--xml-file=\"" + OutputReportName + "\" ";
         
@@ -96,8 +101,8 @@ public class ValgrindMojo extends AbstractLaunchMojo {
      */
     private String instrumentedExecutableArgs;
     
-    
-    protected String getExecutable() {
+    protected String getExecutable()
+    {
         return "valgrind";
     }
 
@@ -108,11 +113,14 @@ public class ValgrindMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private Map environmentVariables = new HashMap();
-    protected Map getMoreEnvironmentVariables() {
+    
+    protected Map getMoreEnvironmentVariables()
+    {
         return environmentVariables;
     }
 
-    protected List getSuccesCode() {
+    protected List getSuccesCode()
+    {
         return null;
     }
 
@@ -123,17 +131,21 @@ public class ValgrindMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private File workingDir;
-    protected File getWorkingDir() {
-        if (null == workingDir) {
-            workingDir = new File(basedir.getPath());
+    
+    protected File getWorkingDir()
+    {
+        if ( null == workingDir )
+        {
+            workingDir = new File( basedir.getPath() );
         }
         return workingDir;
     }
 
-    protected boolean isSkip() {
-        String sOsName = System.getProperty("os.name");
+    protected boolean isSkip()
+    {
+        String sOsName = System.getProperty( "os.name" );
         // vilgrind will work on linux, macos, everything but windows
-        return sOsName.contains("windows");
+        return sOsName.contains( "windows" );
     }
 
 }

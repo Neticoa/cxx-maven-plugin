@@ -36,7 +36,8 @@ import javax.rmi.CORBA.Util;
  * @goal launch
  * 
  */
-public class LaunchMojo extends AbstractLaunchMojo {
+public class LaunchMojo extends AbstractLaunchMojo
+{
 
     /**
      * Can be of type <code>&lt;argument&gt;</code> or <code>&lt;classpath&gt;</code> Can be overriden using "cxx.args"
@@ -46,7 +47,9 @@ public class LaunchMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private List arguments;
-    protected List getArgsList() {
+    
+    protected List getArgsList()
+    {
         return arguments;
     }
 
@@ -56,7 +59,9 @@ public class LaunchMojo extends AbstractLaunchMojo {
      * @parameter expression="${launch.args}"
      */
     private String commandArgs;
-    protected String getCommandArgs() {
+    
+    protected String getCommandArgs()
+    {
         return commandArgs;
     }
 
@@ -69,7 +74,9 @@ public class LaunchMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private String executable;
-    protected String getExecutable() {
+    
+    protected String getExecutable()
+    {
         return executable;
     }
 
@@ -80,7 +87,9 @@ public class LaunchMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private Map environmentVariables = new HashMap();
-    protected Map getMoreEnvironmentVariables() {
+    
+    protected Map getMoreEnvironmentVariables()
+    {
         return environmentVariables;
     }
 
@@ -92,7 +101,9 @@ public class LaunchMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private List successCodes;
-    protected List getSuccesCode() {
+    
+    protected List getSuccesCode()
+    {
         return successCodes;
     }
 
@@ -103,16 +114,19 @@ public class LaunchMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private File workingDir;
-    protected File getWorkingDir() {
-        if (null == workingDir) {
-            workingDir = new File(basedir.getPath());
+    
+    protected File getWorkingDir()
+    {
+        if ( null == workingDir )
+        {
+            workingDir = new File( basedir.getPath() );
         }
         return workingDir;
     }
 
     /**
      * Os for which command shall be executed
-     * os name match is java.lang.System.getProperty("os.name")
+     * os name match is java.lang.System.getProperty( "os.name" )
      * 
      * @parameter
      * @since 0.0.4
@@ -121,23 +135,31 @@ public class LaunchMojo extends AbstractLaunchMojo {
     
     /**
      * Os for which command shall not be executed
-     * os name match is java.lang.System.getProperty("os.name")
+     * os name match is java.lang.System.getProperty( "os.name" )
      *  
      * @parameter
      * @since 0.0.4
      */
     private List excludeOS;
     
-    protected boolean isSkip() {
-        String sOsName = System.getProperty("os.name");
-        if (null == excludeOS && null == includeOS) {
+    protected boolean isSkip()
+    {
+        String sOsName = System.getProperty( "os.name" );
+        if ( null == excludeOS && null == includeOS )
+        {
             return false;
-        } else if (null == includeOS) {
-            return excludeOS.contains(sOsName);
-        } else if (null == excludeOS) {
-            return !includeOS.contains(sOsName);
-        } else {
-            return (excludeOS.contains(sOsName) || !includeOS.contains(sOsName));
+        }
+        else if ( null == includeOS )
+        {
+            return excludeOS.contains( sOsName );
+        }
+        else if ( null == excludeOS )
+        {
+            return !includeOS.contains( sOsName );
+        }
+        else
+        {
+            return ( excludeOS.contains( sOsName ) || !includeOS.contains( sOsName ) );
         }
     }
     
@@ -148,25 +170,33 @@ public class LaunchMojo extends AbstractLaunchMojo {
      * @since 0.0.5
      */
     private File outputStreamOut;
-    protected OutputStream getOutputStreamOut() {
+    
+    protected OutputStream getOutputStreamOut()
+    {
         String sOutputStreamOut = new String();
-        if (null != outputStreamOut && !outputStreamOut.toString().isEmpty())
+        if ( null != outputStreamOut && !outputStreamOut.toString().isEmpty() )
         {
-            if (outputStreamOut.isAbsolute()) {
+            if ( outputStreamOut.isAbsolute() )
+            {
                 sOutputStreamOut = outputStreamOut.getPath();
-            } else {
+            }
+            else
+            {
                 sOutputStreamOut = basedir.getAbsolutePath() + "/" + outputStreamOut.getPath();
             }
             
             getLog().info( "Launch output location " + sOutputStreamOut );
              
             OutputStream output = super.getOutputStreamOut();
-            File file = new File(sOutputStreamOut);
-            try {
-                new File(file.getParent()).mkdirs();
+            File file = new File( sOutputStreamOut );
+            try
+            {
+                new File( file.getParent() ).mkdirs();
                 file.createNewFile();
-                output = new FileOutputStream(file);
-            } catch (IOException e) {
+                output = new FileOutputStream( file );
+            }
+            catch ( IOException e )
+            {
                 getLog().error( "Launch report redirected to stout since " + sOutputStreamOut + " can't be opened" );
             }
             return output;
@@ -184,25 +214,33 @@ public class LaunchMojo extends AbstractLaunchMojo {
      * @since 0.0.5
      */
     private File outputStreamErr;
-    protected OutputStream getOutputStreamErr() {
+    
+    protected OutputStream getOutputStreamErr()
+    {
         String sOutputStreamErr = new String();
-        if (null != outputStreamErr && !outputStreamErr.toString().isEmpty())
+        if ( null != outputStreamErr && !outputStreamErr.toString().isEmpty() )
         {
-            if (outputStreamErr.isAbsolute()) {
+            if ( outputStreamErr.isAbsolute() )
+            {
                 sOutputStreamErr = outputStreamErr.getPath();
-            } else {
+            }
+            else
+            {
                 sOutputStreamErr = basedir.getAbsolutePath() + "/" + outputStreamErr.getPath();
             }
             
             getLog().info( "Launch erroutput location " + sOutputStreamErr );
              
             OutputStream output = super.getOutputStreamErr();
-            File file = new File(sOutputStreamErr);
-            try {
-                new File(file.getParent()).mkdirs();
+            File file = new File( sOutputStreamErr );
+            try
+            {
+                new File( file.getParent() ).mkdirs();
                 file.createNewFile();
-                output = new FileOutputStream(file);
-            } catch (IOException e) {
+                output = new FileOutputStream( file );
+            }
+            catch ( IOException e )
+            {
                 getLog().error( "Launch report redirected to stout since " + sOutputStreamErr + " can't be opened" );
             }
             return output;
@@ -220,25 +258,33 @@ public class LaunchMojo extends AbstractLaunchMojo {
      * @since 0.0.5
      */
     private File inputStream;
-    protected InputStream getInputStream() {
+    
+    protected InputStream getInputStream()
+    {
         String sInputStream = new String();
-        if (null != inputStream && !inputStream.toString().isEmpty())
+        if ( null != inputStream && !inputStream.toString().isEmpty() )
         {
-            if (inputStream.isAbsolute()) {
+            if ( inputStream.isAbsolute() )
+            {
                 sInputStream = inputStream.getPath();
-            } else {
+            }
+            else
+            {
                 sInputStream = basedir.getAbsolutePath() + "/" + inputStream.getPath();
             }
             
             getLog().info( "Launch input location " + sInputStream );
              
             InputStream input = super.getInputStream();
-            File file = new File(sInputStream);
-            try {
-                new File(file.getParent()).mkdirs();
+            File file = new File( sInputStream );
+            try
+            {
+                new File( file.getParent() ).mkdirs();
                 file.createNewFile();
-                input = new FileInputStream(file);
-            } catch (IOException e) {
+                input = new FileInputStream( file );
+            }
+            catch ( IOException e )
+            {
                 getLog().error( "Launch report redirected to stout since " + sInputStream + " can't be opened" );
             }
             return input;

@@ -57,7 +57,7 @@ public class AddSourceMojo extends AbstractMojo
     {   
         getLog().info( "Cxx Maven Plugin AddSource " );
         Iterator it = sourceDirs.iterator();
-        while(it.hasNext())
+        while( it.hasNext() )
         {
             File source = new File( (String) it.next() );
             this.project.addCompileSourceRoot( source.getAbsolutePath() );

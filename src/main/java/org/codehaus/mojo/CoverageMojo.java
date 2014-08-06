@@ -43,8 +43,8 @@ import org.apache.maven.model.FileSet;
  * @phase test
  * 
  */
-public class CoverageMojo extends LaunchMojo {
-    
+public class CoverageMojo extends LaunchMojo
+{  
     /**
      * The Report OutputFile Location.
      * 
@@ -52,7 +52,6 @@ public class CoverageMojo extends LaunchMojo {
      * @since 0.0.4
      */
     private File reportsfileDir;
-
     
     /**
      * The Report OutputFile name identifier.
@@ -61,7 +60,9 @@ public class CoverageMojo extends LaunchMojo {
      * @since 0.0.4
      */
     private String reportIdentifier;
-    private String getReportFileName() {
+    
+    private String getReportFileName()
+    {
         return "gcovr-result-" + reportIdentifier + ".xml";
     }
     
@@ -74,34 +75,43 @@ public class CoverageMojo extends LaunchMojo {
     
     protected void preExecute(Executor exec, CommandLine commandLine, Map enviro) throws MojoExecutionException
     {
-        if (preclean) {
+        if ( preclean )
+        {
             FileSet afileSet = new FileSet();
-            afileSet.setDirectory(getWorkingDir().getAbsolutePath());
+            afileSet.setDirectory( getWorkingDir().getAbsolutePath() );
             
-            getLog().debug("Search for **/*.gcda from " + afileSet.getDirectory());
-            afileSet.setIncludes(Arrays.asList(new String[]{"**/*.gcda"}));
-            //afileSet.setExcludes(Arrays.asList(excludes));
+            getLog().debug( "Search for **/*.gcda from " + afileSet.getDirectory() );
+            afileSet.setIncludes( Arrays.asList( new String[]{"**/*.gcda"} ) );
+            //afileSet.setExcludes( Arrays.asList(excludes) );
             
             FileSetManager aFileSetManager = new FileSetManager();
-            String[] found = aFileSetManager.getIncludedFiles(afileSet);
+            String[] found = aFileSetManager.getIncludedFiles( afileSet );
 
-            for (int i = 0; i < found.length; i++) {
-                File target = new File(getWorkingDir() + "/" + found[i]);
-                getLog().debug("Found file " + target.getAbsolutePath());
-                if (target.exists()) {
-                    try {
-                        if (target.delete()) {
-                            getLog().debug("Succesfully delete " + target.getAbsolutePath());
-                        } else {
-                            getLog().warn("Failed to delete " + target.getAbsolutePath());
+            for (int i = 0; i < found.length; i++)
+            {
+                File target = new File( getWorkingDir() + "/" + found[i]);
+                getLog().debug( "Found file " + target.getAbsolutePath() );
+                if (target.exists() )
+                {
+                    try
+                    {
+                        if ( target.delete() )
+                        {
+                            getLog().debug( "Succesfully delete " + target.getAbsolutePath() );
                         }
-                    } catch (SecurityException e) {
-                        getLog().warn("SecurityException, unable to delete " + target.getAbsolutePath());
+                        else
+                        {
+                            getLog().warn( "Failed to delete " + target.getAbsolutePath() );
+                        }
+                    }
+                    catch ( SecurityException e )
+                    {
+                        getLog().warn( "SecurityException, unable to delete " + target.getAbsolutePath() );
                     } 
                 }
                 else
                 {
-                    getLog().debug("But file " + target.getAbsolutePath() + " not exist");
+                    getLog().debug( "But file " + target.getAbsolutePath() + " not exist" );
                 }
             }
         }
@@ -118,45 +128,53 @@ public class CoverageMojo extends LaunchMojo {
     protected void postExecute(int resultCode) throws MojoExecutionException
     {
         String OutputReportName = new String();
-        if (reportsfileDir.isAbsolute()) {
+        if ( reportsfileDir.isAbsolute() )
+        {
             OutputReportName = reportsfileDir.getAbsolutePath() + "/" + getReportFileName();
-        } else {
+        }
+        else
+        {
             OutputReportName = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath() + "/" + getReportFileName();
         }
-        getLog().info("Coverage report location " + OutputReportName );
+        getLog().info( "Coverage report location " + OutputReportName );
          
         OutputStream outStream = System.out;
-        File file = new File(OutputReportName);
-        try {
-            new File(file.getParent()).mkdirs();
+        File file = new File( OutputReportName );
+        try
+        {
+            new File( file.getParent() ).mkdirs();
             file.createNewFile();
-            outStream = new FileOutputStream(file);
-        } catch (IOException e) {
+            outStream = new FileOutputStream( file );
+        }
+        catch ( IOException e )
+        {
             getLog().error( "Coverage report redirected to stdout since " + OutputReportName + " can't be opened" );
         }
         
-        InputStream pyScript = getClass().getResourceAsStream("/gcovr.py");
+        InputStream pyScript = getClass().getResourceAsStream( "/gcovr.py" );
         
         CommandLine commandLine = new CommandLine( "python" );
         Executor exec = new DefaultExecutor();
-        String[] args = parseCommandlineArgs("-");
-        commandLine.addArguments(args, false );
-        args = parseCommandlineArgs(gcovrArgs);
-        commandLine.addArguments(args, false );
+        String[] args = parseCommandlineArgs( "-" );
+        commandLine.addArguments( args, false );
+        args = parseCommandlineArgs( gcovrArgs );
+        commandLine.addArguments( args, false );
         exec.setWorkingDirectory( getWorkingDir() );
         try
         {
             getLog().info( "Executing command line: " + commandLine );
 
-            int res = executeCommandLine( exec, commandLine, getEnvs(), outStream/*getOutputStreamOut()*/, getOutputStreamErr(), pyScript/*getInputStream()*/);
+            int res = executeCommandLine( exec, commandLine, getEnvs(), outStream/*getOutputStreamOut()*/, getOutputStreamErr(), pyScript/*getInputStream()*/ );
             // this is a hugly workaround against a random bugs from hudson cobertura plugin.
             // hudson cobertura plugin randomly truncat coverage reports file to a 1024 size multiple
             // while it copy reports from slave to master node
-            for (int j = 0 ; j < 200 ; j++) {
-                for (int i = 0 ; i < 80 ; i++) {
-                    outStream.write(' ');
+            for ( int j = 0 ; j < 200 ; j++ )
+            {
+                for ( int i = 0 ; i < 80 ; i++ )
+                {
+                    outStream.write( ' ' );
                 }
-                outStream.write('\n');
+                outStream.write( '\n' );
             }
             outStream.flush();
             

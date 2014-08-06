@@ -72,7 +72,7 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
         
         if ( getCommandArgs() != null )
         {
-            String[] args = parseCommandlineArgs(getCommandArgs());
+            String[] args = parseCommandlineArgs( getCommandArgs() );
             for ( int i = 0; i < args.length; i++ )
             {
                  commandArguments.add( args[i] );
@@ -104,8 +104,7 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
      * @return Array of String representing the arguments
      * @throws MojoExecutionException for wrong formatted arguments
      */
-    protected String[] parseCommandlineArgs(String CommandLineArgs)
-        throws MojoExecutionException
+    protected String[] parseCommandlineArgs( String CommandLineArgs ) throws MojoExecutionException
     {
         if ( CommandLineArgs == null )
         {
@@ -126,8 +125,8 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
     
     protected abstract String getExecutable();
 
-    
     protected abstract Map getMoreEnvironmentVariables();
+
     protected Map getEnvs()
     {
         Map enviro = new HashMap();
@@ -156,6 +155,7 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
     
 
     protected abstract File getWorkingDir();
+    
     private void EnsureExistWorkingDirectory() throws MojoExecutionException
     {
         if ( !getWorkingDir().exists() )
@@ -178,7 +178,6 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
      */
     //private MavenSession session;
 
-    
     CommandLine getExecutablePath( Map enviro, File dir )
     {
         File execFile = new File( getExecutable() );
@@ -247,7 +246,6 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
         return exec.execute( commandLine, enviro );
     }
     
-    
     protected abstract List getSuccesCode();
     
     protected boolean isResultCodeAFailure( int result )
@@ -269,23 +267,28 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
 
     protected abstract boolean isSkip();
     
-    protected OutputStream getOutputStreamOut(){
+    protected OutputStream getOutputStreamOut()
+    {
         return System.out;
     }
     
-    protected OutputStream getOutputStreamErr(){
+    protected OutputStream getOutputStreamErr()
+    {
         return System.err;
     }
     
-    protected InputStream getInputStream(){
+    protected InputStream getInputStream()
+    {
         return System.in;
     }
     
     
-    protected void preExecute(Executor exec, CommandLine commandLine, Map enviro) throws MojoExecutionException {
+    protected void preExecute( Executor exec, CommandLine commandLine, Map enviro ) throws MojoExecutionException
+    {
     }
     
-    protected void postExecute(int resultCode) throws MojoExecutionException{
+    protected void postExecute( int resultCode ) throws MojoExecutionException
+    {
     }
     
     public void execute() throws MojoExecutionException
@@ -311,7 +314,7 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
 
         Executor exec = new DefaultExecutor();
        
-        commandLine.addArguments( (String[])commandArguments.toArray(new String[commandArguments.size()]), false );
+        commandLine.addArguments( (String[])commandArguments.toArray( new String[commandArguments.size()] ), false );
 
         exec.setWorkingDirectory( getWorkingDir() );
 
@@ -321,7 +324,7 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
             
             preExecute(exec, commandLine, enviro);
 
-            int resultCode = executeCommandLine( exec, commandLine, enviro, getOutputStreamOut(), getOutputStreamErr(), getInputStream());
+            int resultCode = executeCommandLine( exec, commandLine, enviro, getOutputStreamOut(), getOutputStreamErr(), getInputStream() );
    
             if ( isResultCodeAFailure( resultCode ) )
             {

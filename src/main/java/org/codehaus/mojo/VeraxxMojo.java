@@ -55,26 +55,29 @@ import org.apache.maven.model.FileSet;
  * @phase test
  * 
  */
-public class VeraxxMojo extends AbstractLaunchMojo {
-
-    protected List getArgsList() {
+public class VeraxxMojo extends AbstractLaunchMojo
+{
+    protected List getArgsList()
+    {
         return null;
     }
     
     private int veraxx_version = 0;
-    protected void preExecute(Executor exec, CommandLine commandLine, Map enviro) throws MojoExecutionException{
+    
+    protected void preExecute( Executor exec, CommandLine commandLine, Map enviro ) throws MojoExecutionException
+    {
         OutputStream outStream = System.out;
         outStream = new ByteArrayOutputStream();
 
         CommandLine commandLineCheck = new CommandLine( getExecutable() );
         Executor execCheck = new DefaultExecutor();
-        String[] args = parseCommandlineArgs("--version");
-        commandLineCheck.addArguments(args, false );
+        String[] args = parseCommandlineArgs( "--version" );
+        commandLineCheck.addArguments( args, false );
         execCheck.setWorkingDirectory( exec.getWorkingDirectory() );
         try
         {
             getLog().info( "Executing command line: " + commandLineCheck );
-            int res = executeCommandLine( execCheck, commandLineCheck, enviro, outStream/*getOutputStreamOut()*/, getOutputStreamErr(), getInputStream());
+            int res = executeCommandLine( execCheck, commandLineCheck, enviro, outStream/*getOutputStreamOut()*/, getOutputStreamErr(), getInputStream() );
 
             /*if ( isResultCodeAFailure( res ) )
             {
@@ -82,28 +85,28 @@ public class VeraxxMojo extends AbstractLaunchMojo {
             }
             else*/
             {
-                DefaultArtifactVersion newFormatMinVersion = new DefaultArtifactVersion("1.2.0");
-                DefaultArtifactVersion currentVeraVersion = new DefaultArtifactVersion(outStream.toString());
+                DefaultArtifactVersion newFormatMinVersion = new DefaultArtifactVersion( "1.2.0" );
+                DefaultArtifactVersion currentVeraVersion = new DefaultArtifactVersion( outStream.toString() );
                 
-                getLog().debug( "Vera++ detected version is : " + outStream.toString());
-                getLog().debug( "Vera++ version as ArtefactVersion is : " + currentVeraVersion.toString());
+                getLog().debug( "Vera++ detected version is : " + outStream.toString() ) ;
+                getLog().debug( "Vera++ version as ArtefactVersion is : " + currentVeraVersion.toString() );
 
-                if (currentVeraVersion.compareTo(newFormatMinVersion) < 0 ) {
-                    getLog().info("Use old Vera++ output parsing");
+                if ( currentVeraVersion.compareTo( newFormatMinVersion ) < 0 )
+                {
+                    getLog().info( "Use old Vera++ output parsing" );
                     veraxx_version = 0;
                 }
                 else
                 {
-                    getLog().info("Use new Vera++ output parsing");
+                    getLog().info( "Use new Vera++ output parsing" );
                     veraxx_version = 1;
                 }
-
             }
         }
         catch ( ExecuteException e )
         {
             /*throw new MojoExecutionException( "preExecute Command execution failed.", e );*/
-            getLog().info( "Exec Exception while detecting Vera++ version. Assum old version");
+            getLog().info( "Exec Exception while detecting Vera++ version. Assum old version" );
             veraxx_version = 0;
         }
         catch ( IOException e )
@@ -119,7 +122,9 @@ public class VeraxxMojo extends AbstractLaunchMojo {
      * @parameter expression="${veraxx.args}" default-value="-nodup -showrules"
      */
     private String commandArgs;
-    protected String getCommandArgs() {
+    
+    protected String getCommandArgs()
+    {
         String params = "- " + commandArgs + " ";
         return params;
     }
@@ -132,7 +137,6 @@ public class VeraxxMojo extends AbstractLaunchMojo {
      */
     private File reportsfileDir;
 
-
     /**
      * The Report OutputFile name identifier.
      * 
@@ -140,88 +144,108 @@ public class VeraxxMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private String reportIdentifier;
-    private String getReportFileName() {
+    
+    private String getReportFileName()
+    {
         return "vera++-result-" + reportIdentifier + ".xml";
     }
     
-    protected OutputStream getOutputStreamErr() {
-        
+    protected OutputStream getOutputStreamErr()
+    {
         String OutputReportName = new String();
-        if (reportsfileDir.isAbsolute()) {
+        if ( reportsfileDir.isAbsolute() )
+        {
             OutputReportName = reportsfileDir.getAbsolutePath() + "/" + getReportFileName();
-        } else {
+        }
+        else
+        {
             OutputReportName = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath() + "/" + getReportFileName();
         }
-        getLog().info("Vera++ report location " + OutputReportName );
+        getLog().info( "Vera++ report location " + OutputReportName );
          
         OutputStream output = System.err;
-        File file = new File(OutputReportName);
-        try {
-            new File(file.getParent()).mkdirs();
+        File file = new File( OutputReportName );
+        try
+        {
+            new File( file.getParent() ).mkdirs();
             file.createNewFile();
-            output = new FileOutputStream(file);
-        } catch (IOException e) {
+            output = new FileOutputStream( file );
+        }
+        catch ( IOException e )
+        {
             getLog().error( "Vera++ report redirected to stderr since " + OutputReportName + " can't be opened" );
             return output;
         }
 
-        final DataOutputStream out = new DataOutputStream(output);
+        final DataOutputStream out = new DataOutputStream( output );
         
-        try {
-            out.writeBytes("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-            out.writeBytes("<checkstyle version=\"5.0\">\n");
-        } catch (IOException e) {
-            getLog().error( "Vera++ xml report write failure");
+        try
+        {
+            out.writeBytes( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" );
+            out.writeBytes( "<checkstyle version=\"5.0\">\n" );
+        }
+        catch ( IOException e )
+        {
+            getLog().error( "Vera++ xml report write failure" );
         }
         
-        OutputStream outErrFilter = new OutputStream() {
+        OutputStream outErrFilter = new OutputStream()
+        {
             StringBuffer sb = new StringBuffer();
-            public void write(int b) throws IOException {
-                if ((b == '\n') || (b == '\r')) {
+            public void write(int b) throws IOException
+            {
+                if ( ( b == '\n' ) || ( b == '\r' ) )
+                {
                     transformCurrentLine();
                     // cleanup for next line
-                    sb.delete(0, sb.length());
-                } else {
-                    sb.append((char) b);
+                    sb.delete( 0, sb.length() );
+                }
+                else 
+                {
+                    sb.append( (char) b );
                 }
             }
             
-            public void flush() throws IOException {
+            public void flush() throws IOException
+            {
                 transformCurrentLine();
-                getLog().debug( "Vera++ xml flush() called");
-                if (!StringUtils.isEmpty(lastfile))    {
-                    out.writeBytes("\t</file>\n");
+                getLog().debug( "Vera++ xml flush() called" );
+                if ( !StringUtils.isEmpty( lastfile ) )
+                {
+                    out.writeBytes( "\t</file>\n" );
                 }
-                out.writeBytes("</checkstyle>\n");
+                out.writeBytes( "</checkstyle>\n" );
                 out.flush();
             }
             
             String lastfile;
             private void transformCurrentLine()
             {
-                if (sb.length() > 0) {
+                if ( sb.length() > 0 )
+                {
                     // parse current line
                     
                     // try to replace ' (RULENumber) ' with 'RULENumber:'
                     String p = "^(.+) \\((.+)\\) (.+)$";
-                    Pattern pattern = Pattern.compile(p);
-                    Matcher matcher = pattern.matcher(sb);
-                    getLog().debug( "match "+ sb + " on " + p);
+                    Pattern pattern = Pattern.compile( p );
+                    Matcher matcher = pattern.matcher( sb );
+                    getLog().debug( "match " + sb + " on " + p );
                     
                     boolean bWinPath = false;
-                    if (sb.charAt(1) == ':') {
+                    if (sb.charAt( 1 ) == ':' )
+                    {
                         bWinPath = true;
-                        sb.setCharAt(1, '_');
+                        sb.setCharAt( 1, '_' );
                     }
                     
-                    if (matcher.matches())
+                    if ( matcher.matches() )
                     {
-                        String sLine = matcher.group(1) + matcher.group(2) + ":" + matcher.group(3);
-                        getLog().debug( "rebuild line = " + sLine);
+                        String sLine = matcher.group( 1 ) + matcher.group( 2 ) + ":" + matcher.group( 3 );
+                        getLog().debug( "rebuild line = " + sLine );
                         
                         // extract informations
-                        pattern = Pattern.compile(":");
-                        String[] items = pattern.split(sLine);
+                        pattern = Pattern.compile( ":" );
+                        String[] items = pattern.split( sLine );
                         
                         String file, line, rule, comment, severity;
                         file = items.length > 0 ? items[0] : "";
@@ -230,25 +254,31 @@ public class VeraxxMojo extends AbstractLaunchMojo {
                         comment = items.length > 3 ? items[3] : "";
                         severity = "warning";
                         
-                        if (bWinPath) {
-                            StringBuilder s = new StringBuilder(file);
-                            s.setCharAt(1, ':');
+                        if ( bWinPath )
+                        {
+                            StringBuilder s = new StringBuilder( file );
+                            s.setCharAt( 1, ':' );
                             file = s.toString();
                         }
                         
                         // output Xml errors
-                        try {
+                        try
+                        {
                             // handle <file/> tags
-                            if (!file.equals(lastfile))    {
-                                if (!StringUtils.isEmpty(lastfile))    {
-                                    out.writeBytes("\t</file>\n");
+                            if ( !file.equals( lastfile ) )
+                            {
+                                if ( !StringUtils.isEmpty( lastfile ) )
+                                {
+                                    out.writeBytes( "\t</file>\n" );
                                 }
-                                out.writeBytes("\t<file name=\"" + file + "\">\n");
+                                out.writeBytes( "\t<file name=\"" + file + "\">\n" );
                                 lastfile = file;
                             }
-                            out.writeBytes("\t\t<error line=\"" + line + "\" severity=\"" + severity + "\" message=\"" + comment + "\" source=\"" + rule + "\"/>\n");
-                        } catch (IOException e) {
-                            getLog().error( "Vera++ xml report write failure");
+                            out.writeBytes( "\t\t<error line=\"" + line + "\" severity=\"" + severity + "\" message=\"" + comment + "\" source=\"" + rule + "\"/>\n" );
+                        }
+                        catch (IOException e)
+                        {
+                            getLog().error( "Vera++ xml report write failure" );
                         }
                     }
                 }
@@ -256,7 +286,6 @@ public class VeraxxMojo extends AbstractLaunchMojo {
         };
         return outErrFilter;
     }
-    
     
     /**
      *  Excludes files/folder from analysis (comma separated list of filter)
@@ -274,38 +303,46 @@ public class VeraxxMojo extends AbstractLaunchMojo {
      */
     private List sourceDirs = new ArrayList();
     
-    protected InputStream getInputStream() {
+    protected InputStream getInputStream()
+    {
         StringBuilder sourceListString = new StringBuilder();
         Iterator it = sourceDirs.iterator();
-        while(it.hasNext()) {
+        while( it.hasNext() )
+        {
             FileSet afileSet = new FileSet();
             String dir = it.next().toString();
-            afileSet.setDirectory(new File(dir).getAbsolutePath());
+            afileSet.setDirectory( new File( dir ).getAbsolutePath() );
             
-            afileSet.setIncludes(Arrays.asList(new String[]{"**/*.cpp", "**/*.h", "**/*.cxx", "**/*.hxx"}));
-            if (StringUtils.isNotEmpty(excludes)) {
-                afileSet.setExcludes(Arrays.asList(excludes.split(",")));
+            afileSet.setIncludes( Arrays.asList( new String[]{"**/*.cpp", "**/*.h", "**/*.cxx", "**/*.hxx"} ) );
+            if ( StringUtils.isNotEmpty( excludes ) )
+            {
+                afileSet.setExcludes( Arrays.asList( excludes.split( "," ) ) );
             }
-            getLog().debug("vera++ excludes are :" + Arrays.toString(afileSet.getExcludes().toArray()) );
+            getLog().debug( "vera++ excludes are :" + Arrays.toString( afileSet.getExcludes().toArray() ) );
             
             FileSetManager aFileSetManager = new FileSetManager();
-            String[] found = aFileSetManager.getIncludedFiles(afileSet);
+            String[] found = aFileSetManager.getIncludedFiles( afileSet );
             
-            for (int i = 0; i < found.length; i++) {
-                sourceListString.append(dir + "/" + found[i] + "\n");
+            for ( int i = 0; i < found.length; i++ )
+            {
+                sourceListString.append( dir + "/" + found[i] + "\n" );
             }
         }
         InputStream is = System.in;
-        try {
-            getLog().debug("vera++ sources are :" + sourceListString );
-            is = new ByteArrayInputStream(sourceListString.toString().getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            getLog().error("vera++ source list from stdin failure" );
+        try
+        {
+            getLog().debug( "vera++ sources are :" + sourceListString );
+            is = new ByteArrayInputStream( sourceListString.toString().getBytes( "UTF-8" ) );
+        }
+        catch ( UnsupportedEncodingException e )
+        {
+            getLog().error( "vera++ source list from stdin failure" );
         }
         return is;
     }
 
-    protected String getExecutable() {
+    protected String getExecutable()
+    {
         return "vera++";
     }
 
@@ -316,11 +353,13 @@ public class VeraxxMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private Map environmentVariables = new HashMap();
-    protected Map getMoreEnvironmentVariables() {
+    protected Map getMoreEnvironmentVariables()
+    {
         return environmentVariables;
     }
 
-    protected List getSuccesCode() {
+    protected List getSuccesCode()
+    {
         return null;
     }
 
@@ -331,15 +370,17 @@ public class VeraxxMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private File workingDir;
-    protected File getWorkingDir() {
-        if (null == workingDir) {
-            workingDir = new File(basedir.getPath());
+    protected File getWorkingDir()
+    {
+        if ( null == workingDir )
+        {
+            workingDir = new File( basedir.getPath() );
         }
         return workingDir;
     }
 
-    protected boolean isSkip() {
+    protected boolean isSkip()
+    {
         return false;
     }
-
 }

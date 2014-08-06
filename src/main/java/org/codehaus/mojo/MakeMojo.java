@@ -30,9 +30,11 @@ import java.util.Map;
  * @phase compile
  * 
  */
-public class MakeMojo extends AbstractLaunchMojo {
+public class MakeMojo extends AbstractLaunchMojo
+{
 
-    protected List getArgsList() {
+    protected List getArgsList()
+    {
         return null;
     }
 
@@ -43,32 +45,38 @@ public class MakeMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private String commandArgs;
-    protected String getCommandArgs() {
+    
+    protected String getCommandArgs()
+    {
         return commandArgs;
     }
 
     /**
      * make commands names per OS name
-     * os name match is java.lang.System.getProperty("os.name")
+     * os name match is java.lang.System.getProperty( "os.name" )
      * 
      * @parameter
      * @since 0.0.4
      */
     private Map makecommandPerOS = new HashMap();
     
-    protected String getExecutable() {
-        String sOsName = System.getProperty("os.name");
-        sOsName = sOsName.replace(" ", "");
+    protected String getExecutable()
+    {
+        String sOsName = System.getProperty( "os.name" );
+        sOsName = sOsName.replace( " ", "" );
         getLog().info( "os.name is \"" + sOsName + "\"" );
-        if (makecommandPerOS == null)
+        if ( makecommandPerOS == null )
         {
             return "make";
         }
         else
         {
-            if (makecommandPerOS.containsKey(sOsName)) {
-                return (String) makecommandPerOS.get(sOsName);
-            } else {
+            if ( makecommandPerOS.containsKey( sOsName ) )
+            {
+                return (String) makecommandPerOS.get( sOsName );
+            }
+            else
+            {
                 return "make";
             }
         }
@@ -81,11 +89,14 @@ public class MakeMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private Map environmentVariables = new HashMap();
-    protected Map getMoreEnvironmentVariables() {
+    
+    protected Map getMoreEnvironmentVariables()
+    {
         return environmentVariables;
     }
 
-    protected List getSuccesCode() {
+    protected List getSuccesCode()
+    {
         return null;
     }
 
@@ -97,15 +108,17 @@ public class MakeMojo extends AbstractLaunchMojo {
      */
     private File projectDir;
     
-    protected File getWorkingDir() {
-        if (null == projectDir) {
-            projectDir = new File(basedir.getPath());
+    protected File getWorkingDir()
+    {
+        if ( null == projectDir )
+        {
+            projectDir = new File( basedir.getPath() );
         }
         return projectDir;
     }
     
-    public boolean isSkip() {
+    public boolean isSkip()
+    {
         return false;
     }
-
 }

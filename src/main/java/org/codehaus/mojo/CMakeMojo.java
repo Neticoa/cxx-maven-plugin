@@ -32,9 +32,11 @@ import org.apache.commons.lang.StringUtils;
  * @phase initialize
  * 
  */
-public class CMakeMojo extends AbstractLaunchMojo {
+public class CMakeMojo extends AbstractLaunchMojo
+{
 
-    protected List getArgsList() {
+    protected List getArgsList()
+    {
         return null;
     }
 
@@ -46,9 +48,11 @@ public class CMakeMojo extends AbstractLaunchMojo {
      */
     private String projectDir;
     
-    protected String getProjectDir() {
-        if (null == projectDir) {
-            projectDir = new String(basedir.getAbsolutePath());
+    protected String getProjectDir()
+    {
+        if ( null == projectDir )
+        {
+            projectDir = new String( basedir.getAbsolutePath() );
         }
         return projectDir;
     }
@@ -70,9 +74,11 @@ public class CMakeMojo extends AbstractLaunchMojo {
      */
     private String commandArgs;
     
-    protected String getCommandArgs() {
+    protected String getCommandArgs()
+    {
         String result = new String();
-        if (!StringUtils.isEmpty(commandArgs)) {
+        if ( !StringUtils.isEmpty( commandArgs ) )
+        {
             result = commandArgs + " ";
         }
         result += "\"" + getProjectDir() + "\" -G " + generator;
@@ -81,7 +87,8 @@ public class CMakeMojo extends AbstractLaunchMojo {
     
 
 
-    protected String getExecutable() {
+    protected String getExecutable()
+    {
         return "cmake";
     }
 
@@ -93,11 +100,13 @@ public class CMakeMojo extends AbstractLaunchMojo {
      * @since 0.0.4
      */
     private Map environmentVariables = new HashMap();
-    protected Map getMoreEnvironmentVariables() {
+    protected Map getMoreEnvironmentVariables()
+    {
         return environmentVariables;
     }
 
-    protected List getSuccesCode() {
+    protected List getSuccesCode()
+    {
         return null;
     }
 
@@ -109,14 +118,17 @@ public class CMakeMojo extends AbstractLaunchMojo {
      */
     private File outsourceDir;
     
-    protected File getWorkingDir() {
-        if (null == outsourceDir) {
-            outsourceDir = new File(basedir.getPath());
+    protected File getWorkingDir()
+    {
+        if (null == outsourceDir)
+        {
+            outsourceDir = new File( basedir.getPath() );
         }
         return outsourceDir;
     }
 
-    public boolean isSkip() {
+    public boolean isSkip()
+    {
         return false;
     }
 

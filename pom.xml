@@ -2,18 +2,29 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-<!--keep following <parent> for codeHaus deployement -->
-<!--use following <parent> for mvn site:site target to succeed -->
-<!--  
+<!--keep following <parent> and <scm> for github and codeHaus deployement -->
+<!--use following <parent> and <scm> for mvn site:site target to succeed -->
+
   <parent>
     <groupId>org.codehaus.mojo</groupId>
     <artifactId>mojo-sandbox-parent</artifactId>
-    <version>8</version>
+    <version>13</version>
   </parent>
+  <scm>
+    <connection>scm:git:https://github.com/franckbonin/cxx-maven-plugin.git</connection>
+    <developerConnection>scm:git:https://github.com/franckbonin/cxx-maven-plugin.git</developerConnection>
+    <url>https://github.com/franckbonin/cxx-maven-plugin/</url>
+  </scm>
+<!--
+  <scm>
+    <connection>scm:svn:https://svn.neticoa.ovh/svn/cxxplugin/trunk/cxx-maven-plugin</connection>
+    <developerConnection>scm:svn:https://svn.neticoa.ovh/svn/cxxplugin/trunk/cxx-maven-plugin</developerConnection>
+    <url>https://svn.neticoa.ovh/svn/cxxplugin/trunk/cxx-maven-plugin</url>
+  </scm>
 -->
 <!--Remove following <groupId> for codeHaus deployement -->
 <!--Remove following <groupId> for mvn site:site target to succeed -->
-  <groupId>org.codehaus.mojo</groupId>
+  <!--<groupId>org.codehaus.mojo</groupId>-->
   
   <artifactId>cxx-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
@@ -22,6 +33,34 @@
   <description>A plugin to allow C++ code compilation and check under maven</description>
   <url>https://github.com/franckbonin/cxx-maven-plugin</url>
   <inceptionYear>2010</inceptionYear>
+  
+  <organization>
+    <name>Neticoa SAS</name>
+    <url>http://www.neticoa.fr</url>
+  </organization>
+  <ciManagement>
+    <system>Jenkins</system>
+    <url>http://hudson/job/cxx-maven-plugin/</url>
+  </ciManagement>
+<!--
+  <issueManagement>
+    <system>Redmine</system>
+    <url>https://redmine/projects/cxx-plugin</url>
+  </issueManagement>
+-->
+  <issueManagement>
+    <system>Github</system>
+    <url>https://github.com/franckbonin/cxx-maven-plugin/issues</url>
+  </issueManagement>
+  <mailingLists>
+    <mailingList>
+      <name>List</name>
+      <subscribe>none</subscribe>
+      <unsubscribe>none</unsubscribe>
+      <post>none</post>
+      <archive>none</archive>
+    </mailingList>
+  </mailingLists>
   
   <developers>
     <developer>
