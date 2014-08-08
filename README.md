@@ -7,6 +7,7 @@
 * [cxx-maven-plugin:cmake](http://franckbonin.github.com/cxx-maven-plugin/cmake-mojo.html) project generation goal using cmake tool.
 * [cxx-maven-plugin:qmake](http://franckbonin.github.com/cxx-maven-plugin/qmake-mojo.html) project generation goal using qmake tool.
 * [cxx-maven-plugin:make](http://franckbonin.github.com/cxx-maven-plugin/make-mojo.html) build goal using make tool.
+* [cxx-maven-plugin:msbuild](http://franckbonin.github.com/cxx-maven-plugin/msbuild-mojo.html) build goal using visual studio.
 * [cxx-maven-plugin:xunit](http://franckbonin.github.com/cxx-maven-plugin/xunit-mojo.html) unit test report generic generation goal.
 * [cxx-maven-plugin:cppcheck](http://franckbonin.github.com/cxx-maven-plugin/cppcheck-mojo.html) cppcheck reports generation goal.
 * [cxx-maven-plugin:cppncss](http://franckbonin.github.com/cxx-maven-plugin/cppncss-mojo.html) cppncss reports generation goal.
