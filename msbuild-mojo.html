@@ -10,7 +10,7 @@
     <meta name="Date-Revision-yyyymmdd" content="20140808" />
     <meta http-equiv="Content-Language" content="en" />
     <title>cxx-maven-plugin Maven Mojo - 
-    cxx:veraxx</title>
+    cxx:msbuild</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.3.0.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
@@ -64,7 +64,7 @@
         </li>
       <li class="divider ">/</li>
         <li class="">
-    cxx:veraxx</li>
+    cxx:msbuild</li>
         
                 
                     
@@ -130,16 +130,32 @@
                                   
             
   
-    <div class="section"><h2>cxx:veraxx<a name="cxx:veraxx"></a></h2>
+    <div class="section"><h2>cxx:msbuild<a name="cxx:msbuild"></a></h2>
       <p><b>Full name</b>:</p>
-      <p>org.codehaus.mojo:cxx-maven-plugin:0.0.5-SNAPSHOT:veraxx</p>
+      <p>org.codehaus.mojo:cxx-maven-plugin:0.0.5-SNAPSHOT:msbuild</p>
       <p><b>Description</b>:</p>
-      <div>Goal which vera++ check sources.</div>
+      <div>Goal which build VisualStudio solutions.</div>
       <p><b>Attributes</b>:</p>
       <ul>
         <li>Requires a Maven project to be executed.</li>
-        <li>Binds by default to the lifecycle phase: <tt>test</tt>.</li>
+        <li>Binds by default to the lifecycle phase: <tt>compile</tt>.</li>
       </ul>
+      <div class="section"><h3>Required Parameters<a name="Required_Parameters"></a></h3>
+        <table class="table table-striped" border="0">
+          <tr class="a">
+            <th>Name</th>
+            <th>Type</th>
+            <th>Since</th>
+            <th>Description</th>
+          </tr>
+          <tr class="b">
+            <td><b><a href="#solutionFileName">solutionFileName</a></b></td>
+            <td><tt>String</tt></td>
+            <td><tt>0.0.5</tt></td>
+            <td>Visual studio solution file name.<br /></td>
+          </tr>
+        </table>
+      </div>
       <div class="section"><h3>Optional Parameters<a name="Optional_Parameters"></a></h3>
         <table class="table table-striped" border="0">
           <tr class="a">
@@ -149,23 +165,34 @@
             <th>Description</th>
           </tr>
           <tr class="b">
-            <td><b><a href="#commandArgs">commandArgs</a></b></td>
-            <td><tt>String</tt></td>
-            <td><tt>-</tt></td>
-            <td>Arguments for vera++ program. Shall be -nodup -showrules<br /><b>Default value is</b>: <tt>-nodup -showrules</tt>.</td>
-          </tr>
-          <tr class="a">
-            <td><b><a href="#environmentVariables">environmentVariables</a></b></td>
-            <td><tt>Map</tt></td>
-            <td><tt>0.0.4</tt></td>
-            <td>Environment variables passed to vera++ program.<br /></td>
-          </tr>
-          <tr class="b">
-            <td><b><a href="#excludes">excludes</a></b></td>
+            <td><b><a href="#buildConfig">buildConfig</a></b></td>
             <td><tt>String</tt></td>
             <td><tt>0.0.5</tt></td>
-            <td>Excludes files/folder from analysis (comma separated list of
-filter)<br /></td>
+            <td>Build config [ debug | release | ... ]<br /><b>Default value is</b>: <tt>release</tt>.</td>
+          </tr>
+          <tr class="a">
+            <td><b><a href="#buildType">buildType</a></b></td>
+            <td><tt>String</tt></td>
+            <td><tt>0.0.5</tt></td>
+            <td>Build type [ rebuild | clean | build | ... ]<br /><b>Default value is</b>: <tt>build</tt>.</td>
+          </tr>
+          <tr class="b">
+            <td><b><a href="#buildVersion">buildVersion</a></b></td>
+            <td><tt>String</tt></td>
+            <td><tt>0.0.5</tt></td>
+            <td>Build version in visual studio format [ x.y.z.t ]<br /><b>Default value is</b>: <tt>0.0.0.1</tt>.</td>
+          </tr>
+          <tr class="a">
+            <td><b><a href="#compilerOptions">compilerOptions</a></b></td>
+            <td><tt>String</tt></td>
+            <td><tt>0.0.5</tt></td>
+            <td>Additional compiler options (without any global quotation)<br /></td>
+          </tr>
+          <tr class="b">
+            <td><b><a href="#environmentVariables">environmentVariables</a></b></td>
+            <td><tt>Map</tt></td>
+            <td><tt>0.0.5</tt></td>
+            <td>Environment variables to pass to the cmake program.<br /></td>
           </tr>
           <tr class="a">
             <td><b><a href="#project">project</a></b></td>
@@ -174,89 +201,99 @@ filter)<br /></td>
             <td>Current Project<br /></td>
           </tr>
           <tr class="b">
-            <td><b><a href="#reportIdentifier">reportIdentifier</a></b></td>
+            <td><b><a href="#solutionDir">solutionDir</a></b></td>
             <td><tt>String</tt></td>
-            <td><tt>0.0.4</tt></td>
-            <td>The Report OutputFile name identifier.<br /></td>
+            <td><tt>0.0.5</tt></td>
+            <td>Directory location of visual studio solution<br /></td>
           </tr>
           <tr class="a">
-            <td><b><a href="#reportsfileDir">reportsfileDir</a></b></td>
-            <td><tt>File</tt></td>
-            <td><tt>0.0.4</tt></td>
-            <td>The Report OutputFile Location.<br /><b>Default value is</b>: <tt>vera++-reports</tt>.</td>
+            <td><b><a href="#targetArchitecture">targetArchitecture</a></b></td>
+            <td><tt>String</tt></td>
+            <td><tt>0.0.5</tt></td>
+            <td>target architecture [ x86 | amd64 | ia64 | x86_amd64 | x86_ia64 ]<br /><b>Default value is</b>: <tt>x86</tt>.</td>
           </tr>
           <tr class="b">
-            <td><b><a href="#sourceDirs">sourceDirs</a></b></td>
-            <td><tt>List</tt></td>
-            <td><tt>0.0.4</tt></td>
-            <td>Directory where vera++ should search for source files<br /></td>
-          </tr>
-          <tr class="a">
-            <td><b><a href="#workingDir">workingDir</a></b></td>
-            <td><tt>File</tt></td>
-            <td><tt>0.0.4</tt></td>
-            <td>The current working directory. Optional. If not specified, basedir
-will be used.<br /></td>
+            <td><b><a href="#targetPlatform">targetPlatform</a></b></td>
+            <td><tt>String</tt></td>
+            <td><tt>0.0.5</tt></td>
+            <td>target platform [ win32 | ... ]<br /><b>Default value is</b>: <tt>win32</tt>.</td>
           </tr>
         </table>
       </div>
       <div class="section"><h3>Parameter Details<a name="Parameter_Details"></a></h3>
-        <p><b><a name="commandArgs">commandArgs</a>:</b></p>
-        <div>Arguments for vera++ program. Shall be -nodup -showrules</div>
-        <ul>
-          <li><b>Type</b>: <tt>java.lang.String</tt></li>
-          <li><b>Required</b>: <tt>No</tt></li>
-          <li><b>Expression</b>: <tt>${veraxx.args}</tt></li>
-          <li><b>Default</b>: <tt>-nodup -showrules</tt></li>
-        </ul><hr /><p><b><a name="environmentVariables">environmentVariables</a>:</b></p>
-        <div>Environment variables passed to vera++ program.</div>
-        <ul>
-          <li><b>Type</b>: <tt>java.util.Map</tt></li>
-          <li><b>Since</b>: <tt>0.0.4</tt></li>
-          <li><b>Required</b>: <tt>No</tt></li>
-        </ul><hr /><p><b><a name="excludes">excludes</a>:</b></p>
-        <div>Excludes files/folder from analysis (comma separated list of
-filter)</div>
+        <p><b><a name="buildConfig">buildConfig</a>:</b></p>
+        <div>Build config [ debug | release | ... ]</div>
         <ul>
           <li><b>Type</b>: <tt>java.lang.String</tt></li>
           <li><b>Since</b>: <tt>0.0.5</tt></li>
           <li><b>Required</b>: <tt>No</tt></li>
-          <li><b>Expression</b>: <tt>${veraxx.excludes}</tt></li>
+          <li><b>Expression</b>: <tt>${visualstudio.buildConfig}</tt></li>
+          <li><b>Default</b>: <tt>release</tt></li>
+        </ul><hr /><p><b><a name="buildType">buildType</a>:</b></p>
+        <div>Build type [ rebuild | clean | build | ... ]</div>
+        <ul>
+          <li><b>Type</b>: <tt>java.lang.String</tt></li>
+          <li><b>Since</b>: <tt>0.0.5</tt></li>
+          <li><b>Required</b>: <tt>No</tt></li>
+          <li><b>Expression</b>: <tt>${visualstudio.buildType}</tt></li>
+          <li><b>Default</b>: <tt>build</tt></li>
+        </ul><hr /><p><b><a name="buildVersion">buildVersion</a>:</b></p>
+        <div>Build version in visual studio format [ x.y.z.t ]</div>
+        <ul>
+          <li><b>Type</b>: <tt>java.lang.String</tt></li>
+          <li><b>Since</b>: <tt>0.0.5</tt></li>
+          <li><b>Required</b>: <tt>No</tt></li>
+          <li><b>Expression</b>: <tt>${visualstudio.buildVersion}</tt></li>
+          <li><b>Default</b>: <tt>0.0.0.1</tt></li>
+        </ul><hr /><p><b><a name="compilerOptions">compilerOptions</a>:</b></p>
+        <div>Additional compiler options (without any global quotation)</div>
+        <ul>
+          <li><b>Type</b>: <tt>java.lang.String</tt></li>
+          <li><b>Since</b>: <tt>0.0.5</tt></li>
+          <li><b>Required</b>: <tt>No</tt></li>
+          <li><b>Expression</b>: <tt>${visualstudio.compilerOptions}</tt></li>
+        </ul><hr /><p><b><a name="environmentVariables">environmentVariables</a>:</b></p>
+        <div>Environment variables to pass to the cmake program.</div>
+        <ul>
+          <li><b>Type</b>: <tt>java.util.Map</tt></li>
+          <li><b>Since</b>: <tt>0.0.5</tt></li>
+          <li><b>Required</b>: <tt>No</tt></li>
         </ul><hr /><p><b><a name="project">project</a>:</b></p>
         <div>Current Project</div>
         <ul>
           <li><b>Type</b>: <tt>org.apache.maven.project.MavenProject</tt></li>
           <li><b>Required</b>: <tt>No</tt></li>
           <li><b>Expression</b>: <tt>${project}</tt></li>
-        </ul><hr /><p><b><a name="reportIdentifier">reportIdentifier</a>:</b></p>
-        <div>The Report OutputFile name identifier.</div>
+        </ul><hr /><p><b><a name="solutionDir">solutionDir</a>:</b></p>
+        <div>Directory location of visual studio solution</div>
         <ul>
           <li><b>Type</b>: <tt>java.lang.String</tt></li>
-          <li><b>Since</b>: <tt>0.0.4</tt></li>
+          <li><b>Since</b>: <tt>0.0.5</tt></li>
           <li><b>Required</b>: <tt>No</tt></li>
-          <li><b>Expression</b>: <tt>${veraxx.reportIdentifier}</tt></li>
-        </ul><hr /><p><b><a name="reportsfileDir">reportsfileDir</a>:</b></p>
-        <div>The Report OutputFile Location.</div>
+          <li><b>Expression</b>: <tt>${visualstudio.solutionDir}</tt></li>
+        </ul><hr /><p><b><a name="solutionFileName">solutionFileName</a>:</b></p>
+        <div>Visual studio solution file name.</div>
         <ul>
-          <li><b>Type</b>: <tt>java.io.File</tt></li>
-          <li><b>Since</b>: <tt>0.0.4</tt></li>
-          <li><b>Required</b>: <tt>No</tt></li>
-          <li><b>Expression</b>: <tt>${veraxx.reportsfilePath}</tt></li>
-          <li><b>Default</b>: <tt>vera++-reports</tt></li>
-        </ul><hr /><p><b><a name="sourceDirs">sourceDirs</a>:</b></p>
-        <div>Directory where vera++ should search for source files</div>
+          <li><b>Type</b>: <tt>java.lang.String</tt></li>
+          <li><b>Since</b>: <tt>0.0.5</tt></li>
+          <li><b>Required</b>: <tt>Yes</tt></li>
+          <li><b>Expression</b>: <tt>${visualstudio.solutionFileName}</tt></li>
+        </ul><hr /><p><b><a name="targetArchitecture">targetArchitecture</a>:</b></p>
+        <div>target architecture [ x86 | amd64 | ia64 | x86_amd64 | x86_ia64 ]</div>
         <ul>
-          <li><b>Type</b>: <tt>java.util.List</tt></li>
-          <li><b>Since</b>: <tt>0.0.4</tt></li>
+          <li><b>Type</b>: <tt>java.lang.String</tt></li>
+          <li><b>Since</b>: <tt>0.0.5</tt></li>
           <li><b>Required</b>: <tt>No</tt></li>
-        </ul><hr /><p><b><a name="workingDir">workingDir</a>:</b></p>
-        <div>The current working directory. Optional. If not specified, basedir
-will be used.</div>
+          <li><b>Expression</b>: <tt>${visualstudio.targetArchitecture}</tt></li>
+          <li><b>Default</b>: <tt>x86</tt></li>
+        </ul><hr /><p><b><a name="targetPlatform">targetPlatform</a>:</b></p>
+        <div>target platform [ win32 | ... ]</div>
         <ul>
-          <li><b>Type</b>: <tt>java.io.File</tt></li>
-          <li><b>Since</b>: <tt>0.0.4</tt></li>
+          <li><b>Type</b>: <tt>java.lang.String</tt></li>
+          <li><b>Since</b>: <tt>0.0.5</tt></li>
           <li><b>Required</b>: <tt>No</tt></li>
-          <li><b>Expression</b>: <tt>${veraxx.workingdir}</tt></li>
+          <li><b>Expression</b>: <tt>${visualstudio.targetPlatform}</tt></li>
+          <li><b>Default</b>: <tt>win32</tt></li>
         </ul>
       </div>
     </div>
