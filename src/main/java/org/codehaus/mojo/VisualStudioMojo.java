@@ -1,0 +1,188 @@
+/*
+ * Copyright (C) 2011, Neticoa SAS France - Tous droits réservés.
+ * Author(s) : Franck Bonin, Neticoa SAS France
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+package org.codehaus.mojo;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.FileOutputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.io.IOUtils;
+
+/**
+ * Goal which build VisualStudio solutions.
+ *
+ * @author Franck Bonin 
+ * @goal msbuild
+ * @phase compile
+ * 
+ */
+public class VisualStudioMojo extends AbstractLaunchMojo
+{
+
+    /**
+     * Directory location of visual studio solution
+     * 
+     * @parameter expression="${visualstudio.solutionDir}"
+     * @since 0.0.5
+     */
+    private String solutionDir;
+    
+    protected String getSolutionDir()
+    {
+        if ( null == solutionDir )
+        {
+            solutionDir = new String( basedir.getAbsolutePath() );
+        }
+        return solutionDir;
+    }
+    
+    /**
+     * Visual studio solution file name.
+     * 
+     * @parameter expression="${visualstudio.solutionFileName}"
+     * @required
+     * @since 0.0.5
+     */
+    private String solutionFileName;
+    
+    /**
+     * Build type [ rebuild | clean | build | ... ]
+     * 
+     * @parameter expression="${visualstudio.buildType}" default-value="build"
+     * @since 0.0.5
+     */
+    private String buildType;
+    
+    /**
+     * Build config [ debug | release | ... ]
+     * 
+     * @parameter expression="${visualstudio.buildConfig}" default-value="release"
+     * @since 0.0.5
+     */
+    private String buildConfig;
+    
+    /**
+     * target platform  [ win32 | ... ]
+     * 
+     * @parameter expression="${visualstudio.targetPlatform}" default-value="win32"
+     * @since 0.0.5
+     */
+    private String targetPlatform;
+    
+    /**
+     * target architecture  [ x86 | amd64 | ia64 | x86_amd64 | x86_ia64 ]
+     * 
+     * @parameter expression="${visualstudio.targetArchitecture}" default-value="x86"
+     * @since 0.0.5
+     */
+    private String targetArchitecture;
+    
+    /**
+     * Build version in visual studio format [ x.y.z.t ]
+     * 
+     * @parameter expression="${visualstudio.buildVersion}" default-value="0.0.0.1"
+     * @since 0.0.5
+     */
+    private String buildVersion;
+    
+    /**
+     * Additional compiler options (without any global quotation)
+     * 
+     * @parameter expression="${visualstudio.compilerOptions}" default-value=""
+     * @since 0.0.5
+     */
+    private String compilerOptions;
+    
+    protected String getCommandArgs()
+    {
+        return null;
+    }
+    
+    protected List getArgsList()
+    {
+        ArrayList args = new ArrayList();
+        
+        args.add( solutionDir );
+        args.add( solutionFileName );
+        args.add( buildType );
+        args.add( buildConfig );
+        args.add( targetPlatform );
+        args.add( targetArchitecture );
+        args.add( buildVersion );
+        args.add( "'\"" + compilerOptions + "\"'" );
+        
+        return args;
+    }
+    
+    protected String getExecutable()
+    {
+        InputStream batchScriptStream = getClass().getResourceAsStream( "/build.bat" );
+        try
+        {    
+            File batchFile = File.createTempFile( "build", ".bat" );
+            batchFile.deleteOnExit();
+            OutputStream outStream = new FileOutputStream( batchFile );
+            
+            IOUtils.copy( batchScriptStream, outStream );
+            
+            getLog().debug( "msbuild batch script is located at :" + batchFile.getAbsolutePath() );
+                
+            return batchFile.getAbsolutePath();
+        }
+        catch ( IOException e )
+        {
+            getLog().error( "Temporary batch script can't be created" );
+            return "echo";
+        }
+    }
+
+    /**
+     * Environment variables to pass to the cmake program.
+     * 
+     * @parameter
+     * @since 0.0.5
+     */
+    private Map environmentVariables = new HashMap();
+    protected Map getMoreEnvironmentVariables()
+    {
+        return environmentVariables;
+    }
+
+    protected List getSuccesCode()
+    {
+        return null;
+    }
+    
+    protected File getWorkingDir()
+    {
+        return new File( solutionDir );
+    }
+
+    public boolean isSkip()
+    {
+        return false;
+    }
+
+}
