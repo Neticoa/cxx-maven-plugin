@@ -180,7 +180,7 @@ public class CoverageMojo extends LaunchMojo
             
             if ( isResultCodeAFailure( res ) )
             {
-                throw new MojoExecutionException( "Result of " + commandLine + " execution is: '" + res + "'." );
+                throw new MojoExecutionException( "Result of command line execution is: '" + res + "'." );
             }
         }
         catch ( ExecuteException e )

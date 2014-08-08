@@ -289,6 +289,10 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
     
     protected void postExecute( int resultCode ) throws MojoExecutionException
     {
+		if ( isResultCodeAFailure( resultCode ) )
+		{
+			throw new MojoExecutionException( "Result of command line execution is: '" + resultCode + "'." );
+		}
     }
     
     public void execute() throws MojoExecutionException
@@ -322,16 +326,11 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
         {
             getLog().info( "Executing command line: " + commandLine );
             
-            preExecute(exec, commandLine, enviro);
+            preExecute( exec, commandLine, enviro );
 
             int resultCode = executeCommandLine( exec, commandLine, enviro, getOutputStreamOut(), getOutputStreamErr(), getInputStream() );
-   
-            if ( isResultCodeAFailure( resultCode ) )
-            {
-                throw new MojoExecutionException( "Result of " + commandLine + " execution is: '" + resultCode + "'." );
-            }
-            
-            postExecute(resultCode);
+              
+            postExecute( resultCode );
         }
         catch ( ExecuteException e )
         {
