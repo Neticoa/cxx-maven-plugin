@@ -124,14 +124,17 @@ public class VisualStudioMojo extends AbstractLaunchMojo
     {
         ArrayList args = new ArrayList();
         
-        args.add( solutionDir );
+        args.add( getSolutionDir() );
         args.add( solutionFileName );
         args.add( buildType );
         args.add( buildConfig );
         args.add( targetPlatform );
         args.add( targetArchitecture );
         args.add( buildVersion );
-        args.add( "'\"" + compilerOptions + "\"'" );
+        if (StringUtils.isNotEmpty( compilerOptions ) )
+        {
+            args.add( "\"" + compilerOptions + "\"" );
+        }
         
         return args;
     }

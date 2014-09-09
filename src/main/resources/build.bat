@@ -7,15 +7,19 @@ REM option 5 [%5] is platform [win32 | ?]
 REM option 6 [%6] is architecture [x86 | amd64 | ia64 | x86_amd64 | x86_ia64]
 REM option 7 [%7] is project version to set [x.y.z.t]
 REM option 8 [%8] is additional compiler options
+REM 
+REM When this batch is used in command line :
 REM use simple quote + double quote ['"] to enclose option 8 in order to specify one or more options with '=' char inside.
 REM use escaped double quote [\"] inside global quotation to specify string typed option values
 REM Example : ['"/DOPTION_1=value /DOPTION_2=\"litteral_string\""'] (VC compiler /D option do not support space char inside value)
 REM additional compiler options will be added to Env vars $(EXTERNAL_COMPILER_OPTIONS) and $(EXTERNAL_RCC_OPTIONS).
-REM put those Env vars in all vcproj projects properties your solution contains:
-REM put $(EXTERNAL_COMPILER_OPTIONS) under [Configuration Properties->C/C++->Command Line] (in both Debug and Release configs)
-REM and put $(EXTERNAL_RCC_OPTIONS) under [Configuration Properties->Resources->Command Line] (in both Debug and Release configs)
-REM
+REM put those Env vars in all vcproj projects properties your solution contains (see bellow)
+REM 
 REM VS Solutions design recomandations :
+REM   - In all your vcproj, put $(EXTERNAL_COMPILER_OPTIONS) under [Configuration Properties->C/C++->Command Line],
+REM     in both Debug and Release configs)
+REM   - In all your vcproj, put $(EXTERNAL_RCC_OPTIONS) under [Configuration Properties->Resources->Command Line],
+REM     in both Debug and Release configs
 REM   - In all your vcproj, set [Configuration Properties->General->Output Directory] to
 REM     $(SolutionDir)$(PlatformName)\$(ConfigurationName), in both Debug and Release configs
 REM   - In all your vcproj, set [Configuration Properties->General->Intermediate Directory] to 
@@ -64,7 +68,17 @@ FOR /F "skip=1 tokens=1-6" %%A IN ('WMIC Path Win32_LocalTime Get Day^,Hour^,Min
     )
 )
 
-call "%PROGRAMFILES%\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" %6
+IF EXIST "%PROGRAMFILES(X86)%\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" (
+	call "%PROGRAMFILES(X86)%\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" %6
+) ELSE (
+	IF EXIST "%PROGRAMFILES%\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" (
+		call "%PROGRAMFILES%\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" %6
+	) ELSE (
+		echo "Microsoft Visual Studio 9.0 not found in [%PROGRAMFILES%] or [%PROGRAMFILES(X86)%]"
+		exit /B 1
+	)
+)
+
 echo call qmake to find QTDIR...
 qmake -query QT_INSTALL_PREFIX > tmpBuildFile 
 set /p QTDIR= < tmpBuildFile 
@@ -95,5 +109,5 @@ popd
 :: There is no custom clean step in VS2008 so we exit successfully whatever to avoid false negative
 IF [%3] == [clean] exit 0
 REM errorlevel come from msbuild
-exit %errorlevel%
+exit /B %errorlevel%
 REM endlocal
