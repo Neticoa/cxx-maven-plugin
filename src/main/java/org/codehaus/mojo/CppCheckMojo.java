@@ -96,7 +96,7 @@ public class CppCheckMojo extends AbstractLaunchMojo
     }
     
     /**
-     * Arguments for the cppncss program. Shall be -v --enable=style --force --xml 
+     * Arguments for the cppcheck program. Shall be -v --enable=style --force --xml 
      * 
      * @parameter expression="${cppcheck.args}" default-value="-v --enable=style --force --xml"
      */
