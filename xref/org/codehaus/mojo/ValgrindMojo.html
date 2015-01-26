@@ -150,15 +150,40 @@
 <a class="jxr_linenumber" name="140" href="#140">140</a>         }
 <a class="jxr_linenumber" name="141" href="#141">141</a>         <strong class="jxr_keyword">return</strong> workingDir;
 <a class="jxr_linenumber" name="142" href="#142">142</a>     }
-<a class="jxr_linenumber" name="143" href="#143">143</a> 
-<a class="jxr_linenumber" name="144" href="#144">144</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> isSkip()
-<a class="jxr_linenumber" name="145" href="#145">145</a>     {
-<a class="jxr_linenumber" name="146" href="#146">146</a>         String sOsName = System.getProperty( <span class="jxr_string">"os.name"</span> );
-<a class="jxr_linenumber" name="147" href="#147">147</a>         <em class="jxr_comment">// vilgrind will work on linux, macos, everything but windows</em>
-<a class="jxr_linenumber" name="148" href="#148">148</a>         <strong class="jxr_keyword">return</strong> sOsName.contains( <span class="jxr_string">"windows"</span> );
-<a class="jxr_linenumber" name="149" href="#149">149</a>     }
-<a class="jxr_linenumber" name="150" href="#150">150</a> 
-<a class="jxr_linenumber" name="151" href="#151">151</a> }
+<a class="jxr_linenumber" name="143" href="#143">143</a>     
+<a class="jxr_linenumber" name="144" href="#144">144</a>     
+<a class="jxr_linenumber" name="145" href="#145">145</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="146" href="#146">146</a> <em class="jxr_javadoccomment">    * Set this to "true" to skip running tests, but still compile them. Its use is NOT RECOMMENDED, but quite</em>
+<a class="jxr_linenumber" name="147" href="#147">147</a> <em class="jxr_javadoccomment">    * convenient on occasion.</em>
+<a class="jxr_linenumber" name="148" href="#148">148</a> <em class="jxr_javadoccomment">    *</em>
+<a class="jxr_linenumber" name="149" href="#149">149</a> <em class="jxr_javadoccomment">    * @parameter expression="${skipTests}" default-Value = "false"</em>
+<a class="jxr_linenumber" name="150" href="#150">150</a> <em class="jxr_javadoccomment">    * @since 0.0.5</em>
+<a class="jxr_linenumber" name="151" href="#151">151</a> <em class="jxr_javadoccomment">    */</em>
+<a class="jxr_linenumber" name="152" href="#152">152</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> skipTests;
+<a class="jxr_linenumber" name="153" href="#153">153</a>     
+<a class="jxr_linenumber" name="154" href="#154">154</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="155" href="#155">155</a> <em class="jxr_javadoccomment">    * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable it using</em>
+<a class="jxr_linenumber" name="156" href="#156">156</a> <em class="jxr_javadoccomment">    * the "maven.test.skip" property, because maven.test.skip shall disables both running the tests and compiling the tests.</em>
+<a class="jxr_linenumber" name="157" href="#157">157</a> <em class="jxr_javadoccomment">    * Consider using the &lt;code&gt;skipTests&lt;/code&gt; parameter instead.</em>
+<a class="jxr_linenumber" name="158" href="#158">158</a> <em class="jxr_javadoccomment">    *</em>
+<a class="jxr_linenumber" name="159" href="#159">159</a> <em class="jxr_javadoccomment">    * @parameter expression="${maven.test.skip}"  default-Value = "false"</em>
+<a class="jxr_linenumber" name="160" href="#160">160</a> <em class="jxr_javadoccomment">    * @since 0.0.5</em>
+<a class="jxr_linenumber" name="161" href="#161">161</a> <em class="jxr_javadoccomment">    */</em>
+<a class="jxr_linenumber" name="162" href="#162">162</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> skip;
+<a class="jxr_linenumber" name="163" href="#163">163</a>     
+<a class="jxr_linenumber" name="164" href="#164">164</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> isSkip()
+<a class="jxr_linenumber" name="165" href="#165">165</a>     {
+<a class="jxr_linenumber" name="166" href="#166">166</a>         <strong class="jxr_keyword">return</strong> _isSkip() || skipTests || skip;
+<a class="jxr_linenumber" name="167" href="#167">167</a>     }
+<a class="jxr_linenumber" name="168" href="#168">168</a> 
+<a class="jxr_linenumber" name="169" href="#169">169</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> _isSkip()
+<a class="jxr_linenumber" name="170" href="#170">170</a>     {
+<a class="jxr_linenumber" name="171" href="#171">171</a>         String sOsName = System.getProperty( <span class="jxr_string">"os.name"</span> );
+<a class="jxr_linenumber" name="172" href="#172">172</a>         <em class="jxr_comment">// vilgrind will work on linux, macos, everything but windows</em>
+<a class="jxr_linenumber" name="173" href="#173">173</a>         <strong class="jxr_keyword">return</strong> sOsName.contains( <span class="jxr_string">"windows"</span> );
+<a class="jxr_linenumber" name="174" href="#174">174</a>     }
+<a class="jxr_linenumber" name="175" href="#175">175</a> 
+<a class="jxr_linenumber" name="176" href="#176">176</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
