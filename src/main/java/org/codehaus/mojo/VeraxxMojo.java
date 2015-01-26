@@ -66,54 +66,62 @@ public class VeraxxMojo extends AbstractLaunchMojo
     
     protected void preExecute( Executor exec, CommandLine commandLine, Map enviro ) throws MojoExecutionException
     {
-        OutputStream outStream = System.out;
-        outStream = new ByteArrayOutputStream();
+        OutputStream outStream = /*System.out;*/new ByteArrayOutputStream();
+        OutputStream errStream = new ByteArrayOutputStream();
 
         CommandLine commandLineCheck = new CommandLine( getExecutable() );
         Executor execCheck = new DefaultExecutor();
         String[] args = parseCommandlineArgs( "--version" );
         commandLineCheck.addArguments( args, false );
         execCheck.setWorkingDirectory( exec.getWorkingDirectory() );
+        
+        getLog().info( "Executing command line: " + commandLineCheck );
+
+        int res = 0;
         try
         {
-            getLog().info( "Executing command line: " + commandLineCheck );
-            int res = executeCommandLine( execCheck, commandLineCheck, enviro, outStream/*getOutputStreamOut()*/, getOutputStreamErr(), getInputStream() );
-
-            /*if ( isResultCodeAFailure( res ) )
-            {
-                throw new MojoExecutionException( "preExecute Result of " + commandLineCheck + " execution is: '" + res + "'." );
-            }
-            else*/
-            {
-                DefaultArtifactVersion newFormatMinVersion = new DefaultArtifactVersion( "1.2.0" );
-                DefaultArtifactVersion currentVeraVersion = new DefaultArtifactVersion( outStream.toString() );
-                
-                getLog().debug( "Vera++ detected version is : " + outStream.toString() ) ;
-                getLog().debug( "Vera++ version as ArtefactVersion is : " + currentVeraVersion.toString() );
-
-                if ( currentVeraVersion.compareTo( newFormatMinVersion ) < 0 )
-                {
-                    getLog().info( "Use old Vera++ output parsing" );
-                    veraxx_version = 0;
-                }
-                else
-                {
-                    getLog().info( "Use new Vera++ output parsing" );
-                    veraxx_version = 1;
-                }
-            }
+            res = executeCommandLine( execCheck, commandLineCheck, enviro, outStream/*getOutputStreamOut()*/, errStream/*getOutputStreamErr()*/, getInputStream() );
         }
         catch ( ExecuteException e )
         {
-            /*throw new MojoExecutionException( "preExecute Command execution failed.", e );*/
-            getLog().info( "Exec Exception while detecting Vera++ version. Assum old version" );
+            getLog().info( "Exec Exception while detecting Vera++ version. Assume old Vera++ v1.1.x (and less) output parsing style" );
+            getLog().info( "Vera++ err output is : " + errStream.toString() ) ;
             veraxx_version = 0;
+			/*throw new MojoExecutionException( "preExecute Command execution failed.", e );*/
+			return;
         }
         catch ( IOException e )
         {
-            throw new MojoExecutionException( "preExecute Command execution failed.", e );
+            getLog().info( "Vera++ detected version is : " + outStream.toString() ) ;
+            getLog().info( "Vera++ err output is : " + errStream.toString() ) ;
+			// due to jdk8 bug :: https://bugs.openjdk.java.net/browse/JDK-8054565
+            // we use this dirty try/catch ...
+            // because this quick command line call can close the output stream before jvm does
+            getLog().info( "jvm "+ System.getProperty("java.version") +" (8u11 - 9) workaround, ignoring a " + e.toString() + " during vera++ test command line.") ;
+            //throw new MojoExecutionException( "preExecute Command execution failed.", e );
         }
- 
+        
+        if ( isResultCodeAFailure( res ) )
+        {
+             getLog().info( "Vera++ returned a failure result code : " + res );
+            //throw new MojoExecutionException( "preExecute Result of " + commandLineCheck + " execution is: '" + res + "'." );
+        }
+		DefaultArtifactVersion newFormatMinVersion = new DefaultArtifactVersion( "1.2.0" );
+		DefaultArtifactVersion currentVeraVersion = new DefaultArtifactVersion( outStream.toString() );
+		
+		getLog().debug( "Vera++ detected version is : " + outStream.toString() ) ;
+		getLog().debug( "Vera++ version as ArtefactVersion is : " + currentVeraVersion.toString() );
+
+		if ( currentVeraVersion.compareTo( newFormatMinVersion ) < 0 )
+		{
+			getLog().info( "Use old Vera++ v1.1.x (and less) output parsing style" );
+			veraxx_version = 0;
+		}
+		else
+		{
+			getLog().info( "Use Vera++ v1.2.0 (and more) output parsing style" );
+			veraxx_version = 1;
+		}
     }
 
     /**
