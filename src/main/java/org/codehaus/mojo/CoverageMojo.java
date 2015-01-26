@@ -192,4 +192,28 @@ public class CoverageMojo extends LaunchMojo
             throw new MojoExecutionException( "Command execution failed.", e );
         }
     }
+    
+    /**
+     * Set this to "true" to skip running tests, but still compile them. Its use is NOT RECOMMENDED, but quite
+     * convenient on occasion.
+     *
+     * @parameter expression="${skipTests}" default-Value = "false"
+     * @since 0.0.5
+     */
+    protected boolean skipTests;
+    
+    /**
+     * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable it using
+     * the "maven.test.skip" property, because maven.test.skip shall disables both running the tests and compiling the tests.
+     * Consider using the <code>skipTests</code> parameter instead.
+     *
+     * @parameter expression="${maven.test.skip}"  default-Value = "false"
+     * @since 0.0.5
+     */
+    protected boolean skip;
+    
+    protected boolean isSkip()
+    {
+        return super.isSkip() || skipTests || skip;
+    }
 }

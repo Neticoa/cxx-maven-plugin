@@ -68,20 +68,39 @@ public class XUnitMojo extends LaunchMojo
         }
         catch (IOException e)
         {
-			 getLog().info( "Could not write to " + OutputReportDir + "/Readme.txt" );
+             getLog().info( "Could not write to " + OutputReportDir + "/Readme.txt" );
         }
     }
     
     /**
-     * The Xunit Skip feature.
+     * The Xunit Legacy Skip feature.
      * 
      * @parameter expression="${xunit.skiptests}" default-value="false"
      * @since 0.0.5
      */
     private boolean skiptests;
     
+    /**
+     * Set this to "true" to skip running tests, but still compile them. Its use is NOT RECOMMENDED, but quite
+     * convenient on occasion.
+     *
+     * @parameter expression="${skipTests}" default-Value = "false"
+     * @since 0.0.5
+     */
+    protected boolean skipTests;
+    
+    /**
+     * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable it using
+     * the "maven.test.skip" property, because maven.test.skip shall disables both running the tests and compiling the tests.
+     * Consider using the <code>skipTests</code> parameter instead.
+     *
+     * @parameter expression="${maven.test.skip}"  default-Value = "false"
+     * @since 0.0.5
+     */
+    protected boolean skip;
+    
     protected boolean isSkip()
     {
-        return super.isSkip() || skiptests;
+        return super.isSkip() || skiptests || skipTests || skip;
     }
 }
