@@ -2,35 +2,19 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-<!--keep following <parent> and <scm> for github and codeHaus deployement -->
-<!--use following <parent> and <scm> for mvn site:site target to succeed -->
-
   <parent>
-    <groupId>org.codehaus.mojo</groupId>
-    <artifactId>mojo-sandbox-parent</artifactId>
-    <version>13</version>
+    <artifactId>maven-plugins</artifactId>
+    <groupId>org.apache.maven.plugins</groupId>
+    <version>22</version>
+    <relativePath>../maven-plugins/pom.xml</relativePath>
   </parent>
-  <scm>
-    <connection>scm:git:https://github.com/franckbonin/cxx-maven-plugin.git</connection>
-    <developerConnection>scm:git:https://github.com/franckbonin/cxx-maven-plugin.git</developerConnection>
-    <url>https://github.com/franckbonin/cxx-maven-plugin/</url>
-  </scm>
-<!--
-  <scm>
-    <connection>scm:svn:https://svn.neticoa.ovh/svn/cxxplugin/trunk/cxx-maven-plugin</connection>
-    <developerConnection>scm:svn:https://svn.neticoa.ovh/svn/cxxplugin/trunk/cxx-maven-plugin</developerConnection>
-    <url>https://svn.neticoa.ovh/svn/cxxplugin/trunk/cxx-maven-plugin</url>
-  </scm>
--->
-<!--Remove following <groupId> for codeHaus deployement -->
-<!--Remove following <groupId> for mvn site:site target to succeed -->
-  <!--<groupId>org.codehaus.mojo</groupId>-->
-  
+
+  <groupId>org.codehaus.mojo</groupId>
   <artifactId>cxx-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
   <version>0.0.5-SNAPSHOT</version>
   <name>cxx-maven-plugin Maven Mojo</name>
-  <description>A plugin to allow C++ code compilation and check under maven</description>
+  <description>A plugin to allow C++ code compilation and code checking with maven</description>
   <url>https://github.com/franckbonin/cxx-maven-plugin</url>
   <inceptionYear>2010</inceptionYear>
   
@@ -38,20 +22,7 @@
     <name>Neticoa SAS</name>
     <url>http://www.neticoa.fr</url>
   </organization>
-  <ciManagement>
-    <system>Jenkins</system>
-    <url>http://hudson/job/cxx-maven-plugin/</url>
-  </ciManagement>
-<!--
-  <issueManagement>
-    <system>Redmine</system>
-    <url>https://redmine/projects/cxx-plugin</url>
-  </issueManagement>
--->
-  <issueManagement>
-    <system>Github</system>
-    <url>https://github.com/franckbonin/cxx-maven-plugin/issues</url>
-  </issueManagement>
+
   <mailingLists>
     <mailingList>
       <name>List</name>
@@ -85,19 +56,15 @@
     </license>
   </licenses>
   
-<!--Remove following <distributionManagement> for codeHaus deployement -->
-<!--  <distributionManagement>
-    <repository>
-      <id>neticoa-nexus</id>
-      <name>neticoa releases</name>
-      <url>http://nexus.neticoa.ovh:8080/nexus/content/repositories/releases</url>
-    </repository>
-    <snapshotRepository>
-      <id>neticoa-nexus</id>
-      <name>neticoa snapshots</name>
-      <url>http://nexus.neticoa.ovh:8080/nexus/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement> -->
+  <scm>
+    <connection>scm:git:https://github.com/franckbonin/cxx-maven-plugin.git</connection>
+    <developerConnection>scm:git:https://github.com/franckbonin/cxx-maven-plugin.git</developerConnection>
+    <url>https://github.com/franckbonin/cxx-maven-plugin/</url>
+  </scm>
+  <issueManagement>
+    <system>Github</system>
+    <url>https://github.com/franckbonin/cxx-maven-plugin/issues</url>
+  </issueManagement>
 
   <reporting>
     <plugins>
@@ -107,9 +74,18 @@
         <version>2.9</version>
       </plugin>
     </plugins>
-  </reporting>  
+  </reporting>
 
   <build>	
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.3</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

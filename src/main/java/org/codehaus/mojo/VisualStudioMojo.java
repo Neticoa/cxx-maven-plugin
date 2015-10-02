@@ -26,6 +26,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.io.IOUtils;
@@ -107,6 +112,46 @@ public class VisualStudioMojo extends AbstractLaunchMojo
      */
     private String buildVersion;
     
+    protected String visualStudioBuildVersion()
+    {
+        Pattern p = Pattern.compile("(\\d+\\.)+\\d+");
+        Matcher m = p.matcher(buildVersion);
+        if (m.find()) 
+        {
+            getLog().debug( "Visual Studio compatible buildVersion match is " + m.group() );
+            return m.group();
+        }
+        else
+        {
+            getLog().debug( "Visual Studio 'as is' buildVersion is " + buildVersion );
+            return buildVersion;
+        }
+    }
+    
+    protected String buildVersionExtension()
+    {
+        Pattern p = Pattern.compile("(\\d+\\.)+\\d+((-[^-\\s]+)+)");
+        Matcher m = p.matcher(buildVersion);
+        if (m.matches() && m.groupCount() >= 3) 
+        {
+            String versionExtension = m.group(2);
+            getLog().debug( "Visual Studio compatible Extension version is " + versionExtension );
+            if (versionExtension.contains("SNAPSHOT"))
+            {
+                return versionExtension.replaceAll("SNAPSHOT", (new SimpleDateFormat("yyyyMMdd.HHmmss")).format(new Date()));
+            }
+            else
+            {
+                return versionExtension;
+            }
+        }
+        else
+        {
+            getLog().debug( "Visual Studio compatible Extension version is empty" );
+            return "\"\\0\""; // this \0 will go through batch script, env var and C++/RCC preprocessor
+        }
+    }
+    
     /**
      * Additional compiler options (without any global quotation)
      * 
@@ -130,7 +175,8 @@ public class VisualStudioMojo extends AbstractLaunchMojo
         args.add( buildConfig );
         args.add( targetPlatform );
         args.add( targetArchitecture );
-        args.add( buildVersion );
+        args.add( visualStudioBuildVersion() );
+        args.add( buildVersionExtension() );
         if (StringUtils.isNotEmpty( compilerOptions ) )
         {
             args.add( "\"" + compilerOptions + "\"" );
@@ -162,7 +208,7 @@ public class VisualStudioMojo extends AbstractLaunchMojo
     }
 
     /**
-     * Environment variables to pass to the cmake program.
+     * Environment variables to pass to the msbuild program.
      * 
      * @parameter
      * @since 0.0.5
