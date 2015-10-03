@@ -182,9 +182,9 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
     {
         File execFile = new File( getExecutable() );
         String exec = null;
-        if ( execFile.exists() )
+        if ( execFile.exists() && execFile.isFile() && execFile.canExecute() )
         {
-            getLog().debug( "Toolchains are ignored, 'executable' parameter is set to " + getExecutable() );
+            getLog().debug( "Toolchains are ignored, 'executable' parameter is set to " + execFile.getAbsolutePath() );
             exec = execFile.getAbsolutePath();
         }
         else
