@@ -1,0 +1,64 @@
+[editor]
+line_wrapping=false
+line_break_column=100
+auto_continue_multiline=true
+
+[file_prefs]
+final_new_line=true
+ensure_convert_new_lines=false
+strip_trailing_spaces=false
+replace_tabs=false
+
+[indentation]
+indent_width=2
+indent_type=0
+indent_hard_tab_width=8
+detect_indent=false
+detect_indent_width=false
+indent_mode=2
+
+[project]
+name=geany_projet
+base_path=/home/fbonin/Documents/cxxplugin/trunk/cxx-maven-plugin
+description=
+file_patterns=
+
+[long line marker]
+long_line_behaviour=1
+long_line_column=100
+
+[files]
+current_page=15
+FILE_NAME_0=2166;Java;0;EUTF-8;0;1;0;%2Fhome%2Ffbonin%2FDocuments%2Fcxxplugin%2Ftrunk%2Fcxx-maven-plugin%2Fsrc%2Fmain%2Fjava%2Forg%2Fcodehaus%2Fmojo%2FAbstractLaunchMojo.java;0;2
+FILE_NAME_1=1854;Java;0;EUTF-8;0;1;0;%2Fhome%2Ffbonin%2FDocuments%2Fcxxplugin%2Ftrunk%2Fcxx-maven-plugin%2Fsrc%2Fmain%2Fjava%2Forg%2Fcodehaus%2Fmojo%2FAddSourceMojo.java;0;2
+FILE_NAME_2=2913;Java;0;EUTF-8;0;1;0;%2Fhome%2Ffbonin%2FDocuments%2Fcxxplugin%2Ftrunk%2Fcxx-maven-plugin%2Fsrc%2Fmain%2Fjava%2Forg%2Fcodehaus%2Fmojo%2FCoverageMojo.java;0;2
+FILE_NAME_3=902;Java;0;EUTF-8;0;1;0;%2Fhome%2Ffbonin%2FDocuments%2Fcxxplugin%2Ftrunk%2Fcxx-maven-plugin%2Fsrc%2Fmain%2Fjava%2Forg%2Fcodehaus%2Fmojo%2FCppCheckMojo.java;0;2
+FILE_NAME_4=0;Java;0;EUTF-8;0;1;0;%2Fhome%2Ffbonin%2FDocuments%2Fcxxplugin%2Ftrunk%2Fcxx-maven-plugin%2Fsrc%2Fmain%2Fjava%2Forg%2Fcodehaus%2Fmojo%2FCppNcssMojo.java;0;2
+FILE_NAME_5=1000;Java;0;EUTF-8;0;1;0;%2Fhome%2Ffbonin%2FDocuments%2Fcxxplugin%2Ftrunk%2Fcxx-maven-plugin%2Fsrc%2Fmain%2Fjava%2Forg%2Fcodehaus%2Fmojo%2FFileSetManager.java;0;2
+FILE_NAME_6=3513;Java;0;EUTF-8;0;1;0;%2Fhome%2Ffbonin%2FDocuments%2Fcxxplugin%2Ftrunk%2Fcxx-maven-plugin%2Fsrc%2Fmain%2Fjava%2Forg%2Fcodehaus%2Fmojo%2FLaunchMojo.java;0;2
+FILE_NAME_7=1312;Java;0;EUTF-8;0;1;0;%2Fhome%2Ffbonin%2FDocuments%2Fcxxplugin%2Ftrunk%2Fcxx-maven-plugin%2Fsrc%2Fmain%2Fjava%2Forg%2Fcodehaus%2Fmojo%2FMakeMojo.java;0;2
+FILE_NAME_8=2852;Java;0;EUTF-8;0;1;0;%2Fhome%2Ffbonin%2FDocuments%2Fcxxplugin%2Ftrunk%2Fcxx-maven-plugin%2Fsrc%2Fmain%2Fjava%2Forg%2Fcodehaus%2Fmojo%2FQMakeMojo.java;0;2
+FILE_NAME_9=4676;Java;0;EUTF-8;0;1;0;%2Fhome%2Ffbonin%2FDocuments%2Fcxxplugin%2Ftrunk%2Fcxx-maven-plugin%2Fsrc%2Fmain%2Fjava%2Forg%2Fcodehaus%2Fmojo%2FValgrindMojo.java;0;2
+FILE_NAME_10=3079;Java;0;EUTF-8;0;1;0;%2Fhome%2Ffbonin%2FDocuments%2Fcxxplugin%2Ftrunk%2Fcxx-maven-plugin%2Fsrc%2Fmain%2Fjava%2Forg%2Fcodehaus%2Fmojo%2FVeraxxMojo.java;0;2
+FILE_NAME_11=0;Java;0;EUTF-8;0;1;0;%2Fhome%2Ffbonin%2FDocuments%2Fcxxplugin%2Ftrunk%2Fcxx-maven-plugin%2Fsrc%2Fmain%2Fjava%2Forg%2Fcodehaus%2Fmojo%2FVisualStudioMojo.java;0;2
+FILE_NAME_12=849;Java;0;EUTF-8;0;1;0;%2Fhome%2Ffbonin%2FDocuments%2Fcxxplugin%2Ftrunk%2Fcxx-maven-plugin%2Fsrc%2Fmain%2Fjava%2Forg%2Fcodehaus%2Fmojo%2FXUnitMojo.java;0;2
+FILE_NAME_13=587;XML;0;EUTF-8;0;1;0;%2Fhome%2Ffbonin%2FDocuments%2Fcxxplugin%2Ftrunk%2Fcxx-maven-plugin%2Fpom.xml;0;2
+FILE_NAME_14=0;Batch;0;EUTF-8;0;1;0;%2Fhome%2Ffbonin%2FDocuments%2Fcxxplugin%2Ftrunk%2Fcxx-maven-plugin%2Fsrc%2Fmain%2Fresources%2Fbuild.bat;0;2
+FILE_NAME_15=11171;Java;0;EUTF-8;0;1;0;%2Fhome%2Ffbonin%2FDocuments%2Fcxxplugin%2Ftrunk%2Fcxx-maven-plugin%2Fsrc%2Fmain%2Fjava%2Forg%2Fcodehaus%2Fmojo%2FCMakeMojo.java;0;2
+
+[VTE]
+last_dir=/home/fbonin/Documents/cxxplugin/trunk/cxx-maven-plugin
+
+[build-menu]
+XMLFT_00_LB=Install
+XMLFT_00_CM=mvn install
+XMLFT_00_WD=%p
+filetypes=XML;Java;
+XMLerror_regex=\\[ERROR\\] ([^:\\[]+):?\\[([0-9]+)
+JavaFT_00_LB=_Compiler
+JavaFT_00_CM=mvn compile
+JavaFT_00_WD=%p
+JavaFT_01_LB=_Install
+JavaFT_01_CM=mvn install
+JavaFT_01_WD=%p
+Javaerror_regex=\\[ERROR\\] ([^:\\[]+):?\\[([0-9]+)

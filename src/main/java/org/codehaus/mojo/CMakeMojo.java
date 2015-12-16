@@ -25,9 +25,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
@@ -127,6 +128,7 @@ public class CMakeMojo extends AbstractLaunchMojo
         result += addCMakeDefinition("SHARED_MODULE_SUFFIX", sharedModuleSuffix);
         result += addCMakeDefinition("STATIC_LIBRARY_PREFIX", staticLibraryPrefix);
         result += addCMakeDefinition("STATIC_LIBRARY_SUFFIX", staticLibrarySuffix);
+        result += addCMakeDefinition("INJECT_MAVEN_DEPENDENCIES", injectMavenDependencies?"true":"false");
         return result;
     }
     
@@ -343,11 +345,103 @@ public class CMakeMojo extends AbstractLaunchMojo
             
             for (int j = 0; null != found && j < found.length; j++)
             {
-                String lib = dependencyRoot + "/" + found[j];
-                getLog().info( "Found dependencies Lib : " + lib );
-                ao_dependenciesLib.add(lib);
+                getLog().info( "Found dependencies Lib : " + found[j] );
+                getLog().info( "Found dependencies Lib full path : " + dependencyRoot + "/" + found[j] );
+                ao_dependenciesLib.add(found[j]);
             }
         }
+    }
+    
+    protected String baseNameAsStaticLibrary(String sName)
+    {
+        if (FilenameUtils.isExtension(sName, FilenameUtils.getExtension(staticLibrarySuffix)))
+        {
+            sName = FilenameUtils.removeExtension(sName)+"${STATIC_LIBRARY_SUFFIX}";
+            if (! StringUtils.isEmpty(staticLibraryPrefix))
+            {
+                if (0 == sName.indexOf(staticLibraryPrefix))
+                {
+                    sName = sName.replaceFirst(Pattern.quote(staticLibraryPrefix), "");
+                    sName = "${STATIC_LIBRARY_PREFIX}" + sName;
+                }
+                else
+                {
+                    sName = "";
+                }
+            }
+            else
+            {
+                sName = "${STATIC_LIBRARY_PREFIX}" + sName;
+            }
+        }
+        return sName;
+    }
+    
+    protected String baseNameAsSharedModule(String sName)
+    {
+        if (FilenameUtils.isExtension(sName, FilenameUtils.getExtension(sharedModuleSuffix)))
+        {
+            sName = FilenameUtils.removeExtension(sName)+"${SHARED_MODULE_SUFFIX}";
+            if (! StringUtils.isEmpty(sharedModulePrefix))
+            {
+                if (0 == sName.indexOf(sharedModulePrefix))
+                {
+                    sName = sName.replaceFirst(Pattern.quote(sharedModulePrefix), "");
+                    sName = "${SHARED_MODULE_PREFIX}" + sName;
+                }
+                else
+                {
+                    sName = "";
+                }
+            }
+            else
+            {
+                sName = "${SHARED_MODULE_PREFIX}" + sName;
+            }
+        }
+        return sName;
+    }
+    
+    protected String baseNameAsSharedLibrary(String sName)
+    {
+        if (FilenameUtils.isExtension(sName, FilenameUtils.getExtension(sharedLibrarySuffix)))
+        {
+            sName = FilenameUtils.removeExtension(sName)+"${SHARED_LIBRARY_SUFFIX}";
+            if (! StringUtils.isEmpty(sharedLibraryPrefix))
+            {
+                if (0 == sName.indexOf(sharedLibraryPrefix))
+                {
+                    sName = sName.replaceFirst(Pattern.quote(sharedLibraryPrefix), "");
+                    sName = "${SHARED_LIBRARY_PREFIX}" + sName;
+                }
+                else
+                {
+                    sName = "";
+                }
+            }
+            else
+            {
+                sName = "${SHARED_LIBRARY_PREFIX}" + sName;
+            }
+        }
+        return sName;
+    }
+    
+    protected String generalizeDependencyFileName(String dependency)
+    {
+        String sName = FilenameUtils.getName(dependency);
+        String fullPath = FilenameUtils.getFullPathNoEndSeparator(dependency);
+
+        String sGeneralizedName = baseNameAsSharedLibrary(sName);
+        if (StringUtils.isEmpty(sGeneralizedName))
+        {
+            sGeneralizedName = baseNameAsStaticLibrary(sName);
+        }
+        if (StringUtils.isEmpty(sGeneralizedName))
+        {
+            sGeneralizedName = baseNameAsSharedModule(sName);
+        }
+        return fullPath + "/" + (StringUtils.isEmpty(sGeneralizedName)? sName : sGeneralizedName);
     }
     
     protected void preExecute(Executor exec, CommandLine commandLine, Map enviro) throws MojoExecutionException
@@ -368,8 +462,25 @@ public class CMakeMojo extends AbstractLaunchMojo
             ArrayList dependenciesLibRelease = new ArrayList();
             findDependencies(releaseDependenciesRoots, dependenciesLibRelease);
             
+            Iterator itReleaseDeps = dependenciesLibRelease.iterator();
+            while( itReleaseDeps.hasNext() )
+            {
+                String cmakeLine = 
+                  "target_link_libraries(${target} optimized ${DEPENDENCY_DIR}/${TARGET_CLASSIFIER}/release/"
+                  + generalizeDependencyFileName((String)itReleaseDeps.next()) + ")";
+                getLog().info( "cmake injected dependency shall be : " + cmakeLine );
+            }
+            
             ArrayList dependenciesLibDebug = new ArrayList();
             findDependencies(debugDependenciesRoots, dependenciesLibDebug);
+            Iterator itDebugDeps = dependenciesLibDebug.iterator();
+            while( itDebugDeps.hasNext() )
+            {
+                String cmakeLine = 
+                  "target_link_libraries(${target} debug ${DEPENDENCY_DIR}/${TARGET_CLASSIFIER}/debug/"
+                  + generalizeDependencyFileName((String)itDebugDeps.next()) + ")";
+                getLog().info( "cmake injected dependency shall be : " + cmakeLine );
+            }
         }
     }
 }
