@@ -12,7 +12,7 @@
   <groupId>org.codehaus.mojo</groupId>
   <artifactId>cxx-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>0.0.5</version>
+  <version>0.0.6-SNAPSHOT</version>
   <name>cxx-maven-plugin Maven Mojo</name>
   <description>A plugin to allow C++ code compilation and code checking with maven</description>
   <url>https://github.com/franckbonin/cxx-maven-plugin</url>
@@ -56,6 +56,8 @@
     </license>
   </licenses>
   
+  <!-- activate following for public deployement -->
+  <!--
   <scm>
     <connection>scm:git:https://github.com/franckbonin/cxx-maven-plugin.git</connection>
     <developerConnection>scm:git:https://github.com/franckbonin/cxx-maven-plugin.git</developerConnection>
@@ -65,6 +67,70 @@
     <system>Github</system>
     <url>https://github.com/franckbonin/cxx-maven-plugin/issues</url>
   </issueManagement>
+  -->
+
+  <!-- remove following for public deployement -->
+  <scm>
+    <connection>scm:svn:https://svn.neticoa.ovh/svn/cxxplugin/trunk/cxx-maven-plugin</connection>
+    <developerConnection>scm:svn:https://svn.neticoa.ovh/svn/cxxplugin/trunk/cxx-maven-plugin</developerConnection>
+    <url>https://svn.neticoa.ovh/svn/cxxplugin/trunk/cxx-maven-plugin</url>
+  </scm>
+  <issueManagement>
+    <system>Redmine</system>
+    <url>https://redmine/projects/cxx-plugin</url>
+  </issueManagement>
+  <ciManagement>
+    <system>Jenkins</system>
+    <url>http://hudson/job/cxx-maven-plugin/</url>
+  </ciManagement>
+  
+  <!--Remove following  <profiles>/**/<distributionManagement> for public deployement -->
+  <profiles>
+    <profile>
+      <activation>
+        <property>
+          <!-- this property expression activate public deployment and desactivate internal deployment -->
+          <!-- call maven using 'mvn deploy -D deployment.public' -->
+          <name>deployment.public</name>
+        </property>
+      </activation>
+      <id>public-deployment</id>
+      <distributionManagement>
+        <repository>
+          <id>neticoa-nexus-public</id>
+          <name>neticoa public release</name>
+          <url>http://nexus.neticoa.fr/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+          <id>neticoa-nexus-public</id>
+          <name>neticoa public snapshots</name>
+          <url>http://nexus.neticoa.fr/content/repositories/snapshots</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+
+    <profile>
+      <activation>
+        <property>
+          <!-- this property expression activate this profile by default -->
+          <name>!deployment.public</name>
+        </property>
+      </activation>
+      <id>internal-deployment</id>
+      <distributionManagement>
+        <repository>
+          <id>neticoa-nexus</id>
+          <name>neticoa releases</name>
+          <url>http://nexus.neticoa.ovh:8080/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+          <id>neticoa-nexus</id>
+          <name>neticoa snapshots</name>
+          <url>http://nexus.neticoa.ovh:8080/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+  </profiles>
 
   <reporting>
     <plugins>
