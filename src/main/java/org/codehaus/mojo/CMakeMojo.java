@@ -120,13 +120,13 @@ public class CMakeMojo extends AbstractLaunchMojo
         result += addCMakeDefinition("TARGET_CLASSIFIER", targetClassifier);
         result += addCMakeDefinition("TARGET_PLATFORM", targetPlatform);
         result += addCMakeDefinition("TARGET_ARCHITECTURE", targetArchitecture);
-        result += addCMakeDefinition("executableSuffix", executableSuffix);
-        result += addCMakeDefinition("sharedLibraryPrefix", sharedLibraryPrefix);
-        result += addCMakeDefinition("sharedLibrarySuffix", sharedLibrarySuffix);
-        result += addCMakeDefinition("sharedModulePrefix", sharedModulePrefix);
-        result += addCMakeDefinition("sharedModuleSuffix", sharedModuleSuffix);
-        result += addCMakeDefinition("staticLibraryPrefix", staticLibraryPrefix);
-        result += addCMakeDefinition("staticLibrarySuffix", staticLibrarySuffix);
+        result += addCMakeDefinition("EXECUTABLE_SUFFIX", executableSuffix);
+        result += addCMakeDefinition("SHARED_LIBRARY_PREFIX", sharedLibraryPrefix);
+        result += addCMakeDefinition("SHARED_LIBRARY_SUFFIX", sharedLibrarySuffix);
+        result += addCMakeDefinition("SHARED_MODULE_PREFIX", sharedModulePrefix);
+        result += addCMakeDefinition("SHARED_MODULE_SUFFIX", sharedModuleSuffix);
+        result += addCMakeDefinition("STATIC_LIBRARY_PREFIX", staticLibraryPrefix);
+        result += addCMakeDefinition("STATIC_LIBRARY_SUFFIX", staticLibrarySuffix);
         return result;
     }
     
