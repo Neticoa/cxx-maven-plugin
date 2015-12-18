@@ -19,16 +19,23 @@ package org.codehaus.mojo;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
@@ -131,7 +138,6 @@ public class CMakeMojo extends AbstractLaunchMojo
         result += addCMakeDefinition("INJECT_MAVEN_DEPENDENCIES", injectMavenDependencies?"true":"false");
         return result;
     }
-    
 
 
     protected String getExecutable()
@@ -213,7 +219,7 @@ public class CMakeMojo extends AbstractLaunchMojo
      * @parameter expression="${cmake.mavenDependenciesFile}"  default-value="CMakeMavenDependencies.txt"
      * @since 0.0.6
      */
-    private String mavenDependenciesFile;
+    private String cmakeDependenciesFile;
     
     /**
      * Arguments for the executed program
@@ -294,22 +300,14 @@ public class CMakeMojo extends AbstractLaunchMojo
     private String staticLibrarySuffix;
     
     /**
-     * directory were bin debug dependencies are
-     * default location is ${project.build.directory}/dependency/${targetClassifier}/debug
+     * directories were bin debug dependencies are
+     * default content is one location : ${project.build.directory}/dependency/${targetClassifier}/${buildConfig}
      * 
      * @parameter
      * @since 0.0.6
      */
-    private List debugDependenciesRoots = new ArrayList();
+    private List dependenciesRoots = new ArrayList();
     
-    /**
-     * directory were bin release dependencies are
-     * default location is ${project.build.directory}/dependency/${targetClassifier}/release
-     * 
-     * @parameter
-     * @since 0.0.6
-     */
-    private List releaseDependenciesRoots = new ArrayList();
     
     protected void findDependencies(List ai_dependenciesRoots, List ao_dependenciesLib)
     {
@@ -337,8 +335,8 @@ public class CMakeMojo extends AbstractLaunchMojo
             FileSet afileSet = new FileSet();
             afileSet.setDirectory( dependencyRoot );
             
-            getLog().info( "Search for **/*.so from " + afileSet.getDirectory() );
-            afileSet.setIncludes( Arrays.asList( new String[]{"**/*.so", "**/*.dll", "**/*.lib", "**/*.a"} ) );
+            getLog().info( "Search for **/*.[so|dylib|dll|lib|a|] from " + afileSet.getDirectory() );
+            afileSet.setIncludes( Arrays.asList( new String[]{"**/*.so", "**/*.dll", "**/*.dylib", "**/*.lib", "**/*.a"} ) );
             
             FileSetManager aFileSetManager = new FileSetManager();
             String[] found = aFileSetManager.getIncludedFiles( afileSet );
@@ -444,43 +442,135 @@ public class CMakeMojo extends AbstractLaunchMojo
         return fullPath + "/" + (StringUtils.isEmpty(sGeneralizedName)? sName : sGeneralizedName);
     }
     
+    protected boolean isDebugBuild()
+    {
+         return (buildConfig.equalsIgnoreCase("debug"));
+    }
+    
+    protected void updateOrCreateCMakeDependenciesFile(List ai_dependenciesLib)
+    {
+        String fullCMakeDependenciesFile = cmakeDependenciesFile;
+        File file = new File(cmakeDependenciesFile);
+        if (!file.isAbsolute()) 
+        {
+            fullCMakeDependenciesFile = getProjectDir() + "/" + cmakeDependenciesFile;
+        }
+        file = new File(fullCMakeDependenciesFile);
+      
+        if (!file.exists())
+        {  
+            try 
+            {
+                file.createNewFile();
+            }
+            catch ( IOException e ) 
+            {
+                getLog().error( cmakeDependenciesFile + " script can't be created at " + file.getAbsolutePath());
+                return;
+            }
+        }
+        
+        
+        // check file content
+        InputStream cmakeMavenDependenciesStream = null;
+        String content = new String();
+        try
+        {  
+            cmakeMavenDependenciesStream = new FileInputStream(file);
+            content = IOUtils.toString(cmakeMavenDependenciesStream, "UTF8");
+        }
+        catch ( IOException e )
+        {
+            // shall not happen since file has been created
+            getLog().error( cmakeDependenciesFile + " script can't be opened at " + file.getAbsolutePath());
+        }
+        finally
+        {
+            getLog().info( "close input stream at reading");
+            IOUtils.closeQuietly(cmakeMavenDependenciesStream);
+        }
+
+        String beginPattern = (isDebugBuild() ?
+            "# BEGIN MAVEN_DEBUG_DEPENDENCIES" : "# BEGIN MAVEN_OPTIMIZED_DEPENDENCIES");
+        String endPattern = (isDebugBuild() ?
+            "# END MAVEN_DEBUG_DEPENDENCIES" : "# END MAVEN_OPTIMIZED_DEPENDENCIES");
+        
+        
+        // reset file content if needed
+        if (content.isEmpty() || content.indexOf(beginPattern) == -1)
+        {
+            getLog().info( file.getAbsolutePath() + " content full update");
+            try
+            { 
+                cmakeMavenDependenciesStream = getClass().getResourceAsStream( "/CMakeMavenDependencies.txt" );
+                content = IOUtils.toString(cmakeMavenDependenciesStream, "UTF8");
+            }
+            catch ( IOException e )
+            {
+                getLog().error( cmakeDependenciesFile + " default content not found ");
+            }
+            finally
+            {
+                getLog().debug( "close input stream at full update");
+                IOUtils.closeQuietly(cmakeMavenDependenciesStream);
+            }
+        }
+        
+        
+        // update file content
+        Iterator itDeps = ai_dependenciesLib.iterator();
+        String indentation = "\n        ";
+        String allDeps = new String(indentation);
+        while( itDeps.hasNext() )
+        {
+            allDeps = allDeps + 
+                "target_link_libraries(${target} " + 
+                (isDebugBuild() ? "debug" : "optimized") +
+                " ${DEPENDENCY_DIR}/${TARGET_CLASSIFIER}/"+
+                (isDebugBuild() ? "debug" : "release") + "/" +
+                generalizeDependencyFileName((String)itDeps.next()) + ")" + indentation;
+        }
+            
+        getLog().debug( "cmake depfile was : " + content );
+        allDeps = allDeps.replace("$", "\\$"); // Matcher replaceAll() is a bit rigid !
+        getLog().info( "cmake injected dependency will be : " + allDeps );
+        // regexp multi-line replace, see http://stackoverflow.com/questions/4154239/java-regex-replaceall-multiline
+        Pattern p = Pattern.compile(beginPattern + ".*" + endPattern, Pattern.DOTALL);
+        Matcher m = p.matcher(content);
+        content = m.replaceAll(beginPattern + allDeps + endPattern);
+                
+        getLog().debug( "cmake depfile now is : " + content );
+        OutputStream outStream = null;
+        try
+        { 
+            outStream = new FileOutputStream( file );
+            IOUtils.write(content, outStream, "UTF8");
+        }
+        catch ( IOException e )
+        {
+            getLog().error( cmakeDependenciesFile + " script can't be written at " + file.getAbsolutePath() + e.toString());
+        }
+        finally
+        {
+            getLog().debug( "close output stream at update");
+            IOUtils.closeQuietly(outStream);
+        }
+    }
+    
     protected void preExecute(Executor exec, CommandLine commandLine, Map enviro) throws MojoExecutionException
     {
         if (injectMavenDependencies)
         {
-            if (releaseDependenciesRoots.isEmpty())
+            if (dependenciesRoots.isEmpty())
             {
-                releaseDependenciesRoots.add(getProjectDependenciesTargetClassifierDirectory() + "/release");
-                getLog().info( "use default release Dependency Root: \"" + releaseDependenciesRoots.get(0) + "\"" );  
-            }
-            if (debugDependenciesRoots.isEmpty())
-            {
-                debugDependenciesRoots.add(getProjectDependenciesTargetClassifierDirectory() + "/debug");
-                getLog().info( "use default debug Dependency Root: \"" + debugDependenciesRoots.get(0) + "\"" );  
+                dependenciesRoots.add(getProjectDependenciesTargetClassifierDirectory() + "/" + buildConfig);
+                getLog().info( "use default Dependency Root: \"" + dependenciesRoots.get(0) + "\"" );  
             }
             
-            ArrayList dependenciesLibRelease = new ArrayList();
-            findDependencies(releaseDependenciesRoots, dependenciesLibRelease);
+            ArrayList dependenciesLib = new ArrayList();
+            findDependencies(dependenciesRoots, dependenciesLib);
             
-            Iterator itReleaseDeps = dependenciesLibRelease.iterator();
-            while( itReleaseDeps.hasNext() )
-            {
-                String cmakeLine = 
-                  "target_link_libraries(${target} optimized ${DEPENDENCY_DIR}/${TARGET_CLASSIFIER}/release/"
-                  + generalizeDependencyFileName((String)itReleaseDeps.next()) + ")";
-                getLog().info( "cmake injected dependency shall be : " + cmakeLine );
-            }
-            
-            ArrayList dependenciesLibDebug = new ArrayList();
-            findDependencies(debugDependenciesRoots, dependenciesLibDebug);
-            Iterator itDebugDeps = dependenciesLibDebug.iterator();
-            while( itDebugDeps.hasNext() )
-            {
-                String cmakeLine = 
-                  "target_link_libraries(${target} debug ${DEPENDENCY_DIR}/${TARGET_CLASSIFIER}/debug/"
-                  + generalizeDependencyFileName((String)itDebugDeps.next()) + ")";
-                getLog().info( "cmake injected dependency shall be : " + cmakeLine );
-            }
+            updateOrCreateCMakeDependenciesFile(dependenciesLib);
         }
     }
 }
