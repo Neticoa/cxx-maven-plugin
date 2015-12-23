@@ -29,9 +29,11 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -46,6 +48,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 /* Use enhanced FileSet and FileManager (not the one provided in this project)*/
 import org.apache.maven.shared.model.fileset.FileSet;
 import org.apache.maven.shared.model.fileset.util.FileSetManager;
+import org.apache.maven.artifact.Artifact;
 
 /**
  * Goal which cmakes workspace.
@@ -200,13 +203,9 @@ public class CMakeMojo extends AbstractLaunchMojo
         return projectBuildDirectory + "/dependency";
     }
     
-    protected String getProjectDependenciesTargetClassifierDirectory()
-    {
-        return getProjectDependenciesDirectory() + "/" + targetClassifier;
-    }
-    
+   
     /**
-     * generate a cmake external dependency file according to 
+     * generate a cmake maven dependency file according
      * 
      * @parameter expression="${cmake.injectMavenDependencies}" default-value=true
      * @since 0.0.6
@@ -214,85 +213,103 @@ public class CMakeMojo extends AbstractLaunchMojo
     private boolean injectMavenDependencies;
     
     /**
-     * Arguments for the executed program
+     * cmake maven dependency file name. If not full qualified name file location is ${basedir}
      * 
      * @parameter expression="${cmake.mavenDependenciesFile}"  default-value="CMakeMavenDependencies.txt"
+     * @since 0.0.6
+     */
+    private String cmakeMavenDependenciesFile;
+    
+    /**
+     * cmake dependency file name. If not full qualified name file location is ${basedir}
+     * 
+     * @parameter expression="${cmake.dependenciesFile}"  default-value="CMakeDependencies.txt"
      * @since 0.0.6
      */
     private String cmakeDependenciesFile;
     
     /**
-     * Arguments for the executed program
+     * build configuration {debug, release, debcov, relcov, relinfo}
      * 
      * @parameter expression="${buildConfig}"  default-value=""
      * @since 0.0.6
      */
     private String buildConfig;
+    
     /**
-     * Arguments for the executed program
+     * maven artifact sub-classifier {win32, win64, linux-x64_64, etc.}
      * 
      * @parameter expression="${targetClassifier}"  default-value=""
      * @since 0.0.6
      */
     private String targetClassifier;
+    
     /**
-     * Arguments for the executed program
+     * build platform = "native API" {win32, linux, mac}
      * 
      * @parameter expression="${targetPlatform}"  default-value=""
      * @since 0.0.6
      */
     private String targetPlatform;
+    
     /**
-     * Arguments for the executed program
+     * build architecture {i386, x86_64, etc.}
      * 
      * @parameter expression="${targetArchitecture}"  default-value=""
      * @since 0.0.6
      */
     private String targetArchitecture;
+    
     /**
-     * Arguments for the executed program
+     *  executables suffix of current platform {".exe", etc.}
      * 
      * @parameter expression="${executableSuffix}"  default-value=""
      * @since 0.0.6
      */
     private String executableSuffix;
+    
     /**
-     * Arguments for the executed program
+     * libraries prefixe of current platform {"lib", etc.}
      * 
      * @parameter expression="${sharedLibraryPrefix}"  default-value=""
      * @since 0.0.6
      */
     private String sharedLibraryPrefix;
+    
     /**
-     * Arguments for the executed program
+     * libraries suffixe of current platform {".so", ".dylib", etc.}
      * 
      * @parameter expression="${sharedLibrarySuffix}"  default-value=""
      * @since 0.0.6
      */
     private String sharedLibrarySuffix;
+    
     /**
-     * Arguments for the executed program
+     * module prefixe of current platform {"lib", etc.}
      * 
      * @parameter expression="${sharedModulePrefix}"  default-value=""
      * @since 0.0.6
      */
     private String sharedModulePrefix;
+    
     /**
-     * Arguments for the executed program
+     * module suffixe of current platform {".so", ".dylib", etc.}
      * 
      * @parameter expression="${sharedModuleSuffix}"  default-value=""
      * @since 0.0.6
      */
     private String sharedModuleSuffix;
+    
     /**
-     * Arguments for the executed program
+     * static libraries prefixe of current platform {"lib", etc.}
      * 
      * @parameter expression="${staticLibraryPrefix}"  default-value=""
      * @since 0.0.6
      */
     private String staticLibraryPrefix;
+    
     /**
-     * Arguments for the executed program
+     * static libraries suffixe of current platform {".a", ".lib", etc.}
      * 
      * @parameter expression="${staticLibrarySuffix}"  default-value=""
      * @since 0.0.6
@@ -300,37 +317,21 @@ public class CMakeMojo extends AbstractLaunchMojo
     private String staticLibrarySuffix;
     
     /**
-     * directories were bin debug dependencies are
-     * default content is one location : ${project.build.directory}/dependency/${targetClassifier}/${buildConfig}
+     * directories were additional bin dependencies are
+     * default dependencies location is : ${project.build.directory}/dependency/${targetClassifier}/${buildConfig}
+     * "${targetClassifier}/${buildConfig}" will be automaticaly added to provided path to search for additionnal dependencies
      * 
      * @parameter
      * @since 0.0.6
      */
-    private List dependenciesRoots = new ArrayList();
+    private List additionalDependenciesRoots = new ArrayList();
     
     
-    protected void findDependencies(List ai_dependenciesRoots, List ao_dependenciesLib)
+    protected void findDependencies(Map<String, String> ai_dependenciesRoots, List ao_dependenciesLib)
     {
-        Iterator itRoots = ai_dependenciesRoots.iterator();
-        while( itRoots.hasNext() )
+        for (Map.Entry<String, String> entry : ai_dependenciesRoots.entrySet())
         {
-            String dependencyRoot = new String((String) itRoots.next());
-            /*File dependencyRootDir = new File( dependencyRoot );
-            String[] subDirectories = dependencyRootDir.list(new FilenameFilter()
-            {
-                @Override
-                public boolean accept(File current, String name)
-                {
-                    return new File(current, name).isDirectory();
-                }
-            });
-            
-            for (int i = 0; null != subDirectories && i < subDirectories.length; i++)
-            {
-                String mod = subDirectories[i];
-                getLog().info( "Found dependencies Mod : " + mod );
-                ao_dependenciesMod.add(mod);
-            }*/
+            String dependencyRoot = new String(entry.getKey());
 
             FileSet afileSet = new FileSet();
             afileSet.setDirectory( dependencyRoot );
@@ -345,22 +346,23 @@ public class CMakeMojo extends AbstractLaunchMojo
             {
                 getLog().info( "Found dependencies Lib : " + found[j] );
                 getLog().info( "Found dependencies Lib full path : " + dependencyRoot + "/" + found[j] );
-                ao_dependenciesLib.add(found[j]);
+                getLog().info( "Found dependencies Lib generalized path : " + entry.getValue() + "/" + found[j] );
+                ao_dependenciesLib.add(entry.getValue() + "/" + found[j]);
             }
         }
     }
     
-    protected String baseNameAsStaticLibrary(String sName)
+    protected String baseNameAsStaticLibrary(String sName, boolean bMavenDependency)
     {
         if (FilenameUtils.isExtension(sName, FilenameUtils.getExtension(staticLibrarySuffix)))
         {
-            sName = FilenameUtils.removeExtension(sName)+"${STATIC_LIBRARY_SUFFIX}";
+            sName = FilenameUtils.removeExtension(sName)+ (bMavenDependency?"${STATIC_LIBRARY_SUFFIX}":"");
             if (! StringUtils.isEmpty(staticLibraryPrefix))
             {
                 if (0 == sName.indexOf(staticLibraryPrefix))
                 {
                     sName = sName.replaceFirst(Pattern.quote(staticLibraryPrefix), "");
-                    sName = "${STATIC_LIBRARY_PREFIX}" + sName;
+                    sName = (bMavenDependency?"${STATIC_LIBRARY_PREFIX}":"") + sName;
                 }
                 else
                 {
@@ -369,23 +371,23 @@ public class CMakeMojo extends AbstractLaunchMojo
             }
             else
             {
-                sName = "${STATIC_LIBRARY_PREFIX}" + sName;
+                sName = (bMavenDependency?"${STATIC_LIBRARY_PREFIX}":"") + sName;
             }
         }
         return sName;
     }
     
-    protected String baseNameAsSharedModule(String sName)
+    protected String baseNameAsSharedModule(String sName, boolean bMavenDependency)
     {
         if (FilenameUtils.isExtension(sName, FilenameUtils.getExtension(sharedModuleSuffix)))
         {
-            sName = FilenameUtils.removeExtension(sName)+"${SHARED_MODULE_SUFFIX}";
+            sName = FilenameUtils.removeExtension(sName)+(bMavenDependency?"${SHARED_MODULE_SUFFIX}":"");
             if (! StringUtils.isEmpty(sharedModulePrefix))
             {
                 if (0 == sName.indexOf(sharedModulePrefix))
                 {
                     sName = sName.replaceFirst(Pattern.quote(sharedModulePrefix), "");
-                    sName = "${SHARED_MODULE_PREFIX}" + sName;
+                    sName = (bMavenDependency?"${SHARED_MODULE_PREFIX}":"") + sName;
                 }
                 else
                 {
@@ -394,23 +396,23 @@ public class CMakeMojo extends AbstractLaunchMojo
             }
             else
             {
-                sName = "${SHARED_MODULE_PREFIX}" + sName;
+                sName = (bMavenDependency?"${SHARED_MODULE_PREFIX}":"") + sName;
             }
         }
         return sName;
     }
     
-    protected String baseNameAsSharedLibrary(String sName)
+    protected String baseNameAsSharedLibrary(String sName, boolean bMavenDependency)
     {
         if (FilenameUtils.isExtension(sName, FilenameUtils.getExtension(sharedLibrarySuffix)))
         {
-            sName = FilenameUtils.removeExtension(sName)+"${SHARED_LIBRARY_SUFFIX}";
+            sName = FilenameUtils.removeExtension(sName)+(bMavenDependency?"${SHARED_LIBRARY_SUFFIX}":"");
             if (! StringUtils.isEmpty(sharedLibraryPrefix))
             {
                 if (0 == sName.indexOf(sharedLibraryPrefix))
                 {
                     sName = sName.replaceFirst(Pattern.quote(sharedLibraryPrefix), "");
-                    sName = "${SHARED_LIBRARY_PREFIX}" + sName;
+                    sName = (bMavenDependency?"${SHARED_LIBRARY_PREFIX}":"") + sName;
                 }
                 else
                 {
@@ -419,43 +421,45 @@ public class CMakeMojo extends AbstractLaunchMojo
             }
             else
             {
-                sName = "${SHARED_LIBRARY_PREFIX}" + sName;
+                sName = (bMavenDependency?"${SHARED_LIBRARY_PREFIX}":"") + sName;
             }
         }
         return sName;
     }
     
-    protected String generalizeDependencyFileName(String dependency)
+    protected String generalizeDependencyFileName(String dependency, boolean bMavenDependency)
     {
         String sName = FilenameUtils.getName(dependency);
         String fullPath = FilenameUtils.getFullPathNoEndSeparator(dependency);
 
-        String sGeneralizedName = baseNameAsSharedLibrary(sName);
+        String sGeneralizedName = baseNameAsSharedLibrary(sName, bMavenDependency);
         if (StringUtils.isEmpty(sGeneralizedName))
         {
-            sGeneralizedName = baseNameAsStaticLibrary(sName);
+            sGeneralizedName = baseNameAsStaticLibrary(sName, bMavenDependency);
         }
         if (StringUtils.isEmpty(sGeneralizedName))
         {
-            sGeneralizedName = baseNameAsSharedModule(sName);
+            sGeneralizedName = baseNameAsSharedModule(sName, bMavenDependency);
         }
-        return fullPath + "/" + (StringUtils.isEmpty(sGeneralizedName)? sName : sGeneralizedName);
+        return (bMavenDependency?fullPath + "/":"") +
+               (StringUtils.isEmpty(sGeneralizedName)? sName : sGeneralizedName);
     }
     
     protected boolean isDebugBuild()
     {
-         return (buildConfig.equalsIgnoreCase("debug"));
+         return (0 == buildConfig.indexOf("deb"));
     }
     
-    protected void updateOrCreateCMakeDependenciesFile(List ai_dependenciesLib)
+    protected void updateOrCreateCMakeDependenciesFile(List ai_dependenciesLib, boolean bMavenDependencies)
     {
-        String fullCMakeDependenciesFile = cmakeDependenciesFile;
-        File file = new File(cmakeDependenciesFile);
+        String dependencieFile = (bMavenDependencies?cmakeMavenDependenciesFile : cmakeDependenciesFile);
+        String fullDependenciesFile = dependencieFile;
+        File file = new File(dependencieFile);
         if (!file.isAbsolute()) 
         {
-            fullCMakeDependenciesFile = getProjectDir() + "/" + cmakeDependenciesFile;
+            fullDependenciesFile = getProjectDir() + "/" + dependencieFile;
         }
-        file = new File(fullCMakeDependenciesFile);
+        file = new File(fullDependenciesFile);
       
         if (!file.exists())
         {  
@@ -465,81 +469,98 @@ public class CMakeMojo extends AbstractLaunchMojo
             }
             catch ( IOException e ) 
             {
-                getLog().error( cmakeDependenciesFile + " script can't be created at " + file.getAbsolutePath());
+                getLog().error( dependencieFile + " script can't be created at " + file.getAbsolutePath());
                 return;
             }
         }
         
         
         // check file content
-        InputStream cmakeMavenDependenciesStream = null;
+        InputStream dependenciesStream = null;
         String content = new String();
         try
         {  
-            cmakeMavenDependenciesStream = new FileInputStream(file);
-            content = IOUtils.toString(cmakeMavenDependenciesStream, "UTF8");
+            dependenciesStream = new FileInputStream(file);
+            content = IOUtils.toString(dependenciesStream, "UTF8");
         }
         catch ( IOException e )
         {
             // shall not happen since file has been created
-            getLog().error( cmakeDependenciesFile + " script can't be opened at " + file.getAbsolutePath());
+            getLog().error( dependencieFile + " script can't be opened at " + file.getAbsolutePath());
         }
         finally
         {
-            getLog().info( "close input stream at reading");
-            IOUtils.closeQuietly(cmakeMavenDependenciesStream);
+            getLog().debug( "close input stream at reading");
+            IOUtils.closeQuietly(dependenciesStream);
         }
 
-        String beginPattern = (isDebugBuild() ?
-            "# BEGIN MAVEN_DEBUG_DEPENDENCIES" : "# BEGIN MAVEN_OPTIMIZED_DEPENDENCIES");
-        String endPattern = (isDebugBuild() ?
-            "# END MAVEN_DEBUG_DEPENDENCIES" : "# END MAVEN_OPTIMIZED_DEPENDENCIES");
-        
-        
+        String beginPattern = (bMavenDependencies ?
+            (isDebugBuild()?"# BEGIN MAVEN_DEBUG_DEPENDENCIES":"# BEGIN MAVEN_OPTIMIZED_DEPENDENCIES"):
+            "# BEGIN CMAKE_DEPENDENCIES");
+        String endPattern = (bMavenDependencies ?
+            (isDebugBuild()?"# END MAVEN_DEBUG_DEPENDENCIES":"# END MAVEN_OPTIMIZED_DEPENDENCIES"):
+            "# END CMAKE_DEPENDENCIES");
+                    
         // reset file content if needed
-        if (content.isEmpty() || content.indexOf(beginPattern) == -1)
+        if (StringUtils.isEmpty(content) || content.indexOf(beginPattern) == -1)
         {
             getLog().info( file.getAbsolutePath() + " content full update");
             try
             { 
-                cmakeMavenDependenciesStream = getClass().getResourceAsStream( "/CMakeMavenDependencies.txt" );
-                content = IOUtils.toString(cmakeMavenDependenciesStream, "UTF8");
+                dependenciesStream = getClass().getResourceAsStream(
+                    (bMavenDependencies?"/CMakeMavenDependencies.txt":"/CMakeDependencies.txt"));
+                content = IOUtils.toString(dependenciesStream, "UTF8");
             }
             catch ( IOException e )
             {
-                getLog().error( cmakeDependenciesFile + " default content not found ");
+                getLog().error( dependencieFile + " default content not found ");
             }
             finally
             {
                 getLog().debug( "close input stream at full update");
-                IOUtils.closeQuietly(cmakeMavenDependenciesStream);
+                IOUtils.closeQuietly(dependenciesStream);
             }
         }
         
-        
         // update file content
+        String simpleIndentation = "\n    ";
+        String doubleIndentation = "\n        ";
         Iterator itDeps = ai_dependenciesLib.iterator();
-        String indentation = "\n        ";
-        String allDeps = new String(indentation);
+        StringBuilder allDepsBuilder = new StringBuilder((bMavenDependencies?doubleIndentation:simpleIndentation));
         while( itDeps.hasNext() )
         {
-            allDeps = allDeps + 
-                "target_link_libraries(${target} " + 
-                (isDebugBuild() ? "debug" : "optimized") +
-                " ${DEPENDENCY_DIR}/${TARGET_CLASSIFIER}/"+
-                (isDebugBuild() ? "debug" : "release") + "/" +
-                generalizeDependencyFileName((String)itDeps.next()) + ")" + indentation;
+            String dep = (String)itDeps.next();
+            
+            if (bMavenDependencies)
+            {
+                String ExternalDep = generalizeDependencyFileName(dep, true);
+                allDepsBuilder.append( 
+                    "target_link_libraries(${target} " + 
+                    (isDebugBuild() ? "debug " : "optimized ") +
+                    ExternalDep + ")" + doubleIndentation);
+            }
+            else
+            {
+                String CMakeDep = generalizeDependencyFileName(dep, false);         
+                allDepsBuilder.append( 
+                    "# If a \""+ CMakeDep + "\" target has been define, this means we are building an amalgamed cmake project" + simpleIndentation +
+                    "# but maven dependencies can be used too" + simpleIndentation +
+                    "if(TARGET "+ CMakeDep + ")" + doubleIndentation +
+                    "message(\"Adding direct" + CMakeDep + "cmake dependencies to target '${target}'\")" + doubleIndentation +
+                    "target_link_libraries(${target} " + CMakeDep + ")" + simpleIndentation +
+                    "endif()" + simpleIndentation);
+            }
         }
             
-        getLog().debug( "cmake depfile was : " + content );
-        allDeps = allDeps.replace("$", "\\$"); // Matcher replaceAll() is a bit rigid !
-        getLog().info( "cmake injected dependency will be : " + allDeps );
+        getLog().debug( dependencieFile + " depfile was : " + content );
+        String allDeps = allDepsBuilder.toString().replace("$", "\\$"); // Matcher replaceAll() is a bit rigid !
+        getLog().info( dependencieFile + " injected dependency will be : " + allDeps );
         // regexp multi-line replace, see http://stackoverflow.com/questions/4154239/java-regex-replaceall-multiline
-        Pattern p = Pattern.compile(beginPattern + ".*" + endPattern, Pattern.DOTALL);
-        Matcher m = p.matcher(content);
-        content = m.replaceAll(beginPattern + allDeps + endPattern);
-                
-        getLog().debug( "cmake depfile now is : " + content );
+        Pattern p1 = Pattern.compile(beginPattern + ".*" + endPattern, Pattern.DOTALL);
+        Matcher m1 = p1.matcher(content);
+        content = m1.replaceAll(beginPattern + allDeps + endPattern);
+            
+        getLog().debug( dependencieFile + " depfile now is : " + content );
         OutputStream outStream = null;
         try
         { 
@@ -548,7 +569,7 @@ public class CMakeMojo extends AbstractLaunchMojo
         }
         catch ( IOException e )
         {
-            getLog().error( cmakeDependenciesFile + " script can't be written at " + file.getAbsolutePath() + e.toString());
+            getLog().error( dependencieFile + " script can't be written at " + file.getAbsolutePath() + e.toString());
         }
         finally
         {
@@ -557,20 +578,91 @@ public class CMakeMojo extends AbstractLaunchMojo
         }
     }
     
+    protected String extractBuildConfig(String classifier)
+    {
+        //bin-${targetClassifier}-${buildConfig}
+        String[] parts = classifier.split("-");
+        return (parts.length >= 3)? parts[parts.length-1] : null;
+    }
+     
+    protected String extractSubClassifier(String classifier)
+    {
+        //bin-${targetClassifier}-${buildConfig}
+        String[] parts = classifier.split("-");
+        if (parts.length >= 3)
+        {
+            //parts[1] .. parts[length-2]
+            StringBuilder builder = new StringBuilder();
+            builder.append(parts[1]);
+            for(int i = 2; i <= parts.length-2; i++) 
+            {
+                builder.append("-");
+                builder.append(parts[i]);
+            }
+            return builder.toString();
+        }
+        return  null;
+    }
+    
     protected void preExecute(Executor exec, CommandLine commandLine, Map enviro) throws MojoExecutionException
     {
         if (injectMavenDependencies)
         {
-            if (dependenciesRoots.isEmpty())
+            Map dependenciesRoots = new HashMap<String, String>();
+            
+            Iterator<String> itAdditionnalDeps = additionalDependenciesRoots.iterator();
+            while( itAdditionnalDeps.hasNext() )
             {
-                dependenciesRoots.add(getProjectDependenciesTargetClassifierDirectory() + "/" + buildConfig);
-                getLog().info( "use default Dependency Root: \"" + dependenciesRoots.get(0) + "\"" );  
+                String cur = itAdditionnalDeps.next() + "/" + targetClassifier + "/" + buildConfig;
+                dependenciesRoots.put(cur, cur);
+                getLog().info( "add additional Dependency Root: \"" + cur + "\"");
+            }
+            
+            // enhanced auto-detection of dependency root dir with artifacts classifier :
+            Set<Artifact> dependencyArtifacts = project.getDependencyArtifacts();
+            Iterator<Artifact> itDeps = dependencyArtifacts.iterator();
+            while( itDeps.hasNext() )
+            {
+                Artifact cur = itDeps.next();
+                String artifactId = cur.getArtifactId();
+                String classifer = cur.getClassifier();
+                if (0 == classifer.indexOf("bin"))
+                {
+                    String artifactBuildConfig = extractBuildConfig(cur.getClassifier());
+                    String artifactBuildConfigGeneralized = artifactBuildConfig;
+                    if (StringUtils.isEmpty(artifactBuildConfig) || artifactBuildConfig.equals(buildConfig))
+                    {
+                        artifactBuildConfig = buildConfig;
+                        artifactBuildConfigGeneralized = buildConfig;//"${CMAKE_BUILD_TYPE}";
+                    }
+                    
+                    String artifactSubClassifier = extractSubClassifier(cur.getClassifier());
+                    String artifactSubClassifierGeneralized = artifactSubClassifier;
+                    if (StringUtils.isEmpty(artifactSubClassifier) || artifactSubClassifier.equals(targetClassifier) )
+                    {
+                        artifactSubClassifier = targetClassifier;
+                        artifactSubClassifierGeneralized = "${TARGET_CLASSIFIER}";
+                    }
+                    
+                    String newDepRoot = getProjectDependenciesDirectory() + "/" +
+                        artifactSubClassifier + "/" + artifactBuildConfig + "/" + artifactId;
+                        
+                    String newDepRootGeneralized = "${DEPENDENCY_DIR}" + "/" +
+                        artifactSubClassifierGeneralized + "/" + artifactBuildConfigGeneralized + "/" + artifactId;
+                    
+                    if (!dependenciesRoots.containsKey(newDepRoot))
+                    {
+                        dependenciesRoots.put( newDepRoot,newDepRootGeneralized );
+                        getLog().info( "add Dependency Root: \"" + newDepRoot + "\" <=> \"" + newDepRootGeneralized + "\"");
+                    }
+                }
             }
             
             ArrayList dependenciesLib = new ArrayList();
             findDependencies(dependenciesRoots, dependenciesLib);
             
-            updateOrCreateCMakeDependenciesFile(dependenciesLib);
+            updateOrCreateCMakeDependenciesFile(dependenciesLib, true);
+            updateOrCreateCMakeDependenciesFile(dependenciesLib, false);
         }
     }
 }
