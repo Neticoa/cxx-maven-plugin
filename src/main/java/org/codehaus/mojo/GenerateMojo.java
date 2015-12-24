@@ -18,6 +18,7 @@
 package org.codehaus.mojo;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.MavenProject;
@@ -61,7 +62,7 @@ public class GenerateMojo
 
     /**
      * The archetype's artifactId.
-     * @parameter expression="${archetypeArtifactId}" default-value=""
+     * @parameter expression="${archetypeArtifactId}" default-value="cmake"
      * @since 0.0.6
      */
     //@Parameter( property = "archetypeArtifactId" )
@@ -69,7 +70,7 @@ public class GenerateMojo
 
     /**
      * The archetype's groupId.
-     * @parameter expression="${archetypeGroupId}" default-value=""
+     * @parameter expression="${archetypeGroupId}" default-value="org.codehaus.mojo.cxx-maven-plugin"
      * @since 0.0.6
      */
     //@Parameter( property = "archetypeGroupId" )
@@ -82,35 +83,6 @@ public class GenerateMojo
      */
     //@Parameter( property = "archetypeVersion" )
     private String archetypeVersion;
-
-    /**
-     * The archetype's repository.
-     * @parameter expression="${archetypeRepository}" default-value=""
-     * @since 0.0.6
-     */
-    //@Parameter( property = "archetypeRepository" )
-    private String archetypeRepository;
-
-
-    /**
-     * Local Maven repository.
-     * @parameter default-value="${localRepository}" 
-     * @required
-     * @readonly
-     * @since 0.0.6
-     */
-    //@Parameter( defaultValue = "${localRepository}", readonly = true, required = true )
-    private ArtifactRepository localRepository;
-
-    /**
-     * List of remote repositories used by the resolver.
-     * @parameter default-value="${project.remoteArtifactRepositories}"
-     * @required
-     * @readonly
-     * @since 0.0.6
-     */
-    //@Parameter( defaultValue = "${project.remoteArtifactRepositories}", readonly = true, required = true )
-    private List<ArtifactRepository> remoteArtifactRepositories;
     
     /**
      * Pom directory location
@@ -141,7 +113,7 @@ public class GenerateMojo
     //@Parameter( defaultValue = "${project}", readonly = true )
     private MavenProject project;
     
-    protected String[] listResourceFolderContent(String path)
+    protected List<String> listResourceFolderContent(String path)
     {
         String location = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
         final File jarFile = new File(location);
@@ -201,7 +173,29 @@ public class GenerateMojo
         //Properties userProperties = session.getUserProperties();
         Properties properties = session.getExecutionProperties();
         
-        listResourceFolderContent("cxx-maven-project");
-
+        // todo :
+        //1/ search for properties
+        // -DgroupId=fr.neticoa -DartifactName=QtUtils -DartifactId=qtutils -Dversion=1.0-SNAPSHOT
+        
+        List<String> resources = listResourceFolderContent("cmake-cxx-project");
+        
+        //2/ unpack resource to destdir 
+        //see http://www.mkyong.com/java/how-to-decompress-files-from-a-zip-file/
+        
+        //3/ create empty dir struct; if needed using a descriptor 
+        //see https://maven.apache.org/guides/mini/guide-creating-archetypes.html
+        
+        //4/ variable substitution :
+        // change prefix and suffix to '$(' and ')'
+        // see https://commons.apache.org/proper/commons-lang/javadocs/api-2.6/org/apache/commons/lang/text/StrSubstitutor.html
+        /*
+        $(parentGroupId)
+        $(parentArtifactId)
+        $(parentVersion)
+        $(groupId)
+        $(artifactId)
+        $(artifactName)
+        $(version)
+        */
     }
 }

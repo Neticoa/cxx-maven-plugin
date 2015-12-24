@@ -508,7 +508,7 @@ public class CMakeMojo extends AbstractLaunchMojo
             try
             { 
                 dependenciesStream = getClass().getResourceAsStream(
-                    (bMavenDependencies?"/CMakeMavenDependencies.txt":"/CMakeDependencies.txt"));
+                    (bMavenDependencies?"/cmake-cxx-project/CMakeMavenDependencies.txt":"/cmake-cxx-project/CMakeDependencies.txt"));
                 content = IOUtils.toString(dependenciesStream, "UTF8");
             }
             catch ( IOException e )
