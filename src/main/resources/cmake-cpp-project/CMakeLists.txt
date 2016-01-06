@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
 get_directory_property(hasParent PARENT_DIRECTORY)
 
-# MAVEN Mandatory. TARGET_NAME can be named what ever you want 
+# MAVEN Mandatory : TARGET_NAME can be named what ever you want 
 if (hasParent)
     message(WARNING "TARGET_NAME reset since current project has parent")
     unset(TARGET_NAME PARENT_SCOPE)
@@ -25,7 +25,7 @@ if(NOT TARGET_NAME)
     set(TARGET_NAME "$(artifactName)") # default TARGET_NAME come from cxx-maven plugin generator
 endif()
 
-# MAVEN Mandatory. TARGET_ID can be what ever you want 
+# MAVEN Mandatory : TARGET_ID can be what ever you want 
 # (not necessary same as project name) but need to be lower case and
 # usualy used as project componant source root
 if (hasParent)
@@ -40,44 +40,44 @@ if(NOT TARGET_ID)
     set(TARGET_ID "$(artifactName)") # default TARGET_ID come from cxx-maven plugin generator
 endif()
 
-# MAVEN Mandatory. DEPENDENCY_DIR point to target/dependency
+# MAVEN Mandatory : DEPENDENCY_DIR point to target/dependency
 if(NOT DEPENDENCY_DIR)
     set(DEPENDENCY_DIR "${PROJECT_SOURCE_DIR}")
     message(WARNING "default DEPENDENCY_DIR is ${DEPENDENCY_DIR}")
 endif()
 
-# MAVEN Mandatory. TARGET_VERSION is pom version
+# MAVEN Mandatory : TARGET_VERSION is pom version
 if(NOT TARGET_VERSION)
     message(WARNING "Please provide a componant version using TARGET_VERSION properties")
     set(TARGET_VERSION "$(version)") # default TARGET_VERSION come from cxx-maven plugin generator
 endif()
 add_definitions(-DTARGET_VERSION=${TARGET_VERSION})
 
-# MAVEN Mandatory. TARGET_PLATFORM is setted by maven (or you !)
+# MAVEN Mandatory : TARGET_PLATFORM is setted by maven (or you !)
 if(NOT TARGET_PLATFORM)
     # ${CMAKE_SYSTEM_NAME} is not safe !
     message(FATAL_ERROR "Please provide a target platform name using TARGET_PLATFORM properties {win32, win64, linux, mac}")
 endif()
 add_definitions(-DTARGET_PLATFORM=${TARGET_PLATFORM})
 
-# MAVEN Mandatory. TARGET_ARCHITECTURE is setted by maven (or you !)
+# MAVEN Mandatory : TARGET_ARCHITECTURE is setted by maven (or you !)
 if(NOT TARGET_ARCHITECTURE)
     # there is no safe way to set a target architecture under cmake
     message(FATAL_ERROR "Please provide a target architecture using TARGET_ARCHITECTURE properties {x86, amd64, i386, i686, x86_64}")
 endif()
 add_definitions(-DTARGET_ARCHITECTURE=${TARGET_ARCHITECTURE})
 
-# MAVEN Mandatory. TARGET_CLASSIFIER is setted by maven (or you !)
+# MAVEN Mandatory : TARGET_CLASSIFIER is setted by maven (or you !)
 if(NOT TARGET_CLASSIFIER)
     # target classifier is a conjonction of target platform and target architecture
     message(FATAL_ERROR "Please provide a target classifier using TARGET_CLASSIFIER properties {win32, win64, linux-i686, linux-x86_64, mac-i386, mac-x86_64}")
 endif()
 add_definitions(-DTARGET_CLASSIFIER=${TARGET_CLASSIFIER})
 
-# CMAKE Mandatory.
+# CMAKE Mandatory : project definition
 project(${TARGET_ID} VERSION ${TARGET_VERSION})
 
-# MAVEN Mandatory. CMakeMavenDependencies.txt file define a cmake function 
+# MAVEN Mandatory : CMakeMavenDependencies.txt file define a cmake function 
 # named "add_maven_dependencies" that you shall call on your targets.
 # This function is generated and updated by maven according to current project
 # dependencies declared in pom.xml.
@@ -97,23 +97,23 @@ include("${CMAKE_SOURCE_DIR}/CMakeMavenDependencies.txt" OPTIONAL RESULT_VARIABL
 # It contains a cmake amalgamed context compliant version of maven dependencies
 include("CMakeDependencies.txt" OPTIONAL RESULT_VARIABLE CMAKE_DEPENDENCIES)
 
-# CMAKE Mandatory. Project content definition setted by you !
+# CMAKE Mandatory : Project content definition setted by you !
 include(CMakeProjectContent.txt)
 
-# MAVEN Mandatory. MAVEN DEPENDENCIES MANAGMENT Default behavior : add maven dependancies 
+# MAVEN Mandatory : MAVEN DEPENDENCIES MANAGMENT Default behavior : add maven dependancies 
 # to "supposed" defaut cmake target of current cmake project
 if (TARGET "${TARGET_NAME}" AND NOT "${MAVEN_DEPENDENCIES}" STREQUAL "NOTFOUND" )
     add_maven_dependencies(${TARGET_NAME})
 endif()
 
-# MAVEN Mandatory. CMAKE DEPENDENCIES MANAGMENT Default behavior : add cmake dependancies 
+# MAVEN Mandatory : CMAKE DEPENDENCIES MANAGMENT Default behavior : add cmake dependancies 
 # to "supposed" defaut cmake target of current cmake project
 if (TARGET "${TARGET_NAME}" AND NOT "${CMAKE_DEPENDENCIES}" STREQUAL "NOTFOUND" )
     add_cmake_dependencies(${TARGET_NAME})
 endif()
 
 ###################################################################################
-# TWEAK LD_LIBRARY_PATH
+# Tools to tweak LD_LIBRARY_PATH
 # see 'otool -L', 'otool -D', 'install_name_tool -id' and 'install_name_tool -change' under Mac OS X
 # see 'ldd', 'readelf -d' and 'chrpath' under Linux
 # there is nothing to do under windows

@@ -59,10 +59,9 @@ import java.util.regex.Pattern;
 
 /**
  * Generates a new project from an archetype, or updates the actual project if using a partial archetype.
- * If the project is fully generated, it is generated in a directory corresponding to its artifactId.
- * If the project is updated with a partial archetype, it is done in the current directory.
+ * If the project is generated or updated in the current directory.
  *
- * @description Creates a project from an archetype.
+ * @description Creates a project from an archetype. Use archetypeArtifactId property.
  * @requiresProject false
  * @goal generate
  * @author Franck Bonin 
@@ -192,7 +191,7 @@ public class GenerateMojo
         StrSubstitutor substitutor = new StrSubstitutor(valuesMap);
         
         path = (StringUtils.isEmpty(path))? "" : path + "/";
-        getLog().info("listResourceFolderContent : " + location + ", sublocation : " + path);
+        getLog().debug("listResourceFolderContent : " + location + ", sublocation : " + path);
         if(jarFile.isFile())
         {
             getLog().info("jar case");
@@ -208,9 +207,9 @@ public class GenerateMojo
                         String resourceFile = File.separator + name;
                         if (! (resourceFile.endsWith("/") || resourceFile.endsWith("\\")) )
                         {
-                            getLog().info("resource entry = " + resourceFile);
+                            getLog().debug("resource entry = " + resourceFile);
                             String destFile = substitutor.replace(resourceFile);
-                            getLog().info("become entry = " + destFile);
+                            getLog().debug("become entry = " + destFile);
                             resources.put(resourceFile, destFile);
                         }
                     }
@@ -236,9 +235,9 @@ public class GenerateMojo
                         String resourceFile = name.getPath();
                         if (! (resourceFile.endsWith("/") || resourceFile.endsWith("\\")) )
                         {
-                            getLog().info("resource entry = " + resourceFile);
+                            getLog().debug("resource entry = " + resourceFile);
                             String destFile = substitutor.replace(resourceFile);
-                            getLog().info("become entry = " + destFile);
+                            getLog().debug("become entry = " + destFile);
                             resources.put(resourceFile, destFile);
                         }
                     }
@@ -258,17 +257,8 @@ public class GenerateMojo
     {
         //Properties systemProperties = session.getSystemProperties();
         //Properties userProperties = session.getUserProperties();
-        Properties properties = session.getExecutionProperties();
+        //Properties properties = session.getExecutionProperties();
         
-        /*
-        $(parentGroupId)
-        $(parentArtifactId)
-        $(parentVersion)
-        $(groupId)
-        $(artifactId)
-        $(artifactName)
-        $(version)
-        */
         Map valuesMap = new HashMap();
         valuesMap.put("parentGroupId", parentGroupId);
         valuesMap.put("parentArtifactId", parentArtifactId);
@@ -283,34 +273,31 @@ public class GenerateMojo
         
         Map<String, String> resources = listResourceFolderContent(archetypeArtifactId, valuesMap);
         
-
         //2/ unpack resource to destdir 
-        //see http://www.mkyong.com/java/how-to-decompress-files-from-a-zip-file/
         getLog().info("basdir = " + basedir);
-        //Iterator<String> itRes = resources.iterator();
-        //while( itRes.hasNext() )
         
         StrSubstitutor substitutor = new StrSubstitutor(valuesMap, "$(", ")");
-        
         for (Map.Entry<String, String> entry : resources.entrySet())
         {
             String curRes = entry.getKey();
             String curDest = entry.getValue();
             InputStream resourceStream = null;
             resourceStream = getClass().getResourceAsStream(curRes);
-            getLog().info("resource stream to open : "+ curRes);
-            getLog().info("destfile to open : "+ curDest);
+            getLog().debug("resource stream to open : "+ curRes);
+            getLog().debug("destfile to open : "+ curDest);
             if (null != resourceStream)
             {
                 String sRelativePath = curDest.replaceFirst(Pattern.quote(archetypeArtifactId + File.separator), "");
                 File newFile = new File(basedir + File.separator + sRelativePath);
                 
-                
                 //3/ create empty dir struct; if needed using a descriptor 
                 //create all non exists folders
                 File newDirs = new File(newFile.getParent());
-                getLog().info("dirs to generate : "+ newDirs.getAbsoluteFile());
-                newDirs.mkdirs();
+                if (Files.notExists(Paths.get(newDirs.getPath())))
+                {
+                    getLog().info("dirs to generate : "+ newDirs.getAbsoluteFile());
+                    newDirs.mkdirs();
+                }
                 
                 if (! newFile.getName().equals("empty.dir"))
                 {
@@ -363,9 +350,5 @@ public class GenerateMojo
                 }
             }            
         }
-        
-
-        
-
     }
 }

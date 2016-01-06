@@ -1,7 +1,7 @@
 # Check if this is necessary :
 #set(CURRENT_TARGET_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 #if(${CMAKE_GENERATOR} MATCHES "Unix Makefiles" OR ${CMAKE_GENERATOR} MATCHES "MinGW Makefiles")
-#    # Moni-config generator case
+#    # Mono-config generator case
 #    set(CURRENT_TARGET_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 #    set_target_properties( ${TARGET_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CURRENT_TARGET_BINARY_DIR} )
 #    set_target_properties( ${TARGET_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CURRENT_TARGET_BINARY_DIR} )

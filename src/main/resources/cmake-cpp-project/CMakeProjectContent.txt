@@ -1,0 +1,146 @@
+########################################################################################
+#
+# TODO : Put in this file with what you ought to fill your original CMakeLists.txt
+#
+# Usefull Maven properties provided to CMake environment :
+#
+# CMAKE_BUILD_TYPE : {debug, release, debcov, relcov, relinfo}. From Maven ${buildType} property, see cpp-super-pom.
+# TARGET_ID : artifact name from pom.xml, lowercase, used in path and as identifier.
+# TARGET_NAME : artifact name from pom.xml, mainly intended for final binary name.
+# DEPENDENCY_DIR : From Maven, location where to find maven dependencies.
+# TARGET_VERSION : artifact version from pom.xml
+# TARGET_CLASSIFIER : {win32, win64, linux-x64_64, etc.} Nexus platform sub-classifier, from Maven ${targetClassifier} property, see cpp-super-pom.
+# TARGET_PLATFORM : {win32, win64, linux, mac} Target platform, from Maven ${targetPlatform} property, see cpp-super-pom}
+# TARGET_ARCHITECTURE : {i386, x86_64, etc.} Target architecture, from Maven ${targetArchitecture} property, see cpp-super-pom}
+# EXECUTABLE_SUFFIX : From Maven ${executableSuffix} property, match CMake default, see cpp-super-pom.
+# SHARED_LIBRARY_PREFIX : From Maven ${sharedLibraryPrefix} property, match CMake default, see cpp-super-pom. 
+# SHARED_LIBRARY_SUFFIX : From Maven ${sharedLibrarySuffix} property, match CMake default, see cpp-super-pom.
+# SHARED_MODULE_PREFIX : From Maven ${sharedModulePrefix} property, match CMake default, see cpp-super-pom.
+# SHARED_MODULE_SUFFIX : From Maven ${sharedModuleSuffix} property, match CMake default, see cpp-super-pom.
+# STATIC_LIBRARY_PREFIX : From Maven ${staticLibraryPrefix} property, match CMake default, see cpp-super-pom.
+# STATIC_LIBRARY_SUFFIX : From Maven ${staticLibrarySuffix} property, match CMake default, see cpp-super-pom.
+# INJECT_MAVEN_DEPENDENCIES : {"true", "false"} From maven-cxx-plugin:cmake goal configuration
+
+########################################################################################
+# Optionnal : Search for external API
+# Example, QT5 :
+#set(CMAKE_AUTOMOC ON)
+#set(CMAKE_AUTOUIC ON)
+#set(CMAKE_AUTORCC ON)
+#set(CMAKE_INCLUDE_CURRENT_DIR ON)
+#find_package(Qt5Widgets REQUIRED)
+
+########################################################################################
+# INTERNAL SOURCES DEFINITION (source that are private and not visible from the outside)
+
+# CMAKE Recommendation : Add your custom include path in this list
+# manage_maven_dependencies.cmake whill update current project dependencies include directory, 
+# see below
+include_directories(
+    "${PROJECT_SOURCE_DIR}"
+    "${PROJECT_SOURCE_DIR}/${TARGET_ID}/include"
+    "${DEPENDENCY_DIR}/include"
+)
+
+# CMAKE Convention : Set the base directory of target source files
+SET(INTERNAL_SRC_DIR "${TARGET_ID}/src" )
+
+# CMAKE Convention : Add your private source files here !
+# Example :
+SET(INTERNAL_SRC
+#    "${INTERNAL_SRC_DIR}/main.cpp"
+#    "${INTERNAL_SRC_DIR}/sample.cpp"
+)
+
+# CMAKE Convention : Add your private header files here !
+# Example :
+SET(INTERNAL_HDRS
+#    "${INTERNAL_SRC_DIR}/sample.h"
+)
+
+# CMAKE Convention : Add your private compilable resource files here !
+# Example :
+SET(INTERNAL_RC
+#    "${INTERNAL_SRC_DIR}/sample.ui"
+#    "${INTERNAL_SRC_DIR}/sample.qrc"
+)
+
+# CMAKE Convention : Add your private static/final resource files here !
+# Example :
+SET(INTERNAL_EMBD_RC
+#    "${INTERNAL_SRC_DIR}/logo-neticoafr.png"
+)
+
+# Optionnal : Resources managment. Compilable resource files depends on static/final resources
+# Example :
+#SET_SOURCE_FILES_PROPERTIES("${INTERNAL_SRC_DIR}/sample.qrc"
+#        PROPERTIES OBJECT_DEPENDS
+#        "${INTERNAL_EMBD_RC}"
+#)
+
+# CMAKE Convention : Group the files here !
+SOURCE_GROUP(src FILES 
+    ${INTERNAL_SRC}
+    ${INTERNAL_HDRS}
+)
+
+# CMAKE Convention : Group the files here !
+SOURCE_GROUP(res FILES 
+    ${INTERNAL_RC}
+    ${INTERNAL_EMBD_RC}
+)
+        
+########################################################################################
+# PUBLIC HEADERS DEFINITION (headers that are public and visible from outside)
+
+# CMAKE Recommendation : Set the base directory of your public header files
+SET(PUBLIC_HDRS_DIR "${TARGET_ID}/include/${TARGET_ID}" )
+
+# CMAKE Convention : Add your public files here !
+# Example :
+SET(PUBLIC_HDRS
+#    "${PUBLIC_HDRS_DIR}/module.h"
+)
+
+# CMAKE Convention : Group the files here !
+SOURCE_GROUP(include FILES 
+    ${PUBLIC_HDRS}
+)
+
+########################################################################################
+# TARGET DEFINITION
+
+# CMAKE Recommendation : Executable target definition depends on current platform
+if(WIN32)
+    SET(EXECUTABLE_TYPE WIN32)
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    SET(EXECUTABLE_TYPE MACOSX_BUNDLE)
+    # if applicable MACOSX_BUNDLE_INFO_PLIST needs to be defined here
+    # see https://cmake.org/cmake/help/v3.0/prop_tgt/MACOSX_BUNDLE_INFO_PLIST.html
+endif()
+
+# CMAKE Mandatory : Executable target definition
+#add_executable(${TARGET_NAME}
+#    ${EXECUTABLE_TYPE}
+#    ${INTERNAL_SRC}
+#    ${INTERNAL_HDRS}
+#    ${INTERNAL_RC}
+#    ${INTERNAL_EMBD_RC}
+#    ${PUBLIC_HDRS}
+#)
+
+# OR CMAKE Mandatory: Shared library target definition
+#add_library(${TARGET_NAME} SHARED
+#    ${INTERNAL_SRC}
+#    ${INTERNAL_HDRS}
+#    ${INTERNAL_RC}
+#    ${INTERNAL_EMBD_RC}
+#    ${PUBLIC_HDRS}
+#)
+# CMAKE Recommendation : C++ preprocessor definition to let linker export shared symbols
+# Example
+#ADD_DEFINITIONS(-DMODULE_LIB)
+
+# Optionnal : link with external API
+# Example, QT5 :
+#target_link_libraries(${TARGET_NAME} Qt5::Widgets)
