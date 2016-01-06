@@ -22,7 +22,7 @@ if(NOT TARGET_NAME)
     if (NOT hasParent)
         message(WARNING "Please provide a componant name using TARGET_NAME properties")
     endif()
-    set(TARGET_NAME "Sample") # default TARGET_NAME come from cxx-maven plugin generator
+    set(TARGET_NAME "$(artifactName)") # default TARGET_NAME come from cxx-maven plugin generator
 endif()
 
 # MAVEN Mandatory. TARGET_ID can be what ever you want 
@@ -37,7 +37,7 @@ if(NOT TARGET_ID)
     if (NOT hasParent)
         message(WARNING "Please provide a componant id using TARGET_ID properties")
     endif()
-    set(TARGET_ID "sample") # default TARGET_ID come from cxx-maven plugin generator
+    set(TARGET_ID "$(artifactName)") # default TARGET_ID come from cxx-maven plugin generator
 endif()
 
 # MAVEN Mandatory. DEPENDENCY_DIR point to target/dependency
@@ -49,7 +49,7 @@ endif()
 # MAVEN Mandatory. TARGET_VERSION is pom version
 if(NOT TARGET_VERSION)
     message(WARNING "Please provide a componant version using TARGET_VERSION properties")
-    set(TARGET_VERSION "0.0.0.1") # default TARGET_VERSION come from cxx-maven plugin generator
+    set(TARGET_VERSION "$(version)") # default TARGET_VERSION come from cxx-maven plugin generator
 endif()
 add_definitions(-DTARGET_VERSION=${TARGET_VERSION})
 
@@ -89,7 +89,7 @@ project(${TARGET_ID} VERSION ${TARGET_VERSION})
 # In other words :
 # - If you try to build an amalgamed cmake project, this avoid injecting bad dependency from previously
 # compiled standalone cmake/maven project but will inject global dependencies define at amalgamed project level.
-# - If you try to build an standalone cmake/maven project, this inject the right dependencies, those
+# - If you try to build a standalone cmake/maven project, this inject the right dependencies, those
 # define in pom.xml located at this level
 include("${CMAKE_SOURCE_DIR}/CMakeMavenDependencies.txt" OPTIONAL RESULT_VARIABLE MAVEN_DEPENDENCIES)
 # Following include try to find CMakenDependencies.txt at this level dir.  

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>$(parentGroupId)</groupId>
+    <artifactId>$(parentArtifactId)</artifactId>
+    <version>$(parentVersion)</version>
+    <!-- an empty <relativePath> so that maven resolves the parent pom from the .m2 cache or repositories.-->
+    <relativePath></relativePath>
+  </parent>
+  
+  <groupId>$(groupId)</groupId>
+  <!-- '$(artifactId)' is coming from pom generation -->
+  <artifactId>$(artifactId)</artifactId>
+  <packaging>pom</packaging>
+  <!-- set the Main project name here -->
+  <name>$(artifactName)</name>
+  <version>$(version)</version>
+
+  <properties>
+    <general.excludes>
+    **/GeneratedFiles/**,
+    **/target/**,
+    </general.excludes>
+    <!-- scm for sonar todo define content -->
+    <sonar.scm.url><!--scm:svn:https://svn/svn/project/trunk--></sonar.scm.url>
+  </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- todo unique place to define bin and interface dependencies version managment -->
+            <!--
+            <dependency>
+                <groupId>$(groupId)</groupId>
+                <artifactId>component1</artifactId>
+                <version>1.0.0.0</version>
+                <classifier>interface</classifier>
+                <type>zip</type>
+                <optional>false</optional>
+            </dependency>
+            <dependency>
+                <groupId>$(groupId)</groupId>
+                <artifactId>component1</artifactId>
+                <version>1.0.0.0</version>
+                <classifier>bin-${targetClassifier}-${buildConfig}</classifier>
+                <type>zip</type>
+                <optional>false</optional>
+            </dependency>
+
+            <dependency>
+                <groupId>$(groupId)</groupId>
+                <artifactId>component2</artifactId>
+                <version>1.0.0.0</version>
+                <classifier>interface</classifier>
+                <type>zip</type>
+                <optional>false</optional>
+            </dependency>
+            <dependency>
+                <groupId>$(groupId)</groupId>
+                <artifactId>component2</artifactId>
+                <version>1.0.0.0</version>
+                <classifier>bin-${targetClassifier}-${buildConfig}</classifier>
+                <type>zip</type>
+                <optional>false</optional>
+            </dependency>
+            -->
+        </dependencies>
+    </dependencyManagement>
+
+
+    <build>
+    <!-- Todo define your own plugin version in your project parent POM -->
+    <pluginManagement>
+      <plugins>
+        <!--
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>cxx-maven-plugin</artifactId>
+          <version>0.0.6-SNAPSHOT</version>
+        </plugin>
+        -->
+        <!-- see http://site.supose.org/doxygen-maven-plugin/ -->
+        <!--
+        <plugin>
+          <groupId>com.soebes.maven.plugins.dmg</groupId>
+          <artifactId>doxygen-maven-plugin</artifactId>
+          <version>1.0.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>sonar-maven-plugin</artifactId>
+        </plugin>
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.3</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>2.9</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.7</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.7</version>
+        </plugin>
+        <plugin>
+          <artifactId>gmaven-plugin</artifactId>
+          <version>1.5</version>
+        </plugin>
+        -->
+      </plugins>
+    </pluginManagement>
+
+  </build>
+</project>

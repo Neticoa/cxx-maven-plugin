@@ -11,10 +11,10 @@
   </parent>
   
   <groupId>$(groupId)</groupId>
-  <!-- 'Sample' is coming from pom generation -->
+  <!-- '$(artifactId)' is coming from pom generation -->
   <artifactId>$(artifactId)</artifactId>
   <packaging>pom</packaging>
-  <!-- set the Solution / Main project name here -->
+  <!-- set the Main project name here -->
   <name>$(artifactName)</name>
   <version>$(version)</version>
   <!--
