@@ -282,17 +282,16 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
         return System.in;
     }
     
-    
     protected void preExecute( Executor exec, CommandLine commandLine, Map enviro ) throws MojoExecutionException
     {
     }
     
     protected void postExecute( int resultCode ) throws MojoExecutionException
     {
-		if ( isResultCodeAFailure( resultCode ) )
-		{
-			throw new MojoExecutionException( "Result of command line execution is: '" + resultCode + "'." );
-		}
+		    if ( isResultCodeAFailure( resultCode ) )
+		    {
+			      throw new MojoExecutionException( "Result of command line execution is: '" + resultCode + "'." );
+		    }
     }
     
     public void execute() throws MojoExecutionException
