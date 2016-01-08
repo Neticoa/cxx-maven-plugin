@@ -19,57 +19,77 @@
   <version>$(version)</version>
 
   <properties>
-    <general.excludes>
-    **/GeneratedFiles/**,
-    **/target/**,
-    </general.excludes>
-    <!-- scm for sonar todo define content -->
-    <sonar.scm.url><!--scm:svn:https://svn/svn/project/trunk--></sonar.scm.url>
   </properties>
+  
+  <!-- This profile allow usage of mixed link config for some component of you choice 
+      To do so use following classifier :
+    <classifier>bin-${targetClassifier}-${alternativeLinkConfig}</classifier>
+      instead of default classifier :
+    <classifier>bin-${targetClassifier}-${buildConfig}</classifier>
+      when you declare concerned dependencies
+      Then call mvn command line with the alternative link config of your choice :
+    mvn clean install -D buildConfig=release -D alternativeLinkConfig=debug
+    mvn clean install -D buildConfig=debug -D alternativeLinkConfig=release
+    mvn clean install -D buildConfig=release -D alternativeLinkConfig=relinfo
+    etc.
+  -->
+  <profiles>
+    <profile>
+      <id>alternativeLinkConfig</id>
+      <activation>
+        <property>
+          <name>!alternativeLinkConfig</name>
+        </property>
+      </activation>
+      <properties>
+        <alternativeLinkConfig>${buildConfig}</alternativeLinkConfig>            
+      </properties>
+    </profile>
+  </profiles>
 
-    <dependencyManagement>
-        <dependencies>
-            <!-- todo unique place to define bin and interface dependencies version managment -->
-            <!--
-            <dependency>
-                <groupId>$(groupId)</groupId>
-                <artifactId>component1</artifactId>
-                <version>1.0.0.0</version>
-                <classifier>interface</classifier>
-                <type>zip</type>
-                <optional>false</optional>
-            </dependency>
-            <dependency>
-                <groupId>$(groupId)</groupId>
-                <artifactId>component1</artifactId>
-                <version>1.0.0.0</version>
-                <classifier>bin-${targetClassifier}-${buildConfig}</classifier>
-                <type>zip</type>
-                <optional>false</optional>
-            </dependency>
+  <dependencyManagement>
+    <dependencies>
+      <!-- todo unique place to define bin and interface dependencies version managment -->
+      <!--
+      <dependency>
+          <groupId>$(groupId)</groupId>
+          <artifactId>component1</artifactId>
+          <version>1.0.0.0</version>
+          <classifier>interface</classifier>
+          <type>zip</type>
+          <optional>false</optional>
+      </dependency>
+      <dependency>
+          <groupId>$(groupId)</groupId>
+          <artifactId>component1</artifactId>
+          <version>1.0.0.0</version>
+          <classifier>bin-${targetClassifier}-${buildConfig}</classifier>
+          <type>zip</type>
+          <optional>false</optional>
+      </dependency>
 
-            <dependency>
-                <groupId>$(groupId)</groupId>
-                <artifactId>component2</artifactId>
-                <version>1.0.0.0</version>
-                <classifier>interface</classifier>
-                <type>zip</type>
-                <optional>false</optional>
-            </dependency>
-            <dependency>
-                <groupId>$(groupId)</groupId>
-                <artifactId>component2</artifactId>
-                <version>1.0.0.0</version>
-                <classifier>bin-${targetClassifier}-${buildConfig}</classifier>
-                <type>zip</type>
-                <optional>false</optional>
-            </dependency>
-            -->
-        </dependencies>
-    </dependencyManagement>
+      <dependency>
+          <groupId>$(groupId)</groupId>
+          <artifactId>component2</artifactId>
+          <version>1.0.0.0</version>
+          <classifier>interface</classifier>
+          <type>zip</type>
+          <optional>false</optional>
+      </dependency>
+      <dependency>
+          <groupId>$(groupId)</groupId>
+          <artifactId>component2</artifactId>
+          <version>1.0.0.0</version>
+          <classifier>bin-${targetClassifier}-${buildConfig}</classifier>
+          <type>zip</type>
+          <optional>false</optional>
+      </dependency>
+      -->
+    </dependencies>
+  </dependencyManagement>
 
 
-    <build>
+  <build>
     <!-- Todo define your own plugin version in your project parent POM -->
     <pluginManagement>
       <plugins>
