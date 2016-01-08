@@ -59,7 +59,7 @@ public class XUnitMojo extends LaunchMojo
             OutputReportDir = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath();
         }
         new File( OutputReportDir ).mkdirs();
-        getLog().info( "You shall produce a xUnit report called \"" + OutputReportDir + "/xunit-result-*.xml\" within this xunit goal" );
+        getLog().info( "You shall produce a xUnit report called \"" + OutputReportDir + File.separator + "xunit-result-*.xml\" within this xunit goal" );
         File file = new File( OutputReportDir + "/Readme.txt" );
         try
         {
@@ -68,7 +68,7 @@ public class XUnitMojo extends LaunchMojo
         }
         catch (IOException e)
         {
-             getLog().info( "Could not write to " + OutputReportDir + "/Readme.txt" );
+             getLog().info( "Could not write to " + OutputReportDir + File.separator + "Readme.txt" );
         }
     }
     

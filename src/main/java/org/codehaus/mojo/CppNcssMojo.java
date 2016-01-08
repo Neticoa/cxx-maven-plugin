@@ -102,11 +102,11 @@ public class CppNcssMojo extends AbstractLaunchMojo
         String OutputReportName = new String();
         if ( reportsfileDir.isAbsolute() )
         {
-            OutputReportName = reportsfileDir.getAbsolutePath() + "/" + getReportFileName();
+            OutputReportName = reportsfileDir.getAbsolutePath() + File.separator + getReportFileName();
         }
         else
         {
-            OutputReportName = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath() + "/" + getReportFileName();
+            OutputReportName = basedir.getAbsolutePath() + File.separator + reportsfileDir.getPath() + File.separator + getReportFileName();
         }
         File file = new File( OutputReportName );
         new File( file.getParent() ).mkdirs();

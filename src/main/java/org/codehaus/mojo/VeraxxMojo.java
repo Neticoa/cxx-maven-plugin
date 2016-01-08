@@ -163,11 +163,11 @@ public class VeraxxMojo extends AbstractLaunchMojo
         String OutputReportName = new String();
         if ( reportsfileDir.isAbsolute() )
         {
-            OutputReportName = reportsfileDir.getAbsolutePath() + "/" + getReportFileName();
+            OutputReportName = reportsfileDir.getAbsolutePath() + File.separator + getReportFileName();
         }
         else
         {
-            OutputReportName = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath() + "/" + getReportFileName();
+            OutputReportName = basedir.getAbsolutePath() + File.separator + reportsfileDir.getPath() + File.separator + getReportFileName();
         }
         getLog().info( "Vera++ report location " + OutputReportName );
          
@@ -333,7 +333,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
             
             for ( int i = 0; i < found.length; i++ )
             {
-                sourceListString.append( dir + "/" + found[i] + "\n" );
+                sourceListString.append( dir + File.separator + found[i] + "\n" );
             }
         }
         InputStream is = System.in;

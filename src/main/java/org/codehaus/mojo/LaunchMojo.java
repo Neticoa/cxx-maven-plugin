@@ -182,7 +182,7 @@ public class LaunchMojo extends AbstractLaunchMojo
             }
             else
             {
-                sOutputStreamOut = basedir.getAbsolutePath() + "/" + outputStreamOut.getPath();
+                sOutputStreamOut = basedir.getAbsolutePath() + File.separator + outputStreamOut.getPath();
             }
             
             getLog().info( "Launch output location " + sOutputStreamOut );
@@ -226,7 +226,7 @@ public class LaunchMojo extends AbstractLaunchMojo
             }
             else
             {
-                sOutputStreamErr = basedir.getAbsolutePath() + "/" + outputStreamErr.getPath();
+                sOutputStreamErr = basedir.getAbsolutePath() + File.separator + outputStreamErr.getPath();
             }
             
             getLog().info( "Launch erroutput location " + sOutputStreamErr );
@@ -270,7 +270,7 @@ public class LaunchMojo extends AbstractLaunchMojo
             }
             else
             {
-                sInputStream = basedir.getAbsolutePath() + "/" + inputStream.getPath();
+                sInputStream = basedir.getAbsolutePath() + File.separator + inputStream.getPath();
             }
             
             getLog().info( "Launch input location " + sInputStream );

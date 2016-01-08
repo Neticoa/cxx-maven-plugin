@@ -345,9 +345,9 @@ public class CMakeMojo extends AbstractLaunchMojo
             for (int j = 0; null != found && j < found.length; j++)
             {
                 getLog().info( "Found dependencies Lib : " + found[j] );
-                getLog().info( "Found dependencies Lib full path : " + dependencyRoot + "/" + found[j] );
-                getLog().info( "Found dependencies Lib generalized path : " + entry.getValue() + "/" + found[j] );
-                ao_dependenciesLib.add(entry.getValue() + "/" + found[j]);
+                getLog().info( "Found dependencies Lib full path : " + dependencyRoot + File.separator + found[j] );
+                getLog().info( "Found dependencies Lib generalized path : " + entry.getValue() + File.separator + found[j] );
+                ao_dependenciesLib.add(entry.getValue() + File.separator + found[j]);
             }
         }
     }
@@ -447,7 +447,7 @@ public class CMakeMojo extends AbstractLaunchMojo
     
     protected boolean isDebugBuild()
     {
-         return (0 == buildConfig.indexOf("deb"));
+         return (!StringUtils.isEmpty(buildConfig) && 0 == buildConfig.indexOf("deb"));
     }
     
     protected void updateOrCreateCMakeDependenciesFile(List ai_dependenciesLib, boolean bMavenDependencies)
@@ -457,7 +457,7 @@ public class CMakeMojo extends AbstractLaunchMojo
         File file = new File(dependencieFile);
         if (!file.isAbsolute()) 
         {
-            fullDependenciesFile = getProjectDir() + "/" + dependencieFile;
+            fullDependenciesFile = getProjectDir() + File.separator + dependencieFile;
         }
         file = new File(fullDependenciesFile);
       
@@ -554,7 +554,7 @@ public class CMakeMojo extends AbstractLaunchMojo
             
         getLog().debug( dependencieFile + " depfile was : " + content );
         String allDeps = allDepsBuilder.toString().replace("$", "\\$"); // Matcher replaceAll() is a bit rigid !
-        getLog().info( dependencieFile + " injected dependency will be : " + allDeps );
+        getLog().debug( dependencieFile + " injected dependency will be : " + allDeps );
         // regexp multi-line replace, see http://stackoverflow.com/questions/4154239/java-regex-replaceall-multiline
         Pattern p1 = Pattern.compile(beginPattern + ".*" + endPattern, Pattern.DOTALL);
         Matcher m1 = p1.matcher(content);
@@ -613,7 +613,7 @@ public class CMakeMojo extends AbstractLaunchMojo
             Iterator<String> itAdditionnalDeps = additionalDependenciesRoots.iterator();
             while( itAdditionnalDeps.hasNext() )
             {
-                String cur = itAdditionnalDeps.next() + "/" + targetClassifier + "/" + buildConfig;
+                String cur = itAdditionnalDeps.next() + File.separator + targetClassifier + File.separator + buildConfig;
                 dependenciesRoots.put(cur, cur);
                 getLog().info( "add additional Dependency Root: \"" + cur + "\"");
             }
@@ -644,11 +644,11 @@ public class CMakeMojo extends AbstractLaunchMojo
                         artifactSubClassifierGeneralized = "${TARGET_CLASSIFIER}";
                     }
                     
-                    String newDepRoot = getProjectDependenciesDirectory() + "/" +
-                        artifactSubClassifier + "/" + artifactBuildConfig + "/" + artifactId;
+                    String newDepRoot = getProjectDependenciesDirectory() + File.separator +
+                        artifactSubClassifier + File.separator + artifactBuildConfig + File.separator + artifactId;
                         
-                    String newDepRootGeneralized = "${DEPENDENCY_DIR}" + "/" +
-                        artifactSubClassifierGeneralized + "/" + artifactBuildConfigGeneralized + "/" + artifactId;
+                    String newDepRootGeneralized = "${DEPENDENCY_DIR}" + File.separator +
+                        artifactSubClassifierGeneralized + File.separator + artifactBuildConfigGeneralized + File.separator + artifactId;
                     
                     if (!dependenciesRoots.containsKey(newDepRoot))
                     {
