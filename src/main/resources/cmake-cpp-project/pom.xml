@@ -109,7 +109,8 @@
               <goal>unpack-dependencies</goal>
             </goals>
             <configuration>
-              <includeClassifiers>bin-${targetClassifier}-${buildConfig},interface</includeClassifiers>
+              <!--compile scope is dependencies default scope.-->
+              <includeScope>compile</includeScope>
               <!--<outputDirectory>${project.build.directory}/dependency</outputDirectory>-->
               <overWriteReleases>true</overWriteReleases>
               <overWriteSnapshots>true</overWriteSnapshots>
