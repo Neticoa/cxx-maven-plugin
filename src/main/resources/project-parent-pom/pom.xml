@@ -49,7 +49,7 @@
 
   <dependencyManagement>
     <dependencies>
-      <!-- todo unique place to define bin and interface dependencies version managment -->
+      <!-- add bin and interface dependencies version here -->
       <!--
       <dependency>
           <groupId>$(groupId)</groupId>
@@ -87,7 +87,6 @@
       -->
     </dependencies>
   </dependencyManagement>
-
 
   <build>
     <!-- Todo define your own plugin version in your project parent POM -->
