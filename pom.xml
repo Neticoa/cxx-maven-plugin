@@ -156,8 +156,15 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
-        <version>2.9</version>	
-        <executions> 	
+        <version>3.2</version>	
+        <executions> 
+          <execution>
+            <id>default-descriptor</id>
+            <goals>
+              <goal>descriptor</goal>
+            </goals>
+            <phase>process-classes</phase>
+          </execution>	
           <execution>	
             <id>generate-helpmojo</id>
             <goals>
@@ -229,6 +236,21 @@
     	<version>2.5.0</version>
     	<type>jar</type>
     	<scope>compile</scope>
+    </dependency>
+    <dependency>    
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-dependency-plugin</artifactId>
+      <version>2.10</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.plugin-tools</groupId>
+      <artifactId>maven-plugin-annotations</artifactId>
+      <version>3.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xerial.snappy</groupId>
+      <artifactId>snappy-java</artifactId>
+      <version>1.1.1.6</version>
     </dependency>
  </dependencies>
 </project>

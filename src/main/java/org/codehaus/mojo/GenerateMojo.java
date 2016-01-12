@@ -64,6 +64,7 @@ import java.util.regex.Pattern;
  * @description Creates a project from an archetype. Use archetypeArtifactId property.
  * @requiresProject false
  * @goal generate
+ * @since 0.0.6
  * @author Franck Bonin 
  * 
  */

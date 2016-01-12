@@ -1,0 +1,157 @@
+<component-set>
+  <components>
+    <!--
+     |
+     | ArchiveContentLister.
+     |
+     -->
+    
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>bzip2</role-hint>
+      <implementation>org.codehaus.plexus.archiver.bzip2.BZip2ArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>gzip</role-hint>
+      <implementation>org.codehaus.plexus.archiver.gzip.GZipArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>snappy</role-hint>
+      <implementation>org.codehaus.plexus.archiver.snappy.SnappyArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>tar</role-hint>
+      <implementation>org.codehaus.plexus.archiver.tar.TarArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
+    
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>zip</role-hint>
+      <implementation>org.codehaus.plexus.archiver.zip.ZipArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>jar</role-hint>
+      <!-- there is no implementation of JarArchiveContentLister, but ZipArchiveContentLister will do the job -->
+      <implementation>org.codehaus.plexus.archiver.zip.ZipArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>war</role-hint>
+      <!-- there is no implementation of WarArchiveContentLister, but ZipArchiveContentLister will do the job -->
+      <implementation>org.codehaus.plexus.archiver.zip.ZipArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>ear</role-hint>
+      <!-- there is no implementation of EarArchiveContentLister, but ZipArchiveContentLister will do the job -->
+      <implementation>org.codehaus.plexus.archiver.zip.ZipArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>swc</role-hint>
+      <!-- there is no implementation of SWCArchiveContentLister, but ZipArchiveContentLister will do the job -->
+      <implementation>org.codehaus.plexus.archiver.zip.ZipArchiveContentListerr</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>	
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>nar</role-hint>
+      <!-- there is no implementation of NARArchiveContentLister, but ZipArchiveContentLister will do the job -->
+      <implementation>org.codehaus.plexus.archiver.zip.ZipArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>  
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>esb</role-hint>
+      <!-- there is no implementation of ESBArchiveContentLister, but ZipArchiveContentLister will do the job -->
+      <implementation>org.codehaus.plexus.archiver.zip.ZipArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>    
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>sar</role-hint>
+      <!-- there is no implementation of SARArchiveContentLister, but ZipArchiveContentLister will do the job -->
+      <implementation>org.codehaus.plexus.archiver.zip.ZipArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>car</role-hint>
+      <!-- there is no implementation of CARArchiveContentLister, but ZipArchiveContentLister will do the job -->
+      <implementation>org.codehaus.plexus.archiver.zip.ZipArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>  
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>par</role-hint>
+      <!-- there is no implementation of PARArchiveContentLister, but ZipArchiveContentLister will do the job -->
+      <implementation>org.codehaus.plexus.archiver.zip.ZipArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>  
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>rar</role-hint>
+      <!-- there is no implementation of RarArchiveContentLister, but ZipArchiveContentLister will do the job -->
+      <implementation>org.codehaus.plexus.archiver.zip.ZipArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
+    
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>tgz</role-hint>
+      <implementation>org.codehaus.plexus.archiver.tar.TarGZipArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>tar.gz</role-hint>
+      <implementation>org.codehaus.plexus.archiver.tar.TarGZipArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
+
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>tbz2</role-hint>
+      <implementation>org.codehaus.plexus.archiver.tar.TarBZip2ArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
+
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>tar.bz2</role-hint>
+      <implementation>org.codehaus.plexus.archiver.tar.TarBZip2ArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
+
+    <component>
+      <role>org.codehaus.plexus.archiver.ArchiveContentLister</role>
+      <role-hint>tar.snappy</role-hint>
+      <implementation>org.codehaus.plexus.archiver.tar.TarSnappyArchiveContentLister</implementation>
+      <instantiation-strategy>per-lookup</instantiation-strategy>
+    </component>
+
+    <!--
+     |
+     | ArchiveContentListerManager
+     |
+     -->
+    <component>
+      <role>org.codehaus.plexus.archiver.manager.ArchiveContentListerManager</role>
+      <implementation>org.codehaus.plexus.archiver.manager.DefaultArchiveContentListerManager</implementation>
+      <role-hint>default</role-hint>
+    </component>	  
+
+  </components>
+</component-set>
