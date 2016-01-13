@@ -1,5 +1,6 @@
+package org.codehaus.mojo;
 /*
- * Copyright (C) 2011, Neticoa SAS France - Tous droits réservés.
+ * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +16,6 @@
  * limitations under the License.
  *
  */
-package org.codehaus.mojo;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.Date;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang.StringUtils;
@@ -38,8 +37,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
  * Goal which build VisualStudio solutions.
@@ -55,7 +52,7 @@ public class VisualStudioMojo extends AbstractLaunchMojo
      * 
      * @since 0.0.5
      */
-    @Parameter( property = "visualstudio.solutionDir")
+    @Parameter( property = "visualstudio.solutionDir" )
     private String solutionDir;
     
     protected String getSolutionDir()
@@ -117,9 +114,9 @@ public class VisualStudioMojo extends AbstractLaunchMojo
     
     protected String visualStudioBuildVersion()
     {
-        Pattern p = Pattern.compile("(\\d+\\.)+\\d+");
-        Matcher m = p.matcher(buildVersion);
-        if (m.find()) 
+        Pattern p = Pattern.compile( "(\\d+\\.)+\\d+" );
+        Matcher m = p.matcher( buildVersion );
+        if ( m.find() ) 
         {
             getLog().debug( "Visual Studio compatible buildVersion match is " + m.group() );
             return m.group();
@@ -133,15 +130,16 @@ public class VisualStudioMojo extends AbstractLaunchMojo
     
     protected String buildVersionExtension()
     {
-        Pattern p = Pattern.compile("(\\d+\\.)+\\d+((-[^-\\s]+)+)");
-        Matcher m = p.matcher(buildVersion);
-        if (m.matches() && m.groupCount() >= 3) 
+        Pattern p = Pattern.compile( "(\\d+\\.)+\\d+((-[^-\\s]+)+)" );
+        Matcher m = p.matcher( buildVersion );
+        if ( m.matches() && m.groupCount() >= 3 ) 
         {
             String versionExtension = m.group(2);
             getLog().debug( "Visual Studio compatible Extension version is " + versionExtension );
             if (versionExtension.contains("SNAPSHOT"))
             {
-                return versionExtension.replaceAll("SNAPSHOT", (new SimpleDateFormat("yyyyMMdd.HHmmss")).format(new Date()));
+                return versionExtension.replaceAll( "SNAPSHOT",
+                    ( new SimpleDateFormat( "yyyyMMdd.HHmmss" ) ).format( new Date() ) );
             }
             else
             {
@@ -180,7 +178,7 @@ public class VisualStudioMojo extends AbstractLaunchMojo
         args.add( targetArchitecture );
         args.add( visualStudioBuildVersion() );
         args.add( buildVersionExtension() );
-        if (StringUtils.isNotEmpty( compilerOptions ) )
+        if ( StringUtils.isNotEmpty( compilerOptions ) )
         {
             args.add( "\"" + compilerOptions + "\"" );
         }

@@ -1,5 +1,6 @@
+package org.codehaus.mojo;
 /*
- * Copyright (C) 2011, Neticoa SAS France - Tous droits réservés.
+ * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
  *
  * Copyright (C) 2005-2006, The Codehaus
@@ -17,8 +18,6 @@
  * limitations under the License.
  *
  */
-
-package org.codehaus.mojo;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;

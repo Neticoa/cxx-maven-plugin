@@ -1,5 +1,6 @@
+package org.codehaus.mojo;
 /*
- * Copyright (C) 2011, Neticoa SAS France - Tous droits réservés.
+ * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +16,6 @@
  * limitations under the License.
  *
  */
-package org.codehaus.mojo;
 
 import java.io.File;
 import java.util.HashMap;

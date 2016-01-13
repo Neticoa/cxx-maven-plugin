@@ -1,20 +1,21 @@
 package org.codehaus.plexus.archiver.tar;
 
-/**
+/*
+ * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
+ * Author(s) : Franck Bonin, Neticoa SAS France
  *
- * Copyright 2004 The Apache Software Foundation
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  */
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -24,7 +25,8 @@ import org.codehaus.plexus.archiver.AbstractArchiveContentLister;
 import org.codehaus.plexus.archiver.ArchiveContentEntry;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.util.IOUtil;
-import org.xerial.snappy.SnappyInputStream;
+// SNAPPY
+//import org.xerial.snappy.SnappyInputStream;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -211,7 +213,8 @@ public class TarArchiveContentLister
         }
         else if ( compression == UntarCompressionMethod.SNAPPY )
         {
-            return new SnappyInputStream( istream );
+            // SNAPPY
+            //return new SnappyInputStream( istream );
         }
         return istream;
     }

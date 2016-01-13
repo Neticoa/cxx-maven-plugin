@@ -1,5 +1,7 @@
+package org.codehaus.mojo;
+
 /*
- * Copyright (C) 2011, Neticoa SAS France - Tous droits réservés.
+ * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +17,6 @@
  * limitations under the License.
  *
  */
-package org.codehaus.mojo;
 
 import java.io.File;
 import java.util.Iterator;
@@ -28,8 +29,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
  * Add more source directories to the POM.
@@ -59,11 +58,12 @@ public class AddSourceMojo extends AbstractMojo
     {   
         getLog().info( "Cxx Maven Plugin AddSource " );
         Iterator it = sourceDirs.iterator();
-        while( it.hasNext() )
+        while ( it.hasNext() )
         {
             File source = new File( (String) it.next() );
             this.project.addCompileSourceRoot( source.getAbsolutePath() );
-            getLog().info( "Source directory: \"" + source.getAbsolutePath() + "\" added to Maven Project." );              
+            getLog().info( "Source directory: \"" + source.getAbsolutePath()
+                 + "\" added to Maven Project." );              
         }
     }
 }

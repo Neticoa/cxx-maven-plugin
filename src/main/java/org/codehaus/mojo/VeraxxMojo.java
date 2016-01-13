@@ -1,5 +1,7 @@
+package org.codehaus.mojo;
+
 /*
- * Copyright (C) 2011, Neticoa SAS France - Tous droits réservés.
+ * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +17,7 @@
  * limitations under the License.
  *
  */
-package org.codehaus.mojo;
+
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 import java.io.ByteArrayInputStream;
@@ -50,8 +52,6 @@ import org.apache.maven.model.FileSet;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
  * Goal which vera++ check sources.
@@ -84,7 +84,8 @@ public class VeraxxMojo extends AbstractLaunchMojo
         int res = 0;
         try
         {
-            res = executeCommandLine( execCheck, commandLineCheck, enviro, outStream/*getOutputStreamOut()*/, errStream/*getOutputStreamErr()*/, getInputStream() );
+            res = executeCommandLine( execCheck, commandLineCheck, enviro,
+                outStream/*getOutputStreamOut()*/, errStream/*getOutputStreamErr()*/, getInputStream() );
         }
         catch ( ExecuteException e )
         {
@@ -101,7 +102,8 @@ public class VeraxxMojo extends AbstractLaunchMojo
             // due to jdk8 bug :: https://bugs.openjdk.java.net/browse/JDK-8054565
             // we use this dirty try/catch ...
             // because this quick command line call can close the output stream before jvm does
-            getLog().info( "jvm "+ System.getProperty("java.version") +" (8u11 - 9) workaround, ignoring a " + e.toString() + " during vera++ test command line.") ;
+            getLog().info( "jvm "+ System.getProperty( "java.version" )
+                + " (8u11 - 9) workaround, ignoring a " + e.toString() + " during vera++ test command line.") ;
             //throw new MojoExecutionException( "preExecute Command execution failed.", e );
         }
         
@@ -132,7 +134,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
      * Arguments for vera++ program. Shall be -nodup -showrules 
      * 
      */
-    @Parameter( property = "veraxx.args", defaultValue = "-nodup -showrules")
+    @Parameter( property = "veraxx.args", defaultValue = "-nodup -showrules" )
     private String commandArgs;
     
     protected String getCommandArgs()
@@ -146,7 +148,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
      * 
      * @since 0.0.4
      */
-    @Parameter( property = "veraxx.reportsfilePath", defaultValue = "vera++-reports")
+    @Parameter( property = "veraxx.reportsfilePath", defaultValue = "vera++-reports" )
     private File reportsfileDir;
 
     /**
@@ -154,7 +156,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
      * 
      * @since 0.0.4
      */
-    @Parameter( property = "veraxx.reportIdentifier", defaultValue = "")
+    @Parameter( property = "veraxx.reportIdentifier", defaultValue = "" )
     private String reportIdentifier;
     
     private String getReportFileName()
@@ -171,7 +173,8 @@ public class VeraxxMojo extends AbstractLaunchMojo
         }
         else
         {
-            OutputReportName = basedir.getAbsolutePath() + File.separator + reportsfileDir.getPath() + File.separator + getReportFileName();
+            OutputReportName = basedir.getAbsolutePath() + File.separator + reportsfileDir.getPath()
+                + File.separator + getReportFileName();
         }
         getLog().info( "Vera++ report location " + OutputReportName );
          
@@ -204,7 +207,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
         OutputStream outErrFilter = new OutputStream()
         {
             StringBuffer sb = new StringBuffer();
-            public void write(int b) throws IOException
+            public void write( int b ) throws IOException
             {
                 if ( ( b == '\n' ) || ( b == '\r' ) )
                 {

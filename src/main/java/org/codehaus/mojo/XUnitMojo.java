@@ -1,5 +1,7 @@
+package org.codehaus.mojo;
+
 /*
- * Copyright (C) 2011, Neticoa SAS France - Tous droits réservés.
+ * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +17,6 @@
  * limitations under the License.
  *
  */
-package org.codehaus.mojo;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -30,8 +31,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
  * Goal which launch unit test  suing custum command.
@@ -50,7 +49,7 @@ public class XUnitMojo extends LaunchMojo
     @Parameter( property = "xunit.reportsfilePath", defaultValue = "xunit-reports" )
     private File reportsfileDir;
     
-    protected void preExecute(Executor exec, CommandLine commandLine, Map enviro) throws MojoExecutionException
+    protected void preExecute( Executor exec, CommandLine commandLine, Map enviro ) throws MojoExecutionException
     {
         // this
         String OutputReportDir = new String();
@@ -67,10 +66,10 @@ public class XUnitMojo extends LaunchMojo
         File file = new File( OutputReportDir + "/Readme.txt" );
         try
         {
-            DataOutputStream out = new DataOutputStream( new FileOutputStream(file) );
-            out.writeBytes( "You shall produce xUnit reports called \"xunit-result-*.xml\" within this directory.\n");
+            DataOutputStream out = new DataOutputStream( new FileOutputStream( file ) );
+            out.writeBytes( "You shall produce xUnit reports called \"xunit-result-*.xml\" within this directory.\n" );
         }
-        catch (IOException e)
+        catch ( IOException e )
         {
              getLog().info( "Could not write to " + OutputReportDir + File.separator + "Readme.txt" );
         }
@@ -94,9 +93,9 @@ public class XUnitMojo extends LaunchMojo
     protected boolean skipTests;
     
     /**
-     * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable it using
-     * the "maven.test.skip" property, because maven.test.skip shall disables both running the tests and compiling the tests.
-     * Consider using the <code>skipTests</code> parameter instead.
+     * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable
+     * it using the "maven.test.skip" property, because maven.test.skip shall disables both running the tests
+     * and compiling the tests. Consider using the <code>skipTests</code> parameter instead.
      *
      * @since 0.0.5
      */

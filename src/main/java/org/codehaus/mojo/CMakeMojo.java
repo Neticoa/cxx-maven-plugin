@@ -1,5 +1,6 @@
+package org.codehaus.mojo;
 /*
- * Copyright (C) 2011, Neticoa SAS France - Tous droits réservés.
+ * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +16,6 @@
  * limitations under the License.
  *
  */
-package org.codehaus.mojo;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -375,7 +375,7 @@ public class CMakeMojo extends AbstractLaunchMojo
             }
             else
             {
-                sName = (bMavenDependency?"${STATIC_LIBRARY_PREFIX}":"") + sName;
+                sName = (bMavenDependency ? "${STATIC_LIBRARY_PREFIX}" : "") + sName;
             }
         }
         return sName;
@@ -383,15 +383,15 @@ public class CMakeMojo extends AbstractLaunchMojo
     
     protected String baseNameAsSharedModule(String sName, boolean bMavenDependency)
     {
-        if (FilenameUtils.isExtension(sName, FilenameUtils.getExtension(sharedModuleSuffix)))
+        if (FilenameUtils.isExtension( sName, FilenameUtils.getExtension( sharedModuleSuffix ) ) )
         {
-            sName = FilenameUtils.removeExtension(sName)+(bMavenDependency?"${SHARED_MODULE_SUFFIX}":"");
-            if (! StringUtils.isEmpty(sharedModulePrefix))
+            sName = FilenameUtils.removeExtension( sName ) + ( bMavenDependency ? "${SHARED_MODULE_SUFFIX}" : "" );
+            if (! StringUtils.isEmpty( sharedModulePrefix ) )
             {
-                if (0 == sName.indexOf(sharedModulePrefix))
+                if (0 == sName.indexOf( sharedModulePrefix ) )
                 {
-                    sName = sName.replaceFirst(Pattern.quote(sharedModulePrefix), "");
-                    sName = (bMavenDependency?"${SHARED_MODULE_PREFIX}":"") + sName;
+                    sName = sName.replaceFirst( Pattern.quote( sharedModulePrefix ), "");
+                    sName = ( bMavenDependency ? "${SHARED_MODULE_PREFIX}" : "" ) + sName;
                 }
                 else
                 {
@@ -400,7 +400,7 @@ public class CMakeMojo extends AbstractLaunchMojo
             }
             else
             {
-                sName = (bMavenDependency?"${SHARED_MODULE_PREFIX}":"") + sName;
+                sName = ( bMavenDependency?"${SHARED_MODULE_PREFIX}":"" ) + sName;
             }
         }
         return sName;
@@ -522,7 +522,7 @@ public class CMakeMojo extends AbstractLaunchMojo
             finally
             {
                 getLog().debug( "close input stream at full update");
-                IOUtils.closeQuietly(dependenciesStream);
+                IOUtils.closeQuietly( dependenciesStream );
             }
         }
         

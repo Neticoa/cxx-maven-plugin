@@ -1,5 +1,7 @@
+package org.codehaus.mojo;
+
 /*
- * Copyright (C) 2011, Neticoa SAS France - Tous droits réservés.
+ * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +17,6 @@
  * limitations under the License.
  *
  */
-package org.codehaus.mojo;
 
 import java.io.File;
 import java.util.HashMap;
@@ -25,8 +26,6 @@ import java.util.Map;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
  * Goal which valgrind executables.
@@ -46,7 +45,7 @@ public class ValgrindMojo extends AbstractLaunchMojo
      * 
      * @since 0.0.4
      */
-    @Parameter( property = "valgrind.reportsfilePath", defaultValue = "valgrind-reports")
+    @Parameter( property = "valgrind.reportsfilePath", defaultValue = "valgrind-reports" )
     private File reportsfileDir;
 
     /**
@@ -54,7 +53,7 @@ public class ValgrindMojo extends AbstractLaunchMojo
      * 
      * @since 0.0.4
      */
-    @Parameter( property = "valgrind.reportIdentifier", defaultValue = "")
+    @Parameter( property = "valgrind.reportIdentifier", defaultValue = "" )
     private String reportIdentifier;
     
     private String getReportFileName()
@@ -65,7 +64,7 @@ public class ValgrindMojo extends AbstractLaunchMojo
      * Arguments for valgrind program. Shall be --leak-check=yes --demangle=yes --xml=yes
      * 
      */
-    @Parameter( property = "valgrind.args", defaultValue = "--leak-check=yes --demangle=yes --xml=yes")
+    @Parameter( property = "valgrind.args", defaultValue = "--leak-check=yes --demangle=yes --xml=yes" )
     private String commandArgs;
     
     protected String getCommandArgs()
@@ -94,7 +93,7 @@ public class ValgrindMojo extends AbstractLaunchMojo
      * Path to executed (tested) program 
      * 
      */
-    @Parameter( property = "valgrind.instrumented", required = true)
+    @Parameter( property = "valgrind.instrumented", required = true )
     private String instrumentedExecutablePath;
     
     /**
@@ -132,7 +131,7 @@ public class ValgrindMojo extends AbstractLaunchMojo
      * 
      * @since 0.0.4
      */
-    @Parameter( property = "valgrind.workingdir")
+    @Parameter( property = "valgrind.workingdir" )
     private File workingDir;
     
     protected File getWorkingDir()

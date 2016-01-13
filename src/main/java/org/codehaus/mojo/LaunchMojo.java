@@ -1,5 +1,7 @@
+package org.codehaus.mojo;
+
 /*
- * Copyright (C) 2011, Neticoa SAS France - Tous droits réservés.
+ * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +17,7 @@
  * limitations under the License.
  *
  */
-package org.codehaus.mojo;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,21 +29,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.rmi.CORBA.Util;
 
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
  * Goal which Launch an external executable.
  *
  * @author Franck Bonin 
- * @goal launch
- * 
  */
+@Mojo( name = "launch" )
 public class LaunchMojo extends AbstractLaunchMojo
 {
 
@@ -63,7 +61,7 @@ public class LaunchMojo extends AbstractLaunchMojo
      * Arguments for the executed program
      * 
      */
-    @Parameter( property = "launch.args")
+    @Parameter( property = "launch.args" )
     private String commandArgs;
     
     protected String getCommandArgs()

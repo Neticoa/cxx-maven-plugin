@@ -1,5 +1,7 @@
+package org.codehaus.mojo;
+
 /*
- * Copyright (C) 2011, Neticoa SAS France - Tous droits réservés.
+ * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +17,6 @@
  * limitations under the License.
  *
  */
-package org.codehaus.mojo;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,8 +39,6 @@ import org.apache.maven.model.FileSet;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
  * Goal which gcovr execution.
@@ -78,7 +77,7 @@ public class CoverageMojo extends LaunchMojo
     @Parameter( property = "coverage.preclean", defaultValue = "true" )
     private boolean preclean;
     
-    protected void preExecute(Executor exec, CommandLine commandLine, Map enviro) throws MojoExecutionException
+    protected void preExecute( Executor exec, CommandLine commandLine, Map enviro ) throws MojoExecutionException
     {
         if ( preclean )
         {
@@ -92,11 +91,11 @@ public class CoverageMojo extends LaunchMojo
             FileSetManager aFileSetManager = new FileSetManager();
             String[] found = aFileSetManager.getIncludedFiles( afileSet );
 
-            for (int i = 0; i < found.length; i++)
+            for ( int i = 0; i < found.length; i++ )
             {
-                File target = new File( getWorkingDir() + "/" + found[i]);
+                File target = new File( getWorkingDir() + "/" + found[i] );
                 getLog().debug( "Found file " + target.getAbsolutePath() );
-                if (target.exists() )
+                if ( target.exists() )
                 {
                     try
                     {
@@ -130,7 +129,7 @@ public class CoverageMojo extends LaunchMojo
     @Parameter( property = "coverage.args", defaultValue = "-x -d" )
     private String gcovrArgs;
     
-    protected void postExecute(int resultCode) throws MojoExecutionException
+    protected void postExecute( int resultCode ) throws MojoExecutionException
     {
         String OutputReportName = new String();
         if ( reportsfileDir.isAbsolute() )
@@ -169,7 +168,8 @@ public class CoverageMojo extends LaunchMojo
         {
             getLog().info( "Executing command line: " + commandLine );
 
-            int res = executeCommandLine( exec, commandLine, getEnvs(), outStream/*getOutputStreamOut()*/, getOutputStreamErr(), pyScript/*getInputStream()*/ );
+            int res = executeCommandLine( exec, commandLine, getEnvs(),
+                outStream/*getOutputStreamOut()*/, getOutputStreamErr(), pyScript/*getInputStream()*/ );
             // this is a hugly workaround against a random bugs from hudson cobertura plugin.
             // hudson cobertura plugin randomly truncat coverage reports file to a 1024 size multiple
             // while it copy reports from slave to master node
@@ -208,9 +208,9 @@ public class CoverageMojo extends LaunchMojo
     protected boolean skipTests;
     
     /**
-     * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable it using
-     * the "maven.test.skip" property, because maven.test.skip shall disables both running the tests and compiling the tests.
-     * Consider using the <code>skipTests</code> parameter instead.
+     * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable
+     * it using the "maven.test.skip" property, because maven.test.skip shall disables both running the tests
+     * and compiling the tests. Consider using the <code>skipTests</code> parameter instead.
      *
      * @since 0.0.5
      */

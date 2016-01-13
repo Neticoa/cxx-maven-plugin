@@ -1,3 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--
+Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
+Author(s) : Franck Bonin, Neticoa SAS France
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -173,6 +192,41 @@
           </execution>
         </executions>
       </plugin>
+      
+      <!-- 
+      [INFO] Restricted to JDK 1.5 yet org.xerial.snappy:snappy-java:jar:1.1.1.6:compile contains org/xerial/snappy/OSInfo.class targeted to JDK 1.6
+      [WARNING] Rule 0: org.apache.maven.plugins.enforcer.EnforceBytecodeVersion failed with message:
+      Found Banned Dependency: org.xerial.snappy:snappy-java:jar:1.1.1.6
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/src/main/java/**/*Snappy*.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      
+      
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <configuration>
+          <excludes combine.children="append">
+            <!--
+            -->
+            <exclude>generation.txt</exclude>
+            <exclude>deploy.txt</exclude>
+            <exclude>README.md</exclude>
+            <exclude>doc.txt</exclude>
+            <exclude>geany_projet</exclude>
+            <exclude>SAMPLE/**</exclude>
+            <exclude>**/gcovr.py</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      
     </plugins>
   </build>
 
@@ -247,10 +301,17 @@
       <artifactId>maven-plugin-annotations</artifactId>
       <version>3.4</version>
     </dependency>
+    <!-- 
+      [INFO] Restricted to JDK 1.5 yet org.xerial.snappy:snappy-java:jar:1.1.1.6:compile contains org/xerial/snappy/OSInfo.class targeted to JDK 1.6
+      [WARNING] Rule 0: org.apache.maven.plugins.enforcer.EnforceBytecodeVersion failed with message:
+      Found Banned Dependency: org.xerial.snappy:snappy-java:jar:1.1.1.6
+    -->
+    <!--
     <dependency>
       <groupId>org.xerial.snappy</groupId>
       <artifactId>snappy-java</artifactId>
       <version>1.1.1.6</version>
     </dependency>
+    -->
  </dependencies>
 </project>
