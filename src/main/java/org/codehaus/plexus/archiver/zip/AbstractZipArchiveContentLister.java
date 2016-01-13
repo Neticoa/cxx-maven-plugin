@@ -28,7 +28,7 @@ import java.util.List;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
-//import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.IOUtils;
 import org.codehaus.plexus.archiver.AbstractArchiveContentLister;
 import org.codehaus.plexus.archiver.ArchiveContentEntry;
 //import org.codehaus.plexus.archiver.ArchiveFilterException;
@@ -180,6 +180,7 @@ public abstract class AbstractZipArchiveContentLister
         }
         finally
         {
+            IOUtils.closeQuietly( zf);
         }
         return archiveContentList;
     }

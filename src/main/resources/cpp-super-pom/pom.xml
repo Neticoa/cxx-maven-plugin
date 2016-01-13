@@ -292,15 +292,16 @@
       </distributionManagement>
     </profile>    
 
+    <!--
+       Build Config profiles
+       Prefer the "-D buildConfig=release|debug" syntax rather the "-P release|debug" syntax, 
+       in order to activate the desired profile. This is required if you use dependencies intensively
+       since Maven Reactor is called so early that all xml properties are not yet interpolated.
+       ${buildConfig} is used in dependencies node and need to be set by command line to work
+       properly under Reactor Context
+    -->
     <profile>
       <id>release</id>
-      <!--
-           Prefer the "-D buildConfig=release" syntax rather the "-P release" syntax, in order to activate
-           the release profile. This is required if you use dependencies intensively since Maven
-           Reactor is called so early that all xml properties are not yet interpolated.
-           ${buildConfig} is used in dependencies node and need to be set by command line to work
-           properly under Reactor Context
-      -->
       <activation>
         <property>
           <name>buildConfig</name>
@@ -313,16 +314,39 @@
         <buildConfig>release</buildConfig>
       </properties>
     </profile>
+    
+    <profile>
+      <id>relcov</id>
+      <activation>
+        <property>
+          <name>buildConfig</name>
+          <value>relcov</value>
+        </property>
+      </activation>
+      <properties>
+        <!-- buildext is for build aim it, beta, rc, etc. -->
+        <buildext>rc</buildext>
+        <buildConfig>relcov</buildConfig>
+      </properties>
+    </profile>
+    
+    <profile>
+      <id>relinfo</id>
+      <activation>
+        <property>
+          <name>buildConfig</name>
+          <value>relinfo</value>
+        </property>
+      </activation>
+      <properties>
+        <!-- buildext is for build aim it, beta, rc, etc. -->
+        <buildext>rc</buildext>
+        <buildConfig>relinfo</buildConfig>
+      </properties>
+    </profile>
        
     <profile>
       <id>debug</id>
-      <!--
-           Prefer the "-D buildConfig=debug" syntax rather the "-P debug" syntax, in order to activate
-           the debug profile. This is required if you use dependencies intensively since Maven
-           Reactor is called so early that all xml properties are not yet interpolated.
-           ${buildConfig} is used in dependencies node and need to be set by command line to work
-           properly under Reactor Context
-      -->
       <activation>
         <property>
           <name>buildConfig</name>
@@ -336,6 +360,21 @@
       </properties>
     </profile>
     
+    <profile>
+      <id>debcov</id>
+      <activation>
+        <property>
+          <name>buildConfig</name>
+          <value>debcov</value>
+        </property>
+      </activation>
+      <properties>
+        <!-- buildext is for build aim it, beta, rc, etc. -->
+        <buildext>rc</buildext>
+        <buildConfig>debcov</buildConfig>
+      </properties>
+    </profile>
+        
     <!--
          Usefull profile to dump the full list of system properties,
          including those set by Maven such as project.build.outputDirectory,

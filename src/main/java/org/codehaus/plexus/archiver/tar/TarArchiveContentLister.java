@@ -137,6 +137,7 @@ public class TarArchiveContentLister
         }
         finally
         {
+            IOUtil.close( tis );
         }
         return archiveContentList;
     }
