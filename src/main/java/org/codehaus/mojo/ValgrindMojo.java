@@ -22,14 +22,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+
 /**
  * Goal which valgrind executables.
  *
  * @author Franck Bonin 
- * @goal valgrind
- * @phase test
- * 
  */
+@Mojo( name = "valgrind", defaultPhase = LifecyclePhase.TEST )
 public class ValgrindMojo extends AbstractLaunchMojo
 {
     protected List getArgsList()
@@ -40,17 +44,17 @@ public class ValgrindMojo extends AbstractLaunchMojo
     /**
      * The Report OutputFile Location.
      * 
-     * @parameter expression="${valgrind.reportsfilePath}" default-value="valgrind-reports"
      * @since 0.0.4
      */
+    @Parameter( property = "valgrind.reportsfilePath", defaultValue = "valgrind-reports")
     private File reportsfileDir;
 
     /**
      * The Report OutputFile name identifier.
      * 
-     * @parameter expression="${valgrind.reportIdentifier}" default-value=""
      * @since 0.0.4
      */
+    @Parameter( property = "valgrind.reportIdentifier", defaultValue = "")
     private String reportIdentifier;
     
     private String getReportFileName()
@@ -60,8 +64,8 @@ public class ValgrindMojo extends AbstractLaunchMojo
     /**
      * Arguments for valgrind program. Shall be --leak-check=yes --demangle=yes --xml=yes
      * 
-     * @parameter expression="${valgrind.args}" default-value="--leak-check=yes --demangle=yes --xml=yes"
      */
+    @Parameter( property = "valgrind.args", defaultValue = "--leak-check=yes --demangle=yes --xml=yes")
     private String commandArgs;
     
     protected String getCommandArgs()
@@ -89,16 +93,15 @@ public class ValgrindMojo extends AbstractLaunchMojo
     /**
      * Path to executed (tested) program 
      * 
-     * @parameter expression="${valgrind.instrumented}"
-     * @required
      */
+    @Parameter( property = "valgrind.instrumented", required = true)
     private String instrumentedExecutablePath;
     
     /**
      * Arguments of executed program 
      * 
-     * @parameter expression="${valgrind.instrumentedArgs}" default-value=" "
      */
+    @Parameter( property = "valgrind.instrumentedArgs", defaultValue = " " )
     private String instrumentedExecutableArgs;
     
     protected String getExecutable()
@@ -109,9 +112,9 @@ public class ValgrindMojo extends AbstractLaunchMojo
     /**
      * Environment variables passed to valgrind program.
      * 
-     * @parameter
      * @since 0.0.4
      */
+    @Parameter()
     private Map environmentVariables = new HashMap();
     
     protected Map getMoreEnvironmentVariables()
@@ -127,9 +130,9 @@ public class ValgrindMojo extends AbstractLaunchMojo
     /**
      * The current working directory. Optional. If not specified, basedir will be used.
      * 
-     * @parameter expression="${valgrind.workingdir}"
      * @since 0.0.4
      */
+    @Parameter( property = "valgrind.workingdir")
     private File workingDir;
     
     protected File getWorkingDir()
@@ -146,9 +149,9 @@ public class ValgrindMojo extends AbstractLaunchMojo
     * Set this to "true" to skip running tests, but still compile them. Its use is NOT RECOMMENDED, but quite
     * convenient on occasion.
     *
-    * @parameter expression="${skipTests}" default-Value = "false"
     * @since 0.0.5
     */
+    @Parameter( property = "skipTests", defaultValue = "false" )
     protected boolean skipTests;
     
     /**
@@ -156,9 +159,9 @@ public class ValgrindMojo extends AbstractLaunchMojo
     * the "maven.test.skip" property, because maven.test.skip shall disables both running the tests and compiling the tests.
     * Consider using the <code>skipTests</code> parameter instead.
     *
-    * @parameter expression="${maven.test.skip}"  default-Value = "false"
     * @since 0.0.5
     */
+    @Parameter( property = "maven.test.skip", defaultValue = "false" )
     protected boolean skip;
     
     protected boolean isSkip()

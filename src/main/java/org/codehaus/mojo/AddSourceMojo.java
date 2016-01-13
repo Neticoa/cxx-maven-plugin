@@ -25,32 +25,34 @@ import java.util.ArrayList;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.project.MavenProject;
 
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+
 /**
  * Add more source directories to the POM.
  *
- * @goal addsource
- * @phase initialize
  * @author Franck Bonin
  * @version $Id$
  * @since 0.0.5
- * @threadSafe
  */
+@Mojo( name = "addsource", defaultPhase = LifecyclePhase.INITIALIZE, threadSafe = true )
 public class AddSourceMojo extends AbstractMojo
 {
     /**
      * directory were sources are
      * 
-     * @parameter
      * @since 0.0.4
      */
+    @Parameter()
     private List sourceDirs = new ArrayList();
 
     /**
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
      * @since 0.0.5
      */
+    @Parameter( property = "project", readonly = true, required = true )
     private MavenProject project;
 
     public void execute()

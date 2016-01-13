@@ -22,14 +22,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+
 /**
  * Goal which makes workspace.
  *
  * @author Franck Bonin 
- * @goal make
- * @phase compile
- * 
  */
+@Mojo( name = "make", defaultPhase = LifecyclePhase.COMPILE )
 public class MakeMojo extends AbstractLaunchMojo
 {
 
@@ -41,9 +45,9 @@ public class MakeMojo extends AbstractLaunchMojo
     /**
      * Arguments for make program
      * 
-     * @parameter expression="${make.args}"
      * @since 0.0.4
      */
+    @Parameter( property = "make.args" )
     private String commandArgs;
     
     protected String getCommandArgs()
@@ -55,9 +59,9 @@ public class MakeMojo extends AbstractLaunchMojo
      * make commands names per OS name
      * os name match is java.lang.System.getProperty( "os.name" )
      * 
-     * @parameter
      * @since 0.0.4
      */
+    @Parameter()
     private Map makecommandPerOS = new HashMap();
     
     protected String getExecutable()
@@ -85,9 +89,9 @@ public class MakeMojo extends AbstractLaunchMojo
     /**
      * Environment variables passed to make program.
      * 
-     * @parameter
      * @since 0.0.4
      */
+    @Parameter()
     private Map environmentVariables = new HashMap();
     
     protected Map getMoreEnvironmentVariables()
@@ -103,9 +107,9 @@ public class MakeMojo extends AbstractLaunchMojo
     /**
      * Directory location where make will be executed
      * 
-     * @parameter expression="${make.projectdir}"
      * @since 0.0.4
      */
+    @Parameter( property = "make.projectdir" )
     private File projectDir;
     
     protected File getWorkingDir()

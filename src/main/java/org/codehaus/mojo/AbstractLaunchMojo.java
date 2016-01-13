@@ -46,22 +46,27 @@ import org.apache.commons.exec.OS;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang.StringUtils;
 
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+
 
 public abstract class AbstractLaunchMojo extends AbstractMojo
 {
     /**
     * Current Project
-    * @parameter expression="${project}"
     */
+    @Parameter( property = "project" )
     protected org.apache.maven.project.MavenProject project;
 
      /**
      * Pom directory location
-     * @parameter expression="${basedir}"
-     * @required
-     * @readonly
+     * 
      * @since 0.0.4
      */
+    @Parameter( property = "basedir", readonly = true, required = true )
     protected File basedir;
     
     protected abstract List getArgsList();
@@ -172,11 +177,9 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
     /**
      * The current build session instance.
      * 
-     * @parameter expression="${session}"
-     * @required
-     * @readonly
      */
-    //private MavenSession session;
+    //@Parameter( defaultValue = "${session}", readonly = true )
+    //protected MavenSession session;
 
     CommandLine getExecutablePath( Map enviro, File dir )
     {

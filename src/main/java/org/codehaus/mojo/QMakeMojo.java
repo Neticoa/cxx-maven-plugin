@@ -26,14 +26,18 @@ import java.util.ArrayList;
 
 import org.apache.commons.lang.StringUtils;
 
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+
 /**
  * Goal which qmakes workspace.
  *
  * @author Franck Bonin 
- * @goal qmake
- * @phase initialize
- * 
  */
+@Mojo( name = "qmake", defaultPhase = LifecyclePhase.GENERATE_SOURCES )
 public class QMakeMojo extends AbstractLaunchMojo
 {
 
@@ -45,9 +49,9 @@ public class QMakeMojo extends AbstractLaunchMojo
     /**
      * directory were sources are
      * 
-     * @parameter
      * @since 0.0.4
      */
+    @Parameter()
     private List sourceDirs = new ArrayList();
 
     /**
@@ -55,9 +59,9 @@ public class QMakeMojo extends AbstractLaunchMojo
      * Can be empty, then sourceDirs will so be used.
      * If sourceDirs is empty to, then basedir will be used.
      * 
-     * @parameter
      * @since 0.0.5
      */
+    @Parameter()
     private List pros = new ArrayList();
     
     protected List getProjectList()
@@ -80,10 +84,9 @@ public class QMakeMojo extends AbstractLaunchMojo
     /**
      * Arguments for qmake program
      * 
-     * @parameter expression="${qmake.args}" default-value=""
-     * 
      * @since 0.0.5
      */
+    @Parameter( property = "qmake.args", defaultValue = "" )
     private String commandArgs;
     
     protected String getCommandArgs()
@@ -106,9 +109,9 @@ public class QMakeMojo extends AbstractLaunchMojo
      * qmake commands names per OS name
      * os name match is java.lang.System.getProperty( "os.name" )
      * 
-     * @parameter
      * @since 0.0.5
      */
+    @Parameter()
     private Map qmakecommandPerOS = new HashMap();
     
     protected String getExecutable()
@@ -136,9 +139,9 @@ public class QMakeMojo extends AbstractLaunchMojo
     /**
      * Environment variables passed to qmake program.
      * 
-     * @parameter
      * @since 0.0.5
      */
+    @Parameter()
     private Map environmentVariables = new HashMap();
     
     protected Map getMoreEnvironmentVariables()
@@ -154,9 +157,9 @@ public class QMakeMojo extends AbstractLaunchMojo
     /**
      * Out of source directory
      * 
-     * @parameter expression="${qmake.outsourcedir}"
      * @since 0.0.5
      */
+    @Parameter( property = "qmake.outsourcedir")
     private File outsourceDir;
     
     protected File getWorkingDir()

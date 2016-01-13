@@ -35,30 +35,34 @@ import org.apache.maven.plugin.MojoExecutionException;
 /* Use FileSet and the FileManager provided in this project*/
 import org.apache.maven.model.FileSet;
 
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+
 /**
  * Goal which gcovr execution.
  *
  * @author Franck Bonin 
- * @goal coverage
- * @phase test
- * 
  */
+@Mojo( name = "coverage", defaultPhase = LifecyclePhase.TEST )
 public class CoverageMojo extends LaunchMojo
 {  
     /**
      * The Report OutputFile Location.
      * 
-     * @parameter expression="${coverage.reportsfilePath}" default-value="gcovr-reports"
      * @since 0.0.4
      */
+    @Parameter( property = "coverage.reportsfilePath", defaultValue = "gcovr-reports" )
     private File reportsfileDir;
     
     /**
      * The Report OutputFile name identifier.
      * 
-     * @parameter expression="${gcovr.reportIdentifier}" default-value=""
      * @since 0.0.4
      */
+    @Parameter( property = "coverage.reportIdentifier", defaultValue = "" )
     private String reportIdentifier;
     
     private String getReportFileName()
@@ -69,8 +73,9 @@ public class CoverageMojo extends LaunchMojo
     /**
      * Arguments to clean preexisting gcda report under workingDir
      * 
-     * @parameter expression="${gcovr.preclean}" default-value=true
+     * @since 0.0.4
      */
+    @Parameter( property = "coverage.preclean", defaultValue = "true" )
     private boolean preclean;
     
     protected void preExecute(Executor exec, CommandLine commandLine, Map enviro) throws MojoExecutionException
@@ -121,8 +126,8 @@ public class CoverageMojo extends LaunchMojo
      * Arguments for the gcovr program. Shall be -x -d
      * ex: -x -d to produce Xml reports and clean gcda execution reports after reading
      * 
-     * @parameter expression="${gcovr.args}" default-value="-x -d"
      */
+    @Parameter( property = "coverage.args", defaultValue = "-x -d" )
     private String gcovrArgs;
     
     protected void postExecute(int resultCode) throws MojoExecutionException
@@ -197,9 +202,9 @@ public class CoverageMojo extends LaunchMojo
      * Set this to "true" to skip running tests, but still compile them. Its use is NOT RECOMMENDED, but quite
      * convenient on occasion.
      *
-     * @parameter expression="${skipTests}" default-Value = "false"
      * @since 0.0.5
      */
+    @Parameter( property = "skipTests", defaultValue = "false" )
     protected boolean skipTests;
     
     /**
@@ -207,9 +212,9 @@ public class CoverageMojo extends LaunchMojo
      * the "maven.test.skip" property, because maven.test.skip shall disables both running the tests and compiling the tests.
      * Consider using the <code>skipTests</code> parameter instead.
      *
-     * @parameter expression="${maven.test.skip}"  default-Value = "false"
      * @since 0.0.5
      */
+    @Parameter( property = "maven.test.skip", defaultValue = "false" )
     protected boolean skip;
     
     protected boolean isSkip()

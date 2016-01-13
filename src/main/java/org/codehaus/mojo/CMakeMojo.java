@@ -50,14 +50,19 @@ import org.apache.maven.shared.model.fileset.FileSet;
 import org.apache.maven.shared.model.fileset.util.FileSetManager;
 import org.apache.maven.artifact.Artifact;
 
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+
 /**
  * Goal which cmakes workspace.
  *
  * @author Franck Bonin 
- * @goal cmake
- * @phase generate-sources
  * 
  */
+@Mojo( name = "cmake", defaultPhase = LifecyclePhase.GENERATE_SOURCES )
 public class CMakeMojo extends AbstractLaunchMojo
 {
 
@@ -70,9 +75,9 @@ public class CMakeMojo extends AbstractLaunchMojo
      * Directory location of main CMakeList.txt, argument for cmake command 
      * Defaut set to ${basedir}
      * 
-     * @parameter expression="${cmake.projectdir}"
      * @since 0.0.4
      */
+    @Parameter( property = "cmake.projectdir" )
     private String projectDir;
     
     protected String getProjectDir()
@@ -87,18 +92,17 @@ public class CMakeMojo extends AbstractLaunchMojo
     /**
      * Generator name, arguments for cmake command
      * 
-     * @parameter expression="${cmake.generator}"
-     * @required
      * @since 0.0.4
      */
+    @Parameter( property = "cmake.generator", required = true )
     private String generator;
     
     /**
      * Arguments for the executed program
      * 
-     * @parameter expression="${cmake.args}"
      * @since 0.0.4
      */
+    @Parameter( property = "cmake.args" )
     private String commandArgs;
     
     protected String addCMakeDefinition(String sCMakeName, String sMavenValue)
@@ -152,9 +156,9 @@ public class CMakeMojo extends AbstractLaunchMojo
     /**
      * Environment variables to pass to the cmake program.
      * 
-     * @parameter
      * @since 0.0.4
      */
+    @Parameter()
     private Map environmentVariables = new HashMap();
     protected Map getMoreEnvironmentVariables()
     {
@@ -170,9 +174,9 @@ public class CMakeMojo extends AbstractLaunchMojo
      * Out of source directory
      * Defaut set to ${basedir}
      * 
-     * @parameter expression="${cmake.outsourcedir}"
      * @since 0.0.4
      */
+    @Parameter( property = "cmake.outsourcedir" )
     private File outsourceDir;
     
     protected File getWorkingDir()
@@ -207,113 +211,113 @@ public class CMakeMojo extends AbstractLaunchMojo
     /**
      * generate a cmake maven dependency file according
      * 
-     * @parameter expression="${cmake.injectMavenDependencies}" default-value=true
      * @since 0.0.6
      */
+    @Parameter( property = "cmake.injectMavenDependencies", defaultValue = "true" )
     private boolean injectMavenDependencies;
     
     /**
      * cmake maven dependency file name. If not full qualified name file location is ${basedir}
      * 
-     * @parameter expression="${cmake.mavenDependenciesFile}"  default-value="CMakeMavenDependencies.txt"
      * @since 0.0.6
      */
+    @Parameter( property = "cmake.mavenDependenciesFile", defaultValue = "CMakeMavenDependencies.txt" )
     private String cmakeMavenDependenciesFile;
     
     /**
      * cmake dependency file name. If not full qualified name file location is ${basedir}
      * 
-     * @parameter expression="${cmake.dependenciesFile}"  default-value="CMakeDependencies.txt"
      * @since 0.0.6
      */
+    @Parameter( property = "cmake.dependenciesFile", defaultValue = "CMakeDependencies.txt" )
     private String cmakeDependenciesFile;
     
     /**
      * build configuration {debug, release, debcov, relcov, relinfo}
      * 
-     * @parameter expression="${buildConfig}"  default-value=""
      * @since 0.0.6
      */
+    @Parameter( property = "buildConfig", defaultValue = "" )
     private String buildConfig;
     
     /**
      * maven artifact sub-classifier {win32, win64, linux-x64_64, etc.}
      * 
-     * @parameter expression="${targetClassifier}"  default-value=""
      * @since 0.0.6
      */
+    @Parameter( property = "targetClassifier", defaultValue = "" )
     private String targetClassifier;
     
     /**
      * build platform = "native API" {win32, linux, mac}
      * 
-     * @parameter expression="${targetPlatform}"  default-value=""
      * @since 0.0.6
      */
+    @Parameter( property = "targetPlatform", defaultValue = "" )
     private String targetPlatform;
     
     /**
      * build architecture {i386, x86_64, etc.}
      * 
-     * @parameter expression="${targetArchitecture}"  default-value=""
      * @since 0.0.6
      */
+    @Parameter( property = "targetArchitecture", defaultValue = "" )
     private String targetArchitecture;
     
     /**
      *  executables suffix of current platform {".exe", etc.}
      * 
-     * @parameter expression="${executableSuffix}"  default-value=""
      * @since 0.0.6
      */
+    @Parameter( property = "executableSuffix", defaultValue = "" )
     private String executableSuffix;
     
     /**
      * libraries prefixe of current platform {"lib", etc.}
      * 
-     * @parameter expression="${sharedLibraryPrefix}"  default-value=""
      * @since 0.0.6
      */
+    @Parameter( property = "sharedLibraryPrefix", defaultValue = "" )
     private String sharedLibraryPrefix;
     
     /**
      * libraries suffixe of current platform {".so", ".dylib", etc.}
      * 
-     * @parameter expression="${sharedLibrarySuffix}"  default-value=""
      * @since 0.0.6
      */
+    @Parameter( property = "sharedLibrarySuffix", defaultValue = "" )
     private String sharedLibrarySuffix;
     
     /**
      * module prefixe of current platform {"lib", etc.}
      * 
-     * @parameter expression="${sharedModulePrefix}"  default-value=""
      * @since 0.0.6
      */
+    @Parameter( property = "sharedModulePrefix", defaultValue = "" )
     private String sharedModulePrefix;
     
     /**
      * module suffixe of current platform {".so", ".dylib", etc.}
      * 
-     * @parameter expression="${sharedModuleSuffix}"  default-value=""
      * @since 0.0.6
      */
+    @Parameter( property = "sharedModuleSuffix", defaultValue = "" )
     private String sharedModuleSuffix;
     
     /**
      * static libraries prefixe of current platform {"lib", etc.}
      * 
-     * @parameter expression="${staticLibraryPrefix}"  default-value=""
      * @since 0.0.6
      */
+    @Parameter( property = "staticLibraryPrefix", defaultValue = "" )
     private String staticLibraryPrefix;
     
     /**
      * static libraries suffixe of current platform {".a", ".lib", etc.}
      * 
-     * @parameter expression="${staticLibrarySuffix}"  default-value=""
      * @since 0.0.6
      */
+    @Parameter( property = "staticLibrarySuffix", defaultValue = "" )
     private String staticLibrarySuffix;
     
     /**
@@ -321,9 +325,9 @@ public class CMakeMojo extends AbstractLaunchMojo
      * default dependencies location is : ${project.build.directory}/dependency/${targetClassifier}/${buildConfig}
      * "${targetClassifier}/${buildConfig}" will be automaticaly added to provided path to search for additionnal dependencies
      * 
-     * @parameter
      * @since 0.0.6
      */
+    @Parameter()
     private List additionalDependenciesRoots = new ArrayList();
     
     

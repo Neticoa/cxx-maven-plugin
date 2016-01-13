@@ -35,23 +35,27 @@ import java.text.SimpleDateFormat;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.io.IOUtils;
 
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+
 /**
  * Goal which build VisualStudio solutions.
  *
  * @author Franck Bonin 
- * @goal msbuild
- * @phase compile
- * 
  */
+@Mojo( name = "msbuild", defaultPhase = LifecyclePhase.COMPILE )
 public class VisualStudioMojo extends AbstractLaunchMojo
 {
 
     /**
-     * Directory location of visual studio solution
+     * Directory location of visual studio solution default set to baseDir
      * 
-     * @parameter expression="${visualstudio.solutionDir}"
      * @since 0.0.5
      */
+    @Parameter( property = "visualstudio.solutionDir")
     private String solutionDir;
     
     protected String getSolutionDir()
@@ -66,50 +70,49 @@ public class VisualStudioMojo extends AbstractLaunchMojo
     /**
      * Visual studio solution file name.
      * 
-     * @parameter expression="${visualstudio.solutionFileName}"
-     * @required
      * @since 0.0.5
      */
+    @Parameter( property = "visualstudio.solutionFileName", required = true )
     private String solutionFileName;
     
     /**
      * Build type [ rebuild | clean | build | ... ]
      * 
-     * @parameter expression="${visualstudio.buildType}" default-value="build"
      * @since 0.0.5
      */
+    @Parameter( property = "visualstudio.buildType", defaultValue = "build" )
     private String buildType;
     
     /**
      * Build config [ debug | release | ... ]
      * 
-     * @parameter expression="${visualstudio.buildConfig}" default-value="release"
      * @since 0.0.5
      */
+    @Parameter( property = "visualstudio.buildConfig", defaultValue = "release" )
     private String buildConfig;
     
     /**
      * target platform  [ win32 | ... ]
      * 
-     * @parameter expression="${visualstudio.targetPlatform}" default-value="win32"
      * @since 0.0.5
      */
+    @Parameter( property = "visualstudio.targetPlatform", defaultValue = "win32" )
     private String targetPlatform;
     
     /**
      * target architecture  [ x86 | amd64 | ia64 | x86_amd64 | x86_ia64 ]
      * 
-     * @parameter expression="${visualstudio.targetArchitecture}" default-value="x86"
      * @since 0.0.5
      */
+    @Parameter( property = "visualstudio.targetArchitecture", defaultValue = "x86" )
     private String targetArchitecture;
     
     /**
      * Build version in visual studio format [ x.y.z.t ]
      * 
-     * @parameter expression="${visualstudio.buildVersion}" default-value="0.0.0.1"
      * @since 0.0.5
      */
+    @Parameter( property = "visualstudio.buildVersion", defaultValue = "0.0.0.1" )
     private String buildVersion;
     
     protected String visualStudioBuildVersion()
@@ -155,9 +158,9 @@ public class VisualStudioMojo extends AbstractLaunchMojo
     /**
      * Additional compiler options (without any global quotation)
      * 
-     * @parameter expression="${visualstudio.compilerOptions}" default-value=""
      * @since 0.0.5
      */
+    @Parameter( property = "visualstudio.compilerOptions", defaultValue = "" )
     private String compilerOptions;
     
     protected String getCommandArgs()
@@ -210,9 +213,9 @@ public class VisualStudioMojo extends AbstractLaunchMojo
     /**
      * Environment variables to pass to the msbuild program.
      * 
-     * @parameter
      * @since 0.0.5
      */
+    @Parameter()
     private Map environmentVariables = new HashMap();
     protected Map getMoreEnvironmentVariables()
     {

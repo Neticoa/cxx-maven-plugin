@@ -35,14 +35,18 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.shared.model.fileset.FileSet;
 import org.apache.maven.shared.model.fileset.util.FileSetManager;
 
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+
 /**
  * Goal which cppcheck sources.
  *
  * @author Franck Bonin 
- * @goal cppcheck
- * @phase test
- * 
  */
+@Mojo( name = "cppcheck", defaultPhase = LifecyclePhase.TEST )
 public class CppCheckMojo extends AbstractLaunchMojo
 {
     protected List getArgsList()
@@ -53,41 +57,41 @@ public class CppCheckMojo extends AbstractLaunchMojo
     /**
      * Directory where cppcheck should search for source files
      * 
-     * @parameter
      * @since 0.0.4
      */
+    @Parameter()
     private List sourceDirs = new ArrayList();
     
     /**
      * Directory where included file shall be found
      * 
-     * @parameter
      * @since 0.0.4
      */
+    @Parameter( )
     private List includeDirs = new ArrayList();
     
     /**
      *  Excludes files/folder from analysis (comma separated list of filter)
      *
-     *  @parameter expression="${cppcheck.excludes}" default-value=""
      *  @since 0.0.5
      */
+    @Parameter( property = "cppcheck.excludes", defaultValue = "" )
     private String excludes;
     
    /**
      * The Report OutputFile Location.
      * 
-     * @parameter expression="${cppcheck.reportsfilePath}" default-value="cppcheck-reports"
      * @since 0.0.4
      */
+    @Parameter( property = "cppcheck.reportsfilePath", defaultValue = "cppcheck-reports" )
     private File reportsfileDir;
     
     /**
      * The Report OutputFile name identifier.
      * 
-     * @parameter expression="${cppcheck.reportIdentifier}" default-value=""
      * @since 0.0.4
      */
+    @Parameter( property = "cppcheck.reportIdentifier", defaultValue = "" )
     private String reportIdentifier;
     
     private String getReportFileName()
@@ -98,8 +102,8 @@ public class CppCheckMojo extends AbstractLaunchMojo
     /**
      * Arguments for the cppcheck program. Shall be -v --enable=style --force --xml 
      * 
-     * @parameter expression="${cppcheck.args}" default-value="-v --enable=style --force --xml"
      */
+    @Parameter( property = "cppcheck.args", defaultValue = "-v --enable=style --force --xml" )
     private String commandArgs;
 
     protected String getCommandArgs()
@@ -206,9 +210,9 @@ public class CppCheckMojo extends AbstractLaunchMojo
     /**
      * Environment variables to pass to cppcheck program.
      * 
-     * @parameter
      * @since 0.0.4
      */
+    @Parameter()
     private Map environmentVariables = new HashMap();
     
     protected Map getMoreEnvironmentVariables()
@@ -224,9 +228,9 @@ public class CppCheckMojo extends AbstractLaunchMojo
     /**
      * The current working directory. Optional. If not specified, basedir will be used.
      * 
-     * @parameter expression="${cppcheck.workingdir}"
      * @since 0.0.4
      */
+    @Parameter( property = "cppcheck.workingdir" )
     private File workingDir;
     
     protected File getWorkingDir()
@@ -242,9 +246,9 @@ public class CppCheckMojo extends AbstractLaunchMojo
      * Set this to "true" to skip running tests, but still compile them. Its use is NOT RECOMMENDED, but quite
      * convenient on occasion.
      *
-     * @parameter expression="${skipTests}" default-Value = "false"
      * @since 0.0.5
      */
+    @Parameter( property = "skipTests", defaultValue = "false" )
     protected boolean skipTests;
     
     /**
@@ -252,9 +256,9 @@ public class CppCheckMojo extends AbstractLaunchMojo
      * the "maven.test.skip" property, because maven.test.skip shall disables both running the tests and compiling the tests.
      * Consider using the <code>skipTests</code> parameter instead.
      *
-     * @parameter expression="${maven.test.skip}"  default-Value = "false"
      * @since 0.0.5
      */
+    @Parameter( property = "maven.test.skip", defaultValue = "false" )
     protected boolean skip;
     
     protected boolean isSkip()

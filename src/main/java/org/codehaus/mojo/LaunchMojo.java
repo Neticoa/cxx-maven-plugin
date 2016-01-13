@@ -29,6 +29,12 @@ import java.util.Map;
 
 import javax.rmi.CORBA.Util;
 
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+
 /**
  * Goal which Launch an external executable.
  *
@@ -43,9 +49,9 @@ public class LaunchMojo extends AbstractLaunchMojo
      * Can be of type <code>&lt;argument&gt;</code> or <code>&lt;classpath&gt;</code> Can be overriden using "cxx.args"
      * env. variable
      * 
-     * @parameter
      * @since 0.0.4
      */
+    @Parameter()
     private List arguments;
     
     protected List getArgsList()
@@ -56,8 +62,8 @@ public class LaunchMojo extends AbstractLaunchMojo
     /**
      * Arguments for the executed program
      * 
-     * @parameter expression="${launch.args}"
      */
+    @Parameter( property = "launch.args")
     private String commandArgs;
     
     protected String getCommandArgs()
@@ -69,10 +75,9 @@ public class LaunchMojo extends AbstractLaunchMojo
      * The executable. Can be a full path or a the name executable. In the latter case, the executable must be in the
      * PATH for the execution to work.
      * 
-     * @parameter expression="${launch.executable}"
-     * @required
      * @since 0.0.4
      */
+    @Parameter( property = "launch.executable", required = true )
     private String executable;
     
     protected String getExecutable()
@@ -83,9 +88,9 @@ public class LaunchMojo extends AbstractLaunchMojo
     /**
      * Environment variables to pass to the executed program.
      * 
-     * @parameter
      * @since 0.0.4
      */
+    @Parameter()
     private Map environmentVariables = new HashMap();
     
     protected Map getMoreEnvironmentVariables()
@@ -97,9 +102,9 @@ public class LaunchMojo extends AbstractLaunchMojo
      * Exit codes to be resolved as successful execution for non-compliant applications (applications not returning 0
      * for success).
      * 
-     * @parameter
      * @since 0.0.4
      */
+    @Parameter()
     private List successCodes;
     
     protected List getSuccesCode()
@@ -110,9 +115,9 @@ public class LaunchMojo extends AbstractLaunchMojo
     /**
      * The current working directory. Optional. If not specified, basedir will be used.
      * 
-     * @parameter expression="${launch.workingdir}"
      * @since 0.0.4
      */
+    @Parameter( property = "launch.workingdir" )
     private File workingDir;
     
     protected File getWorkingDir()
@@ -128,18 +133,18 @@ public class LaunchMojo extends AbstractLaunchMojo
      * Os for which command shall be executed
      * os name match is java.lang.System.getProperty( "os.name" )
      * 
-     * @parameter
      * @since 0.0.4
      */
+    @Parameter()
     private List includeOS;
     
     /**
      * Os for which command shall not be executed
      * os name match is java.lang.System.getProperty( "os.name" )
      *  
-     * @parameter
      * @since 0.0.4
      */
+    @Parameter()
     private List excludeOS;
     
     protected boolean isSkip()
@@ -164,11 +169,11 @@ public class LaunchMojo extends AbstractLaunchMojo
     }
     
     /**
-     * The Report OutputStreamOut Location.
+     * The OutputStreamOut Location.
      * 
-     * @parameter expression="${launch.outputStreamOut}" default-value=""
      * @since 0.0.5
      */
+    @Parameter( property = "launch.outputStreamOut", defaultValue = "" )
     private File outputStreamOut;
     
     protected OutputStream getOutputStreamOut()
@@ -208,11 +213,11 @@ public class LaunchMojo extends AbstractLaunchMojo
     }
     
     /**
-     * The Report OutputStreamErr Location.
+     * The OutputStreamErr Location.
      * 
-     * @parameter expression="${launch.outputStreamErr}" default-value=""
      * @since 0.0.5
      */
+    @Parameter( property = "launch.outputStreamErr", defaultValue = "" )
     private File outputStreamErr;
     
     protected OutputStream getOutputStreamErr()
@@ -252,11 +257,11 @@ public class LaunchMojo extends AbstractLaunchMojo
     }
     
     /**
-     * The Report InputStream Location.
+     * The InputStream Location.
      * 
-     * @parameter expression="${launch.inputStream}" default-value=""
      * @since 0.0.5
      */
+    @Parameter( property = "launch.inputStream", defaultValue = "" )
     private File inputStream;
     
     protected InputStream getInputStream()

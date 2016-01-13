@@ -27,11 +27,11 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.ContextEnabled;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-/*import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;*/
+import org.apache.maven.plugins.annotations.Parameter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,16 +60,13 @@ import java.util.regex.Pattern;
 /**
  * Generates a new project from an archetype, or updates the actual project if using a partial archetype.
  * If the project is generated or updated in the current directory.
- *
- * @description Creates a project from an archetype. Use archetypeArtifactId property.
- * @requiresProject false
- * @goal generate
- * @since 0.0.6
- * @author Franck Bonin 
+ * mvn cxx:generate -DartifactName="an-id" -DartifactId="AnId"
  * 
+ * @author Franck Bonin 
+ * @since 0.0.6
  */
-//@Mojo( name = "generate", requiresProject = false )
-//@Execute( phase = LifecyclePhase.GENERATE_SOURCES )
+@Mojo( name = "generate", requiresProject = false )
+@Execute( phase = LifecyclePhase.GENERATE_SOURCES )
 public class GenerateMojo
     extends AbstractMojo
     implements ContextEnabled
@@ -77,110 +74,102 @@ public class GenerateMojo
 
     /**
      * The archetype's artifactId {cmake-cpp-project | aggregator-pom | project-parent-pom | cpp-super-pom}
-     * @parameter expression="${archetypeArtifactId}" default-value="cmake-cpp-project"
+     * 
      * @since 0.0.6
      */
-    //@Parameter( property = "archetypeArtifactId" )
+    @Parameter( property = "archetypeArtifactId", defaultValue = "cmake-cpp-project" )
     private String archetypeArtifactId;
 
     /**
      * The archetype's groupId (not used, reserved for futur usage).
-     * @parameter expression="${archetypeGroupId}" default-value="org.codehaus.mojo.cxx-maven-plugin"
+     * 
      * @since 0.0.6
      */
-    //@Parameter( property = "archetypeGroupId" )
+    @Parameter( property = "archetypeGroupId", defaultValue = "org.codehaus.mojo.cxx-maven-plugin" )
     private String archetypeGroupId;
 
     /**
      * The archetype's version (not used, reserved for futur usage).
-     * @parameter expression="${archetypeVersion}" default-value="0.1"
      * @since 0.0.6
      */
-    //@Parameter( property = "archetypeVersion" )
+    @Parameter( property = "archetypeVersion", defaultValue = "0.1" )
     private String archetypeVersion;
     
     /**
      * Pom directory location
-     * @parameter expression="${basedir}"
-     * @required
-     * @readonly
      * @since 0.0.6
      */
-    //@Parameter( defaultValue = "${basedir}" )
+    @Parameter( defaultValue = "${basedir}", readonly = true, required = true)
     private File basedir;
 
     /**
      * Pom directory location
-     * @parameter expression="${session}"
-     * @required
-     * @readonly
+     * 
      * @since 0.0.6
      */
-    //@Parameter( defaultValue = "${session}", readonly = true )
+    @Parameter( defaultValue = "${session}", readonly = true, required = true )
     private MavenSession session;
     
     /**
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
      * @since 0.0.5
      */
-    //@Parameter( defaultValue = "${project}", readonly = true )
+    @Parameter( defaultValue = "${project}", readonly = true, required = true )
     private MavenProject project;
     
     /**
      * The generated pom parent groupId.
-     * @parameter expression="${parentGroupId}" default-value="fr.neticoa"
-     * @required
+     * 
      * @since 0.0.6
      */
+    @Parameter( property = "parentGroupId", defaultValue = "fr.neticoa" )
     private String parentGroupId;
     
     /**
      * The generated pom parent artifactId.
-     * @parameter expression="${parentArtifactId}" default-value="cpp-super-pom"
-     * @required
+     * 
      * @since 0.0.6
      */
+    @Parameter( property = "parentArtifactId", defaultValue = "cpp-super-pom" ) 
     private String parentArtifactId;
     
     /**
      * The generated pom parent version.
-     * @parameter expression="${parentVersion}" default-value="1.0.0.0"
-     * @required
+     * 
      * @since 0.0.6
      */
+    @Parameter( property = "parentVersion", defaultValue = "1.1.0.0" )
     private String parentVersion;
     
     /**
-     * The generated pom groupId .
-     * @parameter expression="${groupId}" default-value="fr.neticoa"
-     * @required
+     * The generated pom groupId.
+     * 
      * @since 0.0.6
      */
+    @Parameter( property = "groupId", defaultValue = "fr.neticoa" )
     private String groupId;
     
     /**
      * The generated pom artifact Name.
-     * @parameter expression="${artifactName}"
-     * @required
+     * 
      * @since 0.0.6
      */
+    @Parameter( property = "artifactName", required = true )
     private String artifactName;
      
     /**
      * The generated pom artifactId
-     * @parameter expression="${artifactId}"
-     * @required
+     * 
      * @since 0.0.6
      */
+    @Parameter( property = "artifactId", required = true )
     private String artifactId;
     
     /**
      * The generated pom version.
-     * @parameter expression="${version}" default-value="0.0.0.1"
+     * 
      * @since 0.0.6
      */
+    @Parameter( property = "version", defaultValue = "0.0.0.1" )
     private String version;
     
     protected Map<String, String> listResourceFolderContent(String path, Map valuesMap)
