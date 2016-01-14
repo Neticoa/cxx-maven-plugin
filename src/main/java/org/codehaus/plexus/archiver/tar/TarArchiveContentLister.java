@@ -90,7 +90,7 @@ public class TarArchiveContentLister
     {   
         public MyTarResource( TarFile tarFile, TarArchiveEntry entry )
         {
-            super(tarFile, entry);
+            super( tarFile, entry );
         }
         
         public ArchiveContentEntry asArchiveContentEntry()
@@ -120,7 +120,8 @@ public class TarArchiveContentLister
         {
             TarFile tarFile = new TarFile( getSourceFile() );
             tis = new TarArchiveInputStream(
-                decompress( compression, getSourceFile(), new BufferedInputStream( new FileInputStream( getSourceFile() ) ) ) );
+                decompress( compression, getSourceFile(),
+                new BufferedInputStream( new FileInputStream( getSourceFile() ) ) ) );
             TarArchiveEntry te;
             while ( ( te = tis.getNextTarEntry() ) != null )
             {
@@ -128,7 +129,7 @@ public class TarArchiveContentLister
                 if ( isSelected( te.getName(), fileInfo ) )
                 {
                     ArchiveContentEntry ae = fileInfo.asArchiveContentEntry();
-                    archiveContentList.add(ae);
+                    archiveContentList.add( ae );
                 }
             }
             getLogger().debug( "listing complete" );
@@ -224,14 +225,14 @@ public class TarArchiveContentLister
        */
     public static enum UntarCompressionMethod
     {
-        NONE("none"), GZIP("gzip"), BZIP2("bzip2"), SNAPPY("snappy");
+        NONE( "none" ), GZIP( "gzip" ), BZIP2( "bzip2" ), SNAPPY( "snappy" );
 
         final String value;
 
         /**
          * Constructor
          */
-        UntarCompressionMethod(String value)
+        UntarCompressionMethod( String value )
         {
             this.value = value;
         }

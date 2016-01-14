@@ -1,4 +1,5 @@
 package org.codehaus.mojo;
+
 /*
  * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
@@ -48,12 +49,12 @@ public class FileSetManager
 
         if ( includesList.size() > 0 )
         {
-             scanner.setIncludes( (String[]) includesList.toArray(new String[0]) );
+             scanner.setIncludes( (String[]) includesList.toArray( new String[0] ) );
         }
 
         if ( excludesList.size() > 0 )
         {
-             scanner.setExcludes( (String[]) excludesList.toArray(new String[0]) );
+             scanner.setExcludes( (String[]) excludesList.toArray( new String[0] ) );
         }
 
         if ( true )//fileSet.isUseDefaultExcludes() )
@@ -62,7 +63,7 @@ public class FileSetManager
         }
 
         scanner.setBasedir( basedir );
-        scanner.setFollowSymlinks( true );//fileSet.isFollowSymlinks() );
+        scanner.setFollowSymlinks( true ); //fileSet.isFollowSymlinks() );
 
         scanner.scan();
 

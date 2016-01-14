@@ -1,4 +1,5 @@
 package org.codehaus.mojo;
+
 /*
  * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France

@@ -41,7 +41,7 @@ public class TarBZip2ArchiveContentLister
 
     private void setupCompressionMethod()
     {
-		    this.setCompression(UntarCompressionMethod.BZIP2);
+        this.setCompression( UntarCompressionMethod.BZIP2 );
     }
     
 }

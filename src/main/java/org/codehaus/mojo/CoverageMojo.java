@@ -131,19 +131,19 @@ public class CoverageMojo extends LaunchMojo
     
     protected void postExecute( int resultCode ) throws MojoExecutionException
     {
-        String OutputReportName = new String();
+        String outputReportName = new String();
         if ( reportsfileDir.isAbsolute() )
         {
-            OutputReportName = reportsfileDir.getAbsolutePath() + "/" + getReportFileName();
+            outputReportName = reportsfileDir.getAbsolutePath() + "/" + getReportFileName();
         }
         else
         {
-            OutputReportName = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath() + "/" + getReportFileName();
+            outputReportName = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath() + "/" + getReportFileName();
         }
-        getLog().info( "Coverage report location " + OutputReportName );
+        getLog().info( "Coverage report location " + outputReportName );
          
         OutputStream outStream = System.out;
-        File file = new File( OutputReportName );
+        File file = new File( outputReportName );
         try
         {
             new File( file.getParent() ).mkdirs();
@@ -152,7 +152,7 @@ public class CoverageMojo extends LaunchMojo
         }
         catch ( IOException e )
         {
-            getLog().error( "Coverage report redirected to stdout since " + OutputReportName + " can't be opened" );
+            getLog().error( "Coverage report redirected to stdout since " + outputReportName + " can't be opened" );
         }
         
         InputStream pyScript = getClass().getResourceAsStream( "/gcovr.py" );

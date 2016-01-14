@@ -1,4 +1,5 @@
 package org.codehaus.mojo;
+
 /*
  * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
@@ -20,14 +21,12 @@ package org.codehaus.mojo;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.ContextEnabled;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -35,7 +34,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.nio.file.attribute.BasicFileAttributeView;
@@ -44,13 +43,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.net.URL;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Properties;
 import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
 import java.util.Enumeration;
@@ -99,7 +93,7 @@ public class GenerateMojo
      * Pom directory location
      * @since 0.0.6
      */
-    @Parameter( defaultValue = "${basedir}", readonly = true, required = true)
+    @Parameter( defaultValue = "${basedir}", readonly = true, required = true )
     private File basedir;
 
     /**
@@ -172,67 +166,68 @@ public class GenerateMojo
     @Parameter( property = "version", defaultValue = "0.0.0.1" )
     private String version;
     
-    protected Map<String, String> listResourceFolderContent(String path, Map valuesMap)
+    protected Map<String, String> listResourceFolderContent( String path, Map valuesMap )
     {
         String location = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-        final File jarFile = new File(location);
+        final File jarFile = new File( location );
         
         Map resources = new HashMap<String, String>();
-        StrSubstitutor substitutor = new StrSubstitutor(valuesMap);
+        StrSubstitutor substitutor = new StrSubstitutor( valuesMap );
         
-        path = (StringUtils.isEmpty(path))? "" : path + "/";
-        getLog().debug("listResourceFolderContent : " + location + ", sublocation : " + path);
-        if(jarFile.isFile())
+        path = ( StringUtils.isEmpty( path ) ) ? "" : path + "/";
+        getLog().debug( "listResourceFolderContent : " + location + ", sublocation : " + path );
+        if ( jarFile.isFile() )
         {
-            getLog().info("jar case");
+            getLog().debug( "listResourceFolderContent : jar case" );
             try
             {
-                final JarFile jar = new JarFile(jarFile);
+                final JarFile jar = new JarFile( jarFile );
                 final Enumeration<JarEntry> entries = jar.entries();
-                while(entries.hasMoreElements())
+                while ( entries.hasMoreElements() )
                 {
                     final String name = entries.nextElement().getName();
-                    if (name.startsWith(path))
+                    if ( name.startsWith( path ) )
                     { 
                         String resourceFile = File.separator + name;
-                        if (! (resourceFile.endsWith("/") || resourceFile.endsWith("\\")) )
+                        if ( !( resourceFile.endsWith( "/" ) || resourceFile.endsWith( "\\" ) ) )
                         {
-                            getLog().debug("resource entry = " + resourceFile);
-                            String destFile = substitutor.replace(resourceFile);
-                            getLog().debug("become entry = " + destFile);
-                            resources.put(resourceFile, destFile);
+                            getLog().debug( "resource entry = " + resourceFile );
+                            String destFile = substitutor.replace( resourceFile );
+                            getLog().debug( "become entry = " + destFile );
+                            resources.put( resourceFile, destFile );
                         }
                     }
                 }
                 jar.close();
             }
-            catch (IOException ex)
+            catch ( IOException ex )
             {
+                getLog().error( "unable to list jar content : " + ex );
             }
         }
         else
         {
-            getLog().info("file case");
+            getLog().debug( "listResourceFolderContent : file case" );
             //final URL url = Launcher.class.getResource("/" + path);
-            final URL url = getClass().getResource("/" + path);
-            if (url != null)
+            final URL url = getClass().getResource( "/" + path );
+            if ( url != null )
             {
                 try
                 {
-                    final File names = new File(url.toURI());
-                    for (File name : names.listFiles())
+                    final File names = new File( url.toURI() );
+                    for ( File name : names.listFiles() )
                     {
                         String resourceFile = name.getPath();
-                        if (! (resourceFile.endsWith("/") || resourceFile.endsWith("\\")) )
+                        if ( !( resourceFile.endsWith( "/" ) || resourceFile.endsWith( "\\" ) ) )
                         {
-                            getLog().debug("resource entry = " + resourceFile);
-                            String destFile = substitutor.replace(resourceFile);
-                            getLog().debug("become entry = " + destFile);
-                            resources.put(resourceFile, destFile);
+                            getLog().debug( "resource entry = " + resourceFile );
+                            String destFile = substitutor.replace( resourceFile );
+                            getLog().debug( "become entry = " + destFile );
+                            resources.put( resourceFile, destFile );
                         }
                     }
                 }
-                catch (URISyntaxException ex)
+                catch ( URISyntaxException ex )
                 {
                     // never happens
                 }
@@ -250,92 +245,91 @@ public class GenerateMojo
         //Properties properties = session.getExecutionProperties();
         
         Map valuesMap = new HashMap();
-        valuesMap.put("parentGroupId", parentGroupId);
-        valuesMap.put("parentArtifactId", parentArtifactId);
-        valuesMap.put("parentVersion", parentVersion);
-        valuesMap.put("groupId", groupId);
-        valuesMap.put("artifactId", artifactId);
-        valuesMap.put("artifactName", artifactName);
-        valuesMap.put("version", version);
+        valuesMap.put( "parentGroupId", parentGroupId );
+        valuesMap.put( "parentArtifactId", parentArtifactId );
+        valuesMap.put( "parentVersion", parentVersion );
+        valuesMap.put( "groupId", groupId );
+        valuesMap.put( "artifactId", artifactId );
+        valuesMap.put( "artifactName", artifactName );
+        valuesMap.put( "version", version );
 
-        //1/ search for properties
-        // -DgroupId=fr.neticoa -DartifactName=QtUtils -DartifactId=qtutils -Dversion=1.0-SNAPSHOT
+//1/ search for properties
+// -DgroupId=fr.neticoa -DartifactName=QtUtils -DartifactId=qtutils -Dversion=1.0-SNAPSHOT
+        Map<String, String> resources = listResourceFolderContent( archetypeArtifactId, valuesMap );
         
-        Map<String, String> resources = listResourceFolderContent(archetypeArtifactId, valuesMap);
+//2/ unpack resource to destdir 
+        getLog().info( "basdir = " + basedir );
         
-        //2/ unpack resource to destdir 
-        getLog().info("basdir = " + basedir);
-        
-        StrSubstitutor substitutor = new StrSubstitutor(valuesMap, "$(", ")");
-        for (Map.Entry<String, String> entry : resources.entrySet())
+        StrSubstitutor substitutor = new StrSubstitutor( valuesMap, "$(", ")" );
+        for ( Map.Entry<String, String> entry : resources.entrySet() )
         {
             String curRes = entry.getKey();
             String curDest = entry.getValue();
             InputStream resourceStream = null;
-            resourceStream = getClass().getResourceAsStream(curRes);
-            getLog().debug("resource stream to open : "+ curRes);
-            getLog().debug("destfile to open : "+ curDest);
-            if (null != resourceStream)
+            resourceStream = getClass().getResourceAsStream( curRes );
+            getLog().debug( "resource stream to open : " + curRes );
+            getLog().debug( "destfile to open : " + curDest );
+            if ( null != resourceStream )
             {
-                String sRelativePath = curDest.replaceFirst(Pattern.quote(archetypeArtifactId + File.separator), "");
-                File newFile = new File(basedir + File.separator + sRelativePath);
+                String sRelativePath = curDest.replaceFirst( Pattern.quote( archetypeArtifactId
+                    + File.separator ), "" );
+                File newFile = new File( basedir + File.separator + sRelativePath );
                 
-                //3/ create empty dir struct; if needed using a descriptor 
-                //create all non exists folders
-                File newDirs = new File(newFile.getParent());
-                if (Files.notExists(Paths.get(newDirs.getPath())))
+//3/ create empty dir struct; if needed using a descriptor 
+//create all non exists folders
+                File newDirs = new File( newFile.getParent() );
+                if ( Files.notExists( Paths.get( newDirs.getPath() ) ) )
                 {
-                    getLog().info("dirs to generate : "+ newDirs.getAbsoluteFile());
+                    getLog().info( "dirs to generate : " + newDirs.getAbsoluteFile() );
                     newDirs.mkdirs();
                 }
                 
-                if (! newFile.getName().equals("empty.dir"))
+                if ( !newFile.getName().equals( "empty.dir" ) )
                 {
-                    getLog().info("file to generate : "+ newFile.getAbsoluteFile());
+                    getLog().info( "file to generate : " + newFile.getAbsoluteFile() );
                     try
                     { 
-                        if (!newFile.createNewFile())
+                        if ( !newFile.createNewFile() )
                         {
                             // duplicate existing file
-                            FileInputStream inStream = new FileInputStream(newFile);
-                            File backFile = File.createTempFile(newFile.getName(), ".back", newFile.getParentFile());
-                            FileOutputStream outStream = new FileOutputStream(backFile);
+                            FileInputStream inStream = new FileInputStream( newFile );
+                            File backFile = File.createTempFile( newFile.getName(), ".back", newFile.getParentFile() );
+                            FileOutputStream outStream = new FileOutputStream( backFile );
                             
                             IOUtils.copy( inStream, outStream );
                             // manage file times
                             //backFile.setLastModified(newFile.lastModified());
                             BasicFileAttributes attributesFrom = 
-                                Files.getFileAttributeView(Paths.get(newFile.getPath()),
-                                    BasicFileAttributeView.class).readAttributes();
+                                Files.getFileAttributeView( Paths.get( newFile.getPath() ),
+                                    BasicFileAttributeView.class ).readAttributes();
                             BasicFileAttributeView attributesToView =
-                                Files.getFileAttributeView(Paths.get(backFile.getPath()),
-                                    BasicFileAttributeView.class);
+                                Files.getFileAttributeView( Paths.get( backFile.getPath() ),
+                                    BasicFileAttributeView.class );
                             attributesToView.setTimes(
                                 attributesFrom.lastModifiedTime(),
                                 attributesFrom.lastAccessTime(),
-                                attributesFrom.creationTime());
+                                attributesFrom.creationTime() );
 
                             inStream.close();
                             outStream.close();
                         }
+                        FileOutputStream outStream = new FileOutputStream( newFile );
                         
-                        FileOutputStream outStream = new FileOutputStream(newFile);
-                        
-                        //4/ variable substitution :
-                        // change prefix and suffix to '$(' and ')'
-                        // see https://commons.apache.org/proper/commons-lang/javadocs/api-2.6/org/apache/commons/lang/text/StrSubstitutor.html
-                        String content = IOUtils.toString(resourceStream, "UTF8");
-                        content = substitutor.replace(content);
+//4/ variable substitution :
+// change prefix and suffix to '$(' and ')'
+// see https://commons.apache.org/proper/commons-lang/javadocs/api-2.6/org/apache/commons/lang/text/StrSubstitutor.html
+                        String content = IOUtils.toString( resourceStream, "UTF8" );
+                        content = substitutor.replace( content );
 
                         //IOUtils.copy( resourceStream, outStream );
-                        IOUtils.write(content, outStream, "UTF8");
+                        IOUtils.write( content, outStream, "UTF8" );
 
                         outStream.close();
                         resourceStream.close();
                     }
                     catch ( IOException e )
                     {
-                        getLog().error( "File " + newFile.getAbsoluteFile() + " can't be created : " + e);
+                        getLog().error( "File " + newFile.getAbsoluteFile() + " can't be created : " + e );
                     }
                 }
             }            

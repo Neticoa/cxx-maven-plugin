@@ -39,22 +39,22 @@ public interface ArchiveContentListerManager
     ArchiveContentLister getArchiveContentLister( File file )
         throws NoSuchArchiverException;
 
-	/*@Nonnull Archiver getArchiver( @Nonnull String archiverName )
+    /*@Nonnull Archiver getArchiver( @Nonnull String archiverName )
         throws NoSuchArchiverException;
 
-	@Nonnull Archiver getArchiver( @Nonnull File file )
+    @Nonnull Archiver getArchiver( @Nonnull File file )
       throws NoSuchArchiverException;
     
     @Nonnull UnArchiver getUnArchiver( @Nonnull String unArchiverName )
         throws NoSuchArchiverException;
 
-	@Nonnull UnArchiver getUnArchiver(  @Nonnull File file )
+    @Nonnull UnArchiver getUnArchiver(  @Nonnull File file )
         throws NoSuchArchiverException;    
 
     @Nonnull PlexusIoResourceCollection getResourceCollection( @Nonnull File file )
         throws NoSuchArchiverException;
 
-	@Nonnull
+    @Nonnull
     PlexusIoResourceCollection getResourceCollection( String unArchiverName )
         throws NoSuchArchiverException;*/
 }

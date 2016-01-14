@@ -41,7 +41,7 @@ public class TarGZipArchiveContentLister
     
     private void setupCompressionMethod()
     {
-        this.setCompression(UntarCompressionMethod.GZIP);
+        this.setCompression( UntarCompressionMethod.GZIP );
     }
 
 }

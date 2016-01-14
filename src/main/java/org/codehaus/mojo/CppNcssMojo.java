@@ -101,20 +101,20 @@ public class CppNcssMojo extends AbstractLaunchMojo
     {
         String params = commandArgs + " ";
         
-        String OutputReportName = new String();
+        String outputReportName = new String();
         if ( reportsfileDir.isAbsolute() )
         {
-            OutputReportName = reportsfileDir.getAbsolutePath() + File.separator + getReportFileName();
+            outputReportName = reportsfileDir.getAbsolutePath() + File.separator + getReportFileName();
         }
         else
         {
-            OutputReportName = basedir.getAbsolutePath() + File.separator + reportsfileDir.getPath() 
+            outputReportName = basedir.getAbsolutePath() + File.separator + reportsfileDir.getPath() 
                 + File.separator + getReportFileName();
         }
-        File file = new File( OutputReportName );
+        File file = new File( outputReportName );
         new File( file.getParent() ).mkdirs();
         
-        params += "-f=\"" + OutputReportName + "\" ";
+        params += "-f=\"" + outputReportName + "\" ";
         
         Iterator it = macros.keySet().iterator();
         while ( it.hasNext() )

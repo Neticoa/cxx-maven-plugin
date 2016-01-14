@@ -70,19 +70,19 @@ public class ValgrindMojo extends AbstractLaunchMojo
     protected String getCommandArgs()
     {
         String params = commandArgs + " ";
-        String OutputReportName = new String();
+        String outputReportName = new String();
         if ( reportsfileDir.isAbsolute() )
         {
-            OutputReportName = reportsfileDir.getAbsolutePath() + "/" + getReportFileName();
+            outputReportName = reportsfileDir.getAbsolutePath() + "/" + getReportFileName();
         }
         else
         {
-            OutputReportName = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath() + "/" + getReportFileName();
+            outputReportName = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath() + "/" + getReportFileName();
         }
-        File file = new File( OutputReportName );
+        File file = new File( outputReportName );
         new File( file.getParent() ).mkdirs();
         
-        params += "--xml-file=\"" + OutputReportName + "\" ";
+        params += "--xml-file=\"" + outputReportName + "\" ";
         
         params += "\"" + instrumentedExecutablePath + "\" " + instrumentedExecutableArgs;
                 
@@ -165,10 +165,10 @@ public class ValgrindMojo extends AbstractLaunchMojo
     
     protected boolean isSkip()
     {
-        return _isSkip() || skipTests || skip;
+        return localIsSkip() || skipTests || skip;
     }
 
-    protected boolean _isSkip()
+    protected boolean localIsSkip()
     {
         String sOsName = System.getProperty( "os.name" );
         // vilgrind will work on linux, macos, everything but windows

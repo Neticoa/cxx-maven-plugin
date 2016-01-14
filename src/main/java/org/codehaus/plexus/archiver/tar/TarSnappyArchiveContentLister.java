@@ -33,7 +33,7 @@ public class TarSnappyArchiveContentLister
         this.setupCompressionMethod();
     }
 
-    public TarSnappyArchiveContentLister(File sourceFile)
+    public TarSnappyArchiveContentLister( File sourceFile )
     {
         super( sourceFile );
         this.setupCompressionMethod();
@@ -41,7 +41,7 @@ public class TarSnappyArchiveContentLister
 
     private void setupCompressionMethod()
     {
-        this.setCompression(UntarCompressionMethod.SNAPPY);
+        this.setCompression( UntarCompressionMethod.SNAPPY );
     }
     
 }

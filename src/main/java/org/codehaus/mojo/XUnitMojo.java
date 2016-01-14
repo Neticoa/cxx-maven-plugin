@@ -52,19 +52,19 @@ public class XUnitMojo extends LaunchMojo
     protected void preExecute( Executor exec, CommandLine commandLine, Map enviro ) throws MojoExecutionException
     {
         // this
-        String OutputReportDir = new String();
+        String outputReportDir = new String();
         if ( reportsfileDir.isAbsolute() )
         {
-            OutputReportDir = reportsfileDir.getAbsolutePath();
+            outputReportDir = reportsfileDir.getAbsolutePath();
         }
         else
         {
-            OutputReportDir = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath();
+            outputReportDir = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath();
         }
-        new File( OutputReportDir ).mkdirs();
-        getLog().info( "You shall produce a xUnit report called \"" + OutputReportDir + File.separator
+        new File( outputReportDir ).mkdirs();
+        getLog().info( "You shall produce a xUnit report called \"" + outputReportDir + File.separator
             + "xunit-result-*.xml\" within this xunit goal" );
-        File file = new File( OutputReportDir + "/Readme.txt" );
+        File file = new File( outputReportDir + "/Readme.txt" );
         try
         {
             DataOutputStream out = new DataOutputStream( new FileOutputStream( file ) );
@@ -72,7 +72,7 @@ public class XUnitMojo extends LaunchMojo
         }
         catch ( IOException e )
         {
-             getLog().info( "Could not write to " + OutputReportDir + File.separator + "Readme.txt" );
+             getLog().info( "Could not write to " + outputReportDir + File.separator + "Readme.txt" );
         }
     }
     

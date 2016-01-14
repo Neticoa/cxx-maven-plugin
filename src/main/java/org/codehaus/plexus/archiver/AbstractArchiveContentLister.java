@@ -29,8 +29,10 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
 //import org.codehaus.plexus.util.StringUtils;
 
 
-import java.io.*;
-import java.util.ArrayList;
+//import java.io.*;
+import java.io.File;
+import java.io.IOException;
+//import java.util.ArrayList;
 //import java.util.Date;
 import java.util.List;
 //import java.util.Iterator;
@@ -103,11 +105,11 @@ public abstract class AbstractArchiveContentLister
     {
         if ( finalizers != null )
         {
-			for (Object finalizer1 : finalizers) {
-				final ArchiveFinalizer finalizer = (ArchiveFinalizer) finalizer1;
+            for (Object finalizer1 : finalizers) {
+                final ArchiveFinalizer finalizer = (ArchiveFinalizer) finalizer1;
 
-				finalizer.finalizeArchiveExtraction(this);
-			}
+                finalizer.finalizeArchiveExtraction(this);
+            }
         }
     }
 */
@@ -174,18 +176,19 @@ public abstract class AbstractArchiveContentLister
     {
         if ( fileSelectors != null )
         {
-            for (FileSelector fileSelector : fileSelectors)
+            for ( FileSelector fileSelector : fileSelectors )
             {
-                try {
-                    if (!fileSelector.isSelected(fileInfo))
+                try
+                {
+                    if ( !fileSelector.isSelected( fileInfo ) )
                     {
                         return false;
                     }
                 }
-                catch (final IOException e)
+                catch ( final IOException e )
                 {
-                    throw new ArchiverException("Failed to check, whether " + fileInfo.getName() + " is selected: "
-                        + e.getMessage(), e);
+                    throw new ArchiverException( "Failed to check, whether " + fileInfo.getName() + " is selected: "
+                        + e.getMessage(), e );
                 }
             }
         }

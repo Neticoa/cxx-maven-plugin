@@ -81,7 +81,7 @@ public class ArchiveContentEntry
         } catch (IOException e) {
             throw new   ArchiverException("Error resolving resource " + resource.getName(), e);
         }*/
-        this.attributes = ( resource instanceof ResourceAttributeSupplier)
+        this.attributes = ( resource instanceof ResourceAttributeSupplier )
             ? ( (ResourceAttributeSupplier) resource ).getAttributes() : null;
         
         this.type = type;
@@ -93,8 +93,8 @@ public class ArchiveContentEntry
                 : resource.isSymbolicLink() ? Archiver.DEFAULT_SYMLILNK_MODE : Archiver.DEFAULT_DIR_MODE;
         }
 
-        this.mode = permissions == -1 ? permissions : ( permissions & UnixStat.PERM_MASK ) |
-            ( type == FILE ? UnixStat.FILE_FLAG : type == SYMLINK ? UnixStat.LINK_FLAG : UnixStat.DIR_FLAG );
+        this.mode = permissions == -1 ? permissions : ( permissions & UnixStat.PERM_MASK )
+            | ( type == FILE ? UnixStat.FILE_FLAG : type == SYMLINK ? UnixStat.LINK_FLAG : UnixStat.DIR_FLAG );
     }
 
     /**
@@ -155,8 +155,8 @@ public class ArchiveContentEntry
         }
         */
         return ( ( type == FILE ? Archiver.DEFAULT_FILE_MODE
-            : type == SYMLINK ? Archiver.DEFAULT_SYMLILNK_MODE : Archiver.DEFAULT_DIR_MODE ) & UnixStat.PERM_MASK ) |
-            ( type == FILE ? UnixStat.FILE_FLAG : type == SYMLINK ? UnixStat.LINK_FLAG : UnixStat.DIR_FLAG );
+            : type == SYMLINK ? Archiver.DEFAULT_SYMLILNK_MODE : Archiver.DEFAULT_DIR_MODE ) & UnixStat.PERM_MASK )
+            | ( type == FILE ? UnixStat.FILE_FLAG : type == SYMLINK ? UnixStat.LINK_FLAG : UnixStat.DIR_FLAG );
     }
 
     public static ArchiveContentEntry createFileEntry( String target, PlexusIoResource resource, int permissions )
@@ -176,7 +176,8 @@ public class ArchiveContentEntry
         return new ArchiveEntry( target, resource, type, permissions, collection, defaultDirectoryPermissions );
     }
 
-    public static ArchiveEntry createFileEntry( String target, File file, int permissions, int defaultDirectoryPermissions )
+    public static ArchiveEntry createFileEntry( String target, File file, int permissions,
+            int defaultDirectoryPermissions )
             throws ArchiverException, IOException {
         if ( !file.isFile() )
         {
@@ -242,10 +243,11 @@ public class ArchiveContentEntry
                                                    int defaultDirectoryPermissions
     )
     {
-		File symlinkFile = new File(symlinkName);
-		final ArchiveEntry archiveEntry = new ArchiveEntry(symlinkName, new PlexusIoVirtualSymlinkResource(symlinkFile, symlinkDestination), SYMLINK, permissions,
-                                                           null, defaultDirectoryPermissions );
-		return archiveEntry;
+        File symlinkFile = new File(symlinkName);
+        final ArchiveEntry archiveEntry = new ArchiveEntry(symlinkName,
+             new PlexusIoVirtualSymlinkResource(symlinkFile, symlinkDestination), SYMLINK, permissions,
+             null, defaultDirectoryPermissions );
+        return archiveEntry;
     }
     */
     /*

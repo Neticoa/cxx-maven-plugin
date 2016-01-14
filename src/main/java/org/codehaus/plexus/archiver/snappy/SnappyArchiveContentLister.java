@@ -28,7 +28,8 @@ import java.util.ArrayList;
 import java.net.URL;
 
 /* SNAPPY
-      [INFO] Restricted to JDK 1.5 yet org.xerial.snappy:snappy-java:jar:1.1.1.6:compile contains org/xerial/snappy/OSInfo.class targeted to JDK 1.6
+      [INFO] Restricted to JDK 1.5 yet org.xerial.snappy:snappy-java:jar:1.1.1.6:compile
+             contains org/xerial/snappy/OSInfo.class targeted to JDK 1.6
       [WARNING] Rule 0: org.apache.maven.plugins.enforcer.EnforceBytecodeVersion failed with message:
       Found Banned Dependency: org.xerial.snappy:snappy-java:jar:1.1.1.6
 */
@@ -49,7 +50,7 @@ import org.apache.commons.io.FilenameUtils;
 public class SnappyArchiveContentLister
     extends AbstractArchiveContentLister
 {
-    private final static String OPERATION_SNAPPY = "snappy";
+    private static final String OPERATION_SNAPPY = "snappy";
 
     public SnappyArchiveContentLister()
     {
@@ -60,15 +61,18 @@ public class SnappyArchiveContentLister
         super( sourceFile );
     }
     
-    public class SnappyFileInfo
+    /**
+     * Snappy content resource
+     */
+    protected class SnappyFileInfo
     extends AbstractPlexusIoResource
     {
         private final File sourceFile;
         
-        public SnappyFileInfo( File sourceFile)
+        public SnappyFileInfo( File sourceFile )
         {
-            super(sourceFile.getName(), sourceFile.lastModified(),
-                 PlexusIoResource.UNKNOWN_RESOURCE_SIZE, true, false, true);
+            super( sourceFile.getName(), sourceFile.lastModified(),
+                 PlexusIoResource.UNKNOWN_RESOURCE_SIZE, true, false, true );
             this.sourceFile = sourceFile;
         }
 
@@ -82,7 +86,7 @@ public class SnappyArchiveContentLister
             throws IOException
         {
             // SNAPPY
-            return /*new SnappyInputStream*/( new FileInputStream(sourceFile) );
+            return /*new SnappyInputStream*/( new FileInputStream( sourceFile ) );
         }
     }
     
@@ -93,8 +97,8 @@ public class SnappyArchiveContentLister
         getLogger().debug( "listing: " + getSourceFile() );
 
         ArchiveContentEntry ae = ArchiveContentEntry.createFileEntry( 
-            FilenameUtils.removeExtension(getSourceFile().getName()), new SnappyFileInfo(getSourceFile()), -1 );
-        archiveContentList.add(ae);
+            FilenameUtils.removeExtension( getSourceFile().getName() ), new SnappyFileInfo( getSourceFile() ), -1 );
+        archiveContentList.add( ae );
 
         getLogger().debug( "listing complete" );
         

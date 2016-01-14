@@ -1,4 +1,5 @@
 package org.codehaus.mojo;
+
 /*
  * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
@@ -38,8 +39,6 @@ import org.apache.maven.shared.model.fileset.util.FileSetManager;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
  * Goal which cppcheck sources.
@@ -112,7 +111,7 @@ public class CppCheckMojo extends AbstractLaunchMojo
         HashSet<String> excudedSet = new HashSet<String>();
         
         Iterator it = includeDirs.iterator();
-        while( it.hasNext() )
+        while ( it.hasNext() )
         {
             FileSet afileSet = new FileSet();
             
@@ -122,17 +121,18 @@ public class CppCheckMojo extends AbstractLaunchMojo
             if ( StringUtils.isNotEmpty( excludes ) )
             {
                 afileSet.setDirectory( new File( dir ).getAbsolutePath() );
-                afileSet.setUseDefaultExcludes( false ); // $FB pour éviter d'avoir TROP de fichier excludes (inutiles) dans la boucle for ci-après
+                // $FB pour éviter d'avoir TROP de fichier excludes (inutiles) dans la boucle for ci-après
+                afileSet.setUseDefaultExcludes( false ); 
                 afileSet.setExcludes( Arrays.asList( excludes.split( "," ) ) );
                 getLog().debug( "cppcheck excludes are :" + Arrays.toString( afileSet.getExcludes().toArray() ) );
                 
                 FileSetManager aFileSetManager = new FileSetManager();
                 String[] found = aFileSetManager.getExcludedFiles( afileSet );
-                excudedSet.addAll( new HashSet<String>( Arrays.asList( found ) ));
+                excudedSet.addAll( new HashSet<String>( Arrays.asList( found ) ) );
             }
         }
         it = sourceDirs.iterator();
-        while( it.hasNext() )
+        while ( it.hasNext() )
         {
             FileSet afileSet = new FileSet();
             
@@ -142,13 +142,14 @@ public class CppCheckMojo extends AbstractLaunchMojo
             if ( StringUtils.isNotEmpty( excludes ) )
             {
                 afileSet.setDirectory( new File( dir ).getAbsolutePath() );
-                afileSet.setUseDefaultExcludes( false ); // $FB pour éviter d'avoir TROP de fichiers exclude (inutile) dans la boucle for ci-après
+                // $FB pour éviter d'avoir TROP de fichiers exclude (inutile) dans la boucle for ci-après
+                afileSet.setUseDefaultExcludes( false ); 
                 afileSet.setExcludes( Arrays.asList( excludes.split( "," ) ) );
                 getLog().debug( "cppcheck excludes are :" + Arrays.toString( afileSet.getExcludes().toArray() ) );
                 
                 FileSetManager aFileSetManager = new FileSetManager();
-                String[] found = aFileSetManager.getExcludedFiles( afileSet);
-                excudedSet.addAll( new HashSet<String>( Arrays.asList( found) ));
+                String[] found = aFileSetManager.getExcludedFiles( afileSet );
+                excudedSet.addAll( new HashSet<String>( Arrays.asList( found ) ) );
             }
         }
         for ( Iterator<String> iter = excudedSet.iterator(); iter.hasNext(); )
@@ -156,14 +157,14 @@ public class CppCheckMojo extends AbstractLaunchMojo
             String s = iter.next();
             //cppcheck only check *.cpp, *.cxx, *.cc, *.c++, *.c, *.tpp, and *.txx files
             // so remove unneeded exclusions
-            if (s.matches( "(.+\\.cpp)|(.+\\.cxx)|(.+\\.cc)|(.+\\.c\\+\\+)|(.+\\.c)|(.+\\.tpp)|(.+\\.txx)" ) )
+            if ( s.matches( "(.+\\.cpp)|(.+\\.cxx)|(.+\\.cc)|(.+\\.c\\+\\+)|(.+\\.c)|(.+\\.tpp)|(.+\\.txx)" ) )
             {
                 params += "-i\"" + s + "\" ";
             }
         }
         
         it = sourceDirs.iterator();
-        while( it.hasNext() )
+        while ( it.hasNext() )
         {
             params += "\"" + it.next() + "\" ";
         }
@@ -174,20 +175,21 @@ public class CppCheckMojo extends AbstractLaunchMojo
     //override
     protected OutputStream getOutputStreamErr()
     {
-        String OutputReportName = new String();
+        String outputReportName = new String();
         if ( reportsfileDir.isAbsolute() )
         {
-            OutputReportName = reportsfileDir.getAbsolutePath() + File.separator + getReportFileName();
+            outputReportName = reportsfileDir.getAbsolutePath() + File.separator + getReportFileName();
         }
         else
         {
-            OutputReportName = basedir.getAbsolutePath() + File.separator + reportsfileDir.getPath() + File.separator + getReportFileName();
+            outputReportName = basedir.getAbsolutePath() + File.separator + reportsfileDir.getPath()
+            + File.separator + getReportFileName();
         }
         
-        getLog().info( "Cppcheck report location " + OutputReportName );
+        getLog().info( "Cppcheck report location " + outputReportName );
          
         OutputStream output = System.err;
-        File file = new File( OutputReportName );
+        File file = new File( outputReportName );
         try
         {
             new File( file.getParent() ).mkdirs();
@@ -196,7 +198,7 @@ public class CppCheckMojo extends AbstractLaunchMojo
         }
         catch ( IOException e )
         {
-            getLog().error( "Cppcheck report redirected to stderr since " + OutputReportName + " can't be opened" );
+            getLog().error( "Cppcheck report redirected to stderr since " + outputReportName + " can't be opened" );
         }
 
         return output;
@@ -252,9 +254,9 @@ public class CppCheckMojo extends AbstractLaunchMojo
     protected boolean skipTests;
     
     /**
-     * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable it using
-     * the "maven.test.skip" property, because maven.test.skip shall disables both running the tests and compiling the tests.
-     * Consider using the <code>skipTests</code> parameter instead.
+     * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable
+     * it using the "maven.test.skip" property, because maven.test.skip shall disables both running the tests
+     * and compiling the tests. Consider using the <code>skipTests</code> parameter instead.
      *
      * @since 0.0.5
      */

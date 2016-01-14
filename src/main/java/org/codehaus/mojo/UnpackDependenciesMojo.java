@@ -1,4 +1,5 @@
 package org.codehaus.mojo;
+
 /*
  * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
@@ -36,15 +37,11 @@ import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.plugin.dependency.fromDependencies.AbstractFromDependenciesMojo;
 
 /* Use enhanced FileSet and FileManager (not the one provided in this project)*/
-import org.apache.maven.shared.model.fileset.FileSet;
-import org.apache.maven.shared.model.fileset.util.FileSetManager;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.HashSet;
@@ -67,7 +64,6 @@ import org.codehaus.plexus.archiver.manager.ArchiveContentListerManager;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException;
 import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactFeatureFilter;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactIdFilter;
-import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.shared.artifact.filter.collection.ClassifierFilter;
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
 import org.apache.maven.shared.artifact.filter.collection.GroupIdFilter;
@@ -132,7 +128,7 @@ public class UnpackDependenciesMojo
      * 
      * @since 0.0.6
      */
-    @Parameter(property = "mdep.unpack.flattenDestDirs")
+    @Parameter( property = "mdep.unpack.flattenDestDirs" )
     protected List flattenDestDirs = new ArrayList();
     
     /**
@@ -330,21 +326,21 @@ public class UnpackDependenciesMojo
 
             List<ArchiveContentEntry> contents = archiveContentLister.list();
             
-            for (ArchiveContentEntry content : contents)
+            for ( ArchiveContentEntry content : contents )
             {
-                if (content.getType() == ArchiveContentEntry.FILE)
+                if ( content.getType() == ArchiveContentEntry.FILE )
                 {
-                    String sSubFileName = (new File(content.getName())).getName();
+                    String sSubFileName = ( new File( content.getName() ) ).getName();
                     String src = srcRoot.getAbsolutePath() + File.separator + content.getName();
                     String dst = location +  File.separator + sSubFileName;
                     try
                     {
-                        Files.copy(Paths.get(src), Paths.get(dst), StandardCopyOption.REPLACE_EXISTING);
-                        getLog().debug("Copy " + src + " to " + dst);
+                        Files.copy( Paths.get( src ), Paths.get( dst ), StandardCopyOption.REPLACE_EXISTING );
+                        getLog().debug( "Copy " + src + " to " + dst );
                     }
                     catch ( IOException e )
                     {
-                        getLog().error( "Copy of " + src + " to " + dst + " failed : " + e);
+                        getLog().error( "Copy of " + src + " to " + dst + " failed : " + e );
                     }    
                 }
             }            
@@ -369,7 +365,8 @@ public class UnpackDependenciesMojo
         // dangerous but handle any errors. It's the only way to silence the unArchiver.
         try
         {
-            Field field = ReflectionUtils.getFieldByNameIncludingSuperclasses( "logger", archiveContentLister.getClass() );
+            Field field = ReflectionUtils.getFieldByNameIncludingSuperclasses(
+                "logger", archiveContentLister.getClass() );
 
             field.setAccessible( true );
 
@@ -385,7 +382,7 @@ public class UnpackDependenciesMojo
      * origin : org.apache.maven.plugin.dependency.fromDependencies.AbstractDependencyFilterMojo
      */
     @Component
-    MavenProjectBuilder MyProjectBuilder;
+    MavenProjectBuilder myProjectBuilder;
     
     /**
      * origin : org.apache.maven.plugin.dependency.fromDependencies.AbstractDependencyFilterMojo
@@ -395,7 +392,7 @@ public class UnpackDependenciesMojo
     {
         try
         {
-            return MyProjectBuilder.buildFromRepository( artifact, remoteRepos, getLocal() );
+            return myProjectBuilder.buildFromRepository( artifact, remoteRepos, getLocal() );
         }
         catch ( ProjectBuildingException e )
         {
@@ -442,7 +439,10 @@ public class UnpackDependenciesMojo
         }
     }
     
-    public class ClassifierRegexFilter
+    /**
+     * Our personnal dependencies classifier filter with regexp capabilities
+     */
+    protected class ClassifierRegexFilter
     extends AbstractArtifactFeatureFilter
     {
         /**
@@ -469,10 +469,10 @@ public class UnpackDependenciesMojo
          */
         protected boolean compareFeatures( String lhs, String rhs )
         {
-            getLog().debug("check if '" + lhs + "' (artifact's classifier feature) Regex match '" +
-                rhs + "' (exclude or include pattern)");
+            getLog().debug( "check if '" + lhs + "' (artifact's classifier feature) Regex match '"
+                + rhs + "' (exclude or include pattern)" );
             // If lhs is null, check that rhs is null. Otherwise check if strings are equal.
-            return ( lhs == null ? rhs == null : lhs.matches(rhs) /*lhs.equals( rhs )*/ );
+            return ( lhs == null ? rhs == null : lhs.matches( rhs ) /*lhs.equals( rhs )*/ );
         }
     }
 
@@ -505,8 +505,9 @@ public class UnpackDependenciesMojo
         filter.addFilter( new ClassifierFilter( DependencyUtil.cleanToBeTokenizedString( this.includeClassifiers ),
                                                 DependencyUtil.cleanToBeTokenizedString( this.excludeClassifiers ) ) );
                                                 
-        filter.addFilter( new ClassifierRegexFilter ( DependencyUtil.cleanToBeTokenizedString( this.includeRegexClassifiers ),
-                                                DependencyUtil.cleanToBeTokenizedString( this.excludeRegexClassifiers ) ) );  
+        filter.addFilter( new ClassifierRegexFilter (
+            DependencyUtil.cleanToBeTokenizedString( this.includeRegexClassifiers ),
+            DependencyUtil.cleanToBeTokenizedString( this.excludeRegexClassifiers ) ) );  
 
         filter.addFilter( new GroupIdFilter( DependencyUtil.cleanToBeTokenizedString( this.includeGroupIds ),
                                              DependencyUtil.cleanToBeTokenizedString( this.excludeGroupIds ) ) );
@@ -573,7 +574,7 @@ public class UnpackDependenciesMojo
             File destDir;
             destDir = DependencyUtil.getFormattedOutputDirectory( useSubDirectoryPerScope, useSubDirectoryPerType,
                                                                   useSubDirectoryPerArtifact, useRepositoryLayout,
-                                                                  stripVersion, outputDirectory, artifact );                                 
+                                                                  stripVersion, outputDirectory, artifact );
 
             unpack( artifact, destDir, getIncludes(), getExcludes() );
             DefaultFileMarkerHandler handler = new DefaultFileMarkerHandler( artifact, this.markersDirectory );
@@ -582,10 +583,10 @@ public class UnpackDependenciesMojo
             // flat copy part :
             Iterator it = flattenDestDirs.iterator();
             HashSet<String> incudedSet = new HashSet<String>();
-            while( it.hasNext() )
+            while ( it.hasNext() )
             {
                 String flattenDestDir = it.next().toString();
-                listAndFlatCopy( artifact, destDir, new File(flattenDestDir), getIncludes(), getExcludes() );
+                listAndFlatCopy( artifact, destDir, new File( flattenDestDir ), getIncludes(), getExcludes() );
             }
 
         }

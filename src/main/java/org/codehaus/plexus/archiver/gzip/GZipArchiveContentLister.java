@@ -48,7 +48,7 @@ import org.apache.commons.io.FilenameUtils;
 public class GZipArchiveContentLister
     extends AbstractArchiveContentLister
 {
-    private final static String OPERATION_GZIP = "gzip";
+    private static final String OPERATION_GZIP = "gzip";
 
     public GZipArchiveContentLister()
     {
@@ -59,15 +59,18 @@ public class GZipArchiveContentLister
         super( sourceFile );
     }
     
-    public class GZipFileInfo
+    /**
+     * GZip content resource
+     */
+    protected class GZipFileInfo
     extends AbstractPlexusIoResource
     {
         private final File sourceFile;
         
-        public GZipFileInfo( File sourceFile)
+        public GZipFileInfo( File sourceFile )
         {
-            super(sourceFile.getName(), sourceFile.lastModified(),
-                 PlexusIoResource.UNKNOWN_RESOURCE_SIZE, true, false, true);
+            super( sourceFile.getName(), sourceFile.lastModified(),
+                 PlexusIoResource.UNKNOWN_RESOURCE_SIZE, true, false, true );
             this.sourceFile = sourceFile;
         }
 
@@ -80,7 +83,7 @@ public class GZipArchiveContentLister
         public InputStream getContents()
             throws IOException
         {
-            return new GZIPInputStream( new FileInputStream(sourceFile) );
+            return new GZIPInputStream( new FileInputStream( sourceFile ) );
         }
     }
     
@@ -91,8 +94,8 @@ public class GZipArchiveContentLister
         getLogger().debug( "listing: " + getSourceFile() );
 
         ArchiveContentEntry ae = ArchiveContentEntry.createFileEntry( 
-            FilenameUtils.removeExtension(getSourceFile().getName()), new GZipFileInfo(getSourceFile()), -1 );
-        archiveContentList.add(ae);
+            FilenameUtils.removeExtension( getSourceFile().getName() ), new GZipFileInfo( getSourceFile() ), -1 );
+        archiveContentList.add( ae );
 
         getLogger().debug( "listing complete" );
         

@@ -66,7 +66,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
         return null;
     }
     
-    private int veraxx_version = 0;
+    private int veraxxVersion = 0;
     
     protected void preExecute( Executor exec, CommandLine commandLine, Map enviro ) throws MojoExecutionException
     {
@@ -89,9 +89,10 @@ public class VeraxxMojo extends AbstractLaunchMojo
         }
         catch ( ExecuteException e )
         {
-            getLog().info( "Exec Exception while detecting Vera++ version. Assume old Vera++ v1.1.x (and less) output parsing style" );
+            getLog().info( "Exec Exception while detecting Vera++ version."
+                + " Assume old Vera++ v1.1.x (and less) output parsing style" );
             getLog().info( "Vera++ err output is : " + errStream.toString() ) ;
-            veraxx_version = 0;
+            veraxxVersion = 0;
             /*throw new MojoExecutionException( "preExecute Command execution failed.", e );*/
             return;
         }
@@ -122,12 +123,12 @@ public class VeraxxMojo extends AbstractLaunchMojo
         if ( currentVeraVersion.compareTo( newFormatMinVersion ) < 0 )
         {
             getLog().info( "Use old Vera++ v1.1.x (and less) output parsing style" );
-            veraxx_version = 0;
+            veraxxVersion = 0;
         }
         else
         {
             getLog().info( "Use Vera++ v1.2.0 (and more) output parsing style" );
-            veraxx_version = 1;
+            veraxxVersion = 1;
         }
     }
 
@@ -167,20 +168,20 @@ public class VeraxxMojo extends AbstractLaunchMojo
     
     protected OutputStream getOutputStreamErr()
     {
-        String OutputReportName = new String();
+        String outputReportName = new String();
         if ( reportsfileDir.isAbsolute() )
         {
-            OutputReportName = reportsfileDir.getAbsolutePath() + File.separator + getReportFileName();
+            outputReportName = reportsfileDir.getAbsolutePath() + File.separator + getReportFileName();
         }
         else
         {
-            OutputReportName = basedir.getAbsolutePath() + File.separator + reportsfileDir.getPath()
+            outputReportName = basedir.getAbsolutePath() + File.separator + reportsfileDir.getPath()
                 + File.separator + getReportFileName();
         }
-        getLog().info( "Vera++ report location " + OutputReportName );
+        getLog().info( "Vera++ report location " + outputReportName );
          
         OutputStream output = System.err;
-        File file = new File( OutputReportName );
+        File file = new File( outputReportName );
         try
         {
             new File( file.getParent() ).mkdirs();
@@ -189,7 +190,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
         }
         catch ( IOException e )
         {
-            getLog().error( "Vera++ report redirected to stderr since " + OutputReportName + " can't be opened" );
+            getLog().error( "Vera++ report redirected to stderr since " + outputReportName + " can't be opened" );
             return output;
         }
 
@@ -324,7 +325,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
     {
         StringBuilder sourceListString = new StringBuilder();
         Iterator it = sourceDirs.iterator();
-        while( it.hasNext() )
+        while ( it.hasNext() )
         {
             FileSet afileSet = new FileSet();
             String dir = it.next().toString();

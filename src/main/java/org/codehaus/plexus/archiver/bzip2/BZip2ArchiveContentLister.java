@@ -44,7 +44,7 @@ import org.apache.commons.io.FilenameUtils;
 public class BZip2ArchiveContentLister
     extends AbstractArchiveContentLister
 {
-    private final static String OPERATION_BZIP2 = "bzip2";
+    private static final String OPERATION_BZIP2 = "bzip2";
 
     public BZip2ArchiveContentLister()
     {
@@ -55,15 +55,18 @@ public class BZip2ArchiveContentLister
         super( sourceFile );
     }
     
-    public class BZip2FileInfo
+    /**
+     * BZip2 content resource
+     */
+    protected class BZip2FileInfo
     extends AbstractPlexusIoResource
     {
         private final File sourceFile;
         
-        public BZip2FileInfo( File sourceFile)
+        public BZip2FileInfo( File sourceFile )
         {
-            super(sourceFile.getName(), sourceFile.lastModified(),
-                 PlexusIoResource.UNKNOWN_RESOURCE_SIZE, true, false, true);
+            super( sourceFile.getName(), sourceFile.lastModified(),
+                 PlexusIoResource.UNKNOWN_RESOURCE_SIZE, true, false, true );
             this.sourceFile = sourceFile;
         }
 
@@ -76,7 +79,7 @@ public class BZip2ArchiveContentLister
         public InputStream getContents()
             throws IOException
         {
-            return new BZip2CompressorInputStream( new FileInputStream(sourceFile) );
+            return new BZip2CompressorInputStream( new FileInputStream( sourceFile ) );
         }
     }
     
@@ -87,8 +90,8 @@ public class BZip2ArchiveContentLister
         getLogger().debug( "listing: " + getSourceFile() );
 
         ArchiveContentEntry ae = ArchiveContentEntry.createFileEntry( 
-            FilenameUtils.removeExtension(getSourceFile().getName()), new BZip2FileInfo(getSourceFile()), -1 );
-        archiveContentList.add(ae);
+            FilenameUtils.removeExtension( getSourceFile().getName() ), new BZip2FileInfo( getSourceFile() ), -1 );
+        archiveContentList.add( ae );
 
         getLogger().debug( "listing complete" );
         

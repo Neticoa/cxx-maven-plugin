@@ -35,8 +35,6 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 
-import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
-
 /**
  * @author Franck Bonin
  * @version $Revision$ $Date$
@@ -58,7 +56,7 @@ public class DefaultArchiveContentListerManager
     }
     
     public ArchiveContentLister getArchiveContentLister( String archiveContentListerName )
-        throws NoSuchArchiverException
+        throws org.codehaus.plexus.archiver.manager.NoSuchArchiverException
     {
         try
         {
@@ -66,12 +64,12 @@ public class DefaultArchiveContentListerManager
         }
         catch ( ComponentLookupException e )
         {
-            throw new NoSuchArchiverException( archiveContentListerName );
+            throw new org.codehaus.plexus.archiver.manager.NoSuchArchiverException( archiveContentListerName );
         }
     }
         
     public ArchiveContentLister getArchiveContentLister( File file )
-        throws NoSuchArchiverException
+        throws org.codehaus.plexus.archiver.manager.NoSuchArchiverException
     {
         return getArchiveContentLister( getFileExtention( file ) );
     }
@@ -109,7 +107,8 @@ public class DefaultArchiveContentListerManager
     {
         try
         {
-            return (PlexusIoResourceCollection) container.lookup( PlexusIoResourceCollection.ROLE, resourceCollectionName );
+            return (PlexusIoResourceCollection) container.lookup( PlexusIoResourceCollection.ROLE,
+                resourceCollectionName );
         }
         catch ( ComponentLookupException e )
         {
@@ -117,7 +116,7 @@ public class DefaultArchiveContentListerManager
         }
     }    
     */
-    private static String getFileExtention (File file )
+    private static String getFileExtention ( File file )
     {
         String path = file.getAbsolutePath();
         
@@ -127,7 +126,7 @@ public class DefaultArchiveContentListerManager
         {
             String [] tokens = StringUtils.split( path, "." );
             
-            if ( tokens.length > 2  && "tar".equals( tokens[tokens.length -2].toLowerCase( Locale.ENGLISH ) ) )
+            if ( tokens.length > 2  && "tar".equals( tokens[tokens.length - 2].toLowerCase( Locale.ENGLISH ) ) )
             {
                 archiveExt = "tar." + archiveExt;
             }

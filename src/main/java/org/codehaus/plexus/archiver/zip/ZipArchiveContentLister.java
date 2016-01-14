@@ -1,7 +1,5 @@
 package org.codehaus.plexus.archiver.zip;
 
-import java.io.File;
-
 /*
  * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
@@ -19,6 +17,9 @@ import java.io.File;
  * limitations under the License.
  *
  */
+ 
+ import java.io.File;
+ 
 /**
  * @author Franck Bonin
  * @version $Revision$ $Date$

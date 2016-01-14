@@ -35,7 +35,6 @@ import org.codehaus.plexus.archiver.ArchiveContentEntry;
 //import org.codehaus.plexus.archiver.ArchiveFilterException;
 import org.codehaus.plexus.archiver.ArchiverException;
 import org.codehaus.plexus.components.io.resources.PlexusIoResource;
-import org.codehaus.plexus.util.IOUtil;
 
 /**
  * @author Franck Bonin
@@ -76,11 +75,12 @@ public abstract class AbstractZipArchiveContentLister
     private static class ZipEntryFileInfo
         implements PlexusIoResource
     {
-        private final org.apache.commons.compress.archivers.zip.ZipFile  zipFile;
+        private final ZipFile zipFile;
 
         private final ZipArchiveEntry zipEntry;
 
-        ZipEntryFileInfo( final org.apache.commons.compress.archivers.zip.ZipFile zipFile, final ZipArchiveEntry zipEntry )
+        ZipEntryFileInfo( final org.apache.commons.compress.archivers.zip.ZipFile zipFile,
+            final ZipArchiveEntry zipEntry )
         {
             this.zipFile = zipFile;
             this.zipEntry = zipEntry;
@@ -170,7 +170,7 @@ public abstract class AbstractZipArchiveContentLister
                 if ( isSelected( ze.getName(), fileInfo ) )
                 {
                     ArchiveContentEntry ae = fileInfo.asArchiveContentEntry();
-                    archiveContentList.add(ae);
+                    archiveContentList.add( ae );
                 }
             }
             getLogger().debug( "listing complete" );
@@ -181,7 +181,7 @@ public abstract class AbstractZipArchiveContentLister
         }
         finally
         {
-            IOUtils.closeQuietly( zf);
+            IOUtils.closeQuietly( zf );
         }
         return archiveContentList;
     }
@@ -202,14 +202,14 @@ public abstract class AbstractZipArchiveContentLister
                 final ZipEntryFileInfo fileInfo = new ZipEntryFileInfo( zf, ze );
                 if ( isSelected( ze.getName(), fileInfo ) )
                 {
-					InputStream in = zf.getInputStream( ze );
-					extractFileIfIncluded(getSourceFile(), getDestDirectory(), in, ze.getName(),
-							new Date(ze.getTime()), ze.isDirectory(), ze.getUnixMode() != 0 ? ze.getUnixMode() : null,
+                    InputStream in = zf.getInputStream( ze );
+                    extractFileIfIncluded(getSourceFile(), getDestDirectory(), in, ze.getName(),
+                            new Date(ze.getTime()), ze.isDirectory(), ze.getUnixMode() != 0 ? ze.getUnixMode() : null,
                             resolveSymlink( zf, ze ) );
-					IOUtil.close(in);
-				}
+                    IOUtil.close(in);
+                }
 
-			}
+            }
 
             getLogger().debug( "expand complete" );
         }
@@ -219,7 +219,7 @@ public abstract class AbstractZipArchiveContentLister
         }
         finally
         {
-			IOUtils.closeQuietly( zf);
+            IOUtils.closeQuietly( zf);
         }
     }
 
@@ -263,9 +263,9 @@ public abstract class AbstractZipArchiveContentLister
                 {
                     final InputStream inputStream = zipFile.getInputStream( ze );
                     extractFileIfIncluded( getSourceFile(), outputDirectory, inputStream,
-                                           ze.getName(), new Date( ze.getTime() ), ze.isDirectory(),
-                                           ze.getUnixMode() != 0 ? ze.getUnixMode() : null, resolveSymlink( zipFile, ze ) );
-					IOUtil.close(inputStream);
+                        ze.getName(), new Date( ze.getTime() ), ze.isDirectory(),
+                        ze.getUnixMode() != 0 ? ze.getUnixMode() : null, resolveSymlink( zipFile, ze ) );
+                    IOUtil.close(inputStream);
                 }
             }
         }
@@ -275,7 +275,7 @@ public abstract class AbstractZipArchiveContentLister
         }
         finally
         {
-			IOUtils.closeQuietly( zipFile);
+            IOUtils.closeQuietly( zipFile);
         }
     }
     */

@@ -1,4 +1,5 @@
 package org.codehaus.mojo;
+
 /*
  * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
@@ -47,6 +48,11 @@ import org.apache.commons.lang.StringUtils;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
+/**
+ * Common mojo stuff to launch external tools
+ *
+ * @author Franck Bonin
+ */
 public abstract class AbstractLaunchMojo extends AbstractMojo
 {
     /**
@@ -103,9 +109,9 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
      * @return Array of String representing the arguments
      * @throws MojoExecutionException for wrong formatted arguments
      */
-    protected String[] parseCommandlineArgs( String CommandLineArgs ) throws MojoExecutionException
+    protected String[] parseCommandlineArgs( String commandLineArgs ) throws MojoExecutionException
     {
-        if ( CommandLineArgs == null )
+        if ( commandLineArgs == null )
         {
             return null;
         }
@@ -113,7 +119,7 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
         {
             try
             {
-                return CommandLineUtils.translateCommandline( CommandLineArgs );
+                return CommandLineUtils.translateCommandline( commandLineArgs );
             }
             catch ( Exception e )
             {
@@ -155,7 +161,7 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
 
     protected abstract File getWorkingDir();
     
-    private void EnsureExistWorkingDirectory() throws MojoExecutionException
+    private void ensureExistWorkingDirectory() throws MojoExecutionException
     {
         if ( !getWorkingDir().exists() )
         {
@@ -308,7 +314,7 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
         
         Map enviro = getEnvs();
         
-        EnsureExistWorkingDirectory();
+        ensureExistWorkingDirectory();
 
         CommandLine commandLine = getExecutablePath( enviro, getWorkingDir() );
 
