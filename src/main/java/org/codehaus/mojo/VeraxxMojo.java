@@ -102,15 +102,16 @@ public class VeraxxMojo extends AbstractLaunchMojo
             // due to jdk8 bug :: https://bugs.openjdk.java.net/browse/JDK-8054565
             // we use this dirty try/catch ...
             // because this quick command line call can close the output stream before jvm does
-            getLog().info( "jvm "+ System.getProperty( "java.version" )
-                + " (8u11 - 9) workaround, ignoring a " + e.toString() + " during vera++ test command line.") ;
+            getLog().info( "jvm " + System.getProperty( "java.version" )
+                + " (8u11 - 9) workaround, ignoring a " + e.toString() + " during vera++ test command line." );
             //throw new MojoExecutionException( "preExecute Command execution failed.", e );
         }
         
         if ( isResultCodeAFailure( res ) )
         {
              getLog().info( "Vera++ returned a failure result code : " + res );
-            //throw new MojoExecutionException( "preExecute Result of " + commandLineCheck + " execution is: '" + res + "'." );
+            //throw new MojoExecutionException( "preExecute Result of " + commandLineCheck 
+            //    + " execution is: '" + res + "'." );
         }
         DefaultArtifactVersion newFormatMinVersion = new DefaultArtifactVersion( "1.2.0" );
         DefaultArtifactVersion currentVeraVersion = new DefaultArtifactVersion( outStream.toString() );
@@ -247,7 +248,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
                     getLog().debug( "match " + sb + " on " + p );
                     
                     boolean bWinPath = false;
-                    if (sb.charAt( 1 ) == ':' )
+                    if ( sb.charAt( 1 ) == ':' )
                     {
                         bWinPath = true;
                         sb.setCharAt( 1, '_' );
@@ -289,9 +290,10 @@ public class VeraxxMojo extends AbstractLaunchMojo
                                 out.writeBytes( "\t<file name=\"" + file + "\">\n" );
                                 lastfile = file;
                             }
-                            out.writeBytes( "\t\t<error line=\"" + line + "\" severity=\"" + severity + "\" message=\"" + comment + "\" source=\"" + rule + "\"/>\n" );
+                            out.writeBytes( "\t\t<error line=\"" + line + "\" severity=\"" + severity 
+                                + "\" message=\"" + comment + "\" source=\"" + rule + "\"/>\n" );
                         }
-                        catch (IOException e)
+                        catch ( IOException e )
                         {
                             getLog().error( "Vera++ xml report write failure" );
                         }
@@ -383,7 +385,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
      * 
      * @since 0.0.4
      */
-    @Parameter( property = "veraxx.workingdir")
+    @Parameter( property = "veraxx.workingdir" )
     private File workingDir;
     protected File getWorkingDir()
     {
@@ -400,17 +402,17 @@ public class VeraxxMojo extends AbstractLaunchMojo
      *
      * @since 0.0.5
      */
-    @Parameter( property = "skipTests", defaultValue = "false")
+    @Parameter( property = "skipTests", defaultValue = "false" )
     protected boolean skipTests;
     
     /**
-     * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable it using
-     * the "maven.test.skip" property, because maven.test.skip shall disables both running the tests and compiling the tests.
-     * Consider using the <code>skipTests</code> parameter instead.
+     * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable
+     * it using the "maven.test.skip" property, because maven.test.skip shall disables both running the tests
+     * and compiling the tests. Consider using the <code>skipTests</code> parameter instead.
      *
      * @since 0.0.5
      */
-    @Parameter( property = "maven.test.skip", defaultValue = "false")
+    @Parameter( property = "maven.test.skip", defaultValue = "false" )
     protected boolean skip;
     
     protected boolean isSkip()

@@ -29,8 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
  * Goal which qmakes workspace.
@@ -69,7 +67,7 @@ public class QMakeMojo extends AbstractLaunchMojo
         if ( pros.size() == 0 )
         {
             Iterator it = sourceDirs.iterator();
-            while( it.hasNext() )
+            while ( it.hasNext() )
             {
                 pros.add( new File( (String) it.next() ).getAbsolutePath() );
             }
@@ -98,7 +96,7 @@ public class QMakeMojo extends AbstractLaunchMojo
         }
         List proList = getProjectList();
         Iterator it = proList.iterator();
-        while( it.hasNext() )
+        while ( it.hasNext() )
         {
             result += "\"" + (String) it.next() + "\" ";
         }
@@ -159,7 +157,7 @@ public class QMakeMojo extends AbstractLaunchMojo
      * 
      * @since 0.0.5
      */
-    @Parameter( property = "qmake.outsourcedir")
+    @Parameter( property = "qmake.outsourcedir" )
     private File outsourceDir;
     
     protected File getWorkingDir()

@@ -33,7 +33,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 /**
- * Goal which launch unit test  suing custum command.
+ * Goal which launch unit test using a custom command.
  * This mojo just tell programmer where to produce xUnit reports
  *
  * @author Franck Bonin 
@@ -62,7 +62,8 @@ public class XUnitMojo extends LaunchMojo
             OutputReportDir = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath();
         }
         new File( OutputReportDir ).mkdirs();
-        getLog().info( "You shall produce a xUnit report called \"" + OutputReportDir + File.separator + "xunit-result-*.xml\" within this xunit goal" );
+        getLog().info( "You shall produce a xUnit report called \"" + OutputReportDir + File.separator
+            + "xunit-result-*.xml\" within this xunit goal" );
         File file = new File( OutputReportDir + "/Readme.txt" );
         try
         {

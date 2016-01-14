@@ -134,9 +134,9 @@ public class VisualStudioMojo extends AbstractLaunchMojo
         Matcher m = p.matcher( buildVersion );
         if ( m.matches() && m.groupCount() >= 3 ) 
         {
-            String versionExtension = m.group(2);
+            String versionExtension = m.group( 2 );
             getLog().debug( "Visual Studio compatible Extension version is " + versionExtension );
-            if (versionExtension.contains("SNAPSHOT"))
+            if ( versionExtension.contains( "SNAPSHOT" ) )
             {
                 return versionExtension.replaceAll( "SNAPSHOT",
                     ( new SimpleDateFormat( "yyyyMMdd.HHmmss" ) ).format( new Date() ) );

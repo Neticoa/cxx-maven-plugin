@@ -154,9 +154,9 @@ public class ValgrindMojo extends AbstractLaunchMojo
     protected boolean skipTests;
     
     /**
-    * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable it using
-    * the "maven.test.skip" property, because maven.test.skip shall disables both running the tests and compiling the tests.
-    * Consider using the <code>skipTests</code> parameter instead.
+    * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable it
+    * using the "maven.test.skip" property, because maven.test.skip shall disables both running the tests and
+    * compiling the tests. Consider using the <code>skipTests</code> parameter instead.
     *
     * @since 0.0.5
     */

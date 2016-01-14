@@ -45,12 +45,7 @@ import org.apache.commons.exec.OS;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang.StringUtils;
 
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.Component;
-import org.apache.maven.plugins.annotations.ResolutionScope;
-
 
 public abstract class AbstractLaunchMojo extends AbstractMojo
 {
@@ -290,10 +285,10 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
     
     protected void postExecute( int resultCode ) throws MojoExecutionException
     {
-		    if ( isResultCodeAFailure( resultCode ) )
-		    {
-			      throw new MojoExecutionException( "Result of command line execution is: '" + resultCode + "'." );
-		    }
+        if ( isResultCodeAFailure( resultCode ) )
+        {
+              throw new MojoExecutionException( "Result of command line execution is: '" + resultCode + "'." );
+        }
     }
     
     public void execute() throws MojoExecutionException
@@ -319,7 +314,7 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
 
         Executor exec = new DefaultExecutor();
        
-        commandLine.addArguments( (String[])commandArguments.toArray( new String[commandArguments.size()] ), false );
+        commandLine.addArguments( (String[]) commandArguments.toArray( new String[commandArguments.size()] ), false );
 
         exec.setWorkingDirectory( getWorkingDir() );
 
@@ -329,7 +324,8 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
             
             preExecute( exec, commandLine, enviro );
 
-            int resultCode = executeCommandLine( exec, commandLine, enviro, getOutputStreamOut(), getOutputStreamErr(), getInputStream() );
+            int resultCode = executeCommandLine( exec, commandLine, enviro, getOutputStreamOut(),
+                getOutputStreamErr(), getInputStream() );
               
             postExecute( resultCode );
         }
