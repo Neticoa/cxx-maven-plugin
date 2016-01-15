@@ -72,42 +72,7 @@ limitations under the License.
     </dependency>
     -->
   </dependencies>
-  
-  <profiles>
-    <profile>
-      <id>windows-pre-clean-dependencies</id>
-      <activation>
-        <os>
-          <family>windows</family>
-        </os>
-      </activation>
-      <build>
-        <pluginManagement>
-        </pluginManagement>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>cxx-maven-plugin</artifactId>
-            <executions>
-              <!-- this safely clean windows links created with MKLINK -->
-              <execution>
-                <id>clean</id>
-                <phase>pre-clean</phase>
-                <goals>
-                  <goal>launch</goal>
-                </goals>
-                <configuration>
-                  <executable>cmd</executable>
-                  <commandArgs>/c rmdir /S /Q "${project.build.directory}\dependency\include" || set ERRORLEVEL = 0 $</commandArgs>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>   
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-  
+
   <build>
     <!-- Todo add plugins if used only in this pom -->
     <pluginManagement>

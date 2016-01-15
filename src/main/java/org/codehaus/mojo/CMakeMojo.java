@@ -326,6 +326,14 @@ public class CMakeMojo extends AbstractLaunchMojo
     @Parameter()
     private List additionalDependenciesRoots = new ArrayList();
     
+    /**
+     * Directory where additional include dependencies are
+     * 
+     * @since 0.0.6
+     */
+    @Parameter( )
+    protected List additionalIncludeRoots = new ArrayList();
+    
     
     protected void findDependencies( Map<String, String> aiDependenciesRoots, List aoDependenciesLib )
     {
@@ -496,22 +504,25 @@ public class CMakeMojo extends AbstractLaunchMojo
             IOUtils.closeQuietly( dependenciesStream );
         }
 
-        String beginPattern = ( bMavenDependencies
+        String beginDepsPattern = ( bMavenDependencies
             ? ( isDebugBuild() ? "# BEGIN MAVEN_DEBUG_DEPENDENCIES" : "# BEGIN MAVEN_OPTIMIZED_DEPENDENCIES" )
             : "# BEGIN CMAKE_DEPENDENCIES" );
-        String endPattern = ( bMavenDependencies
+        String endDepsPattern = ( bMavenDependencies
             ? ( isDebugBuild() ? "# END MAVEN_DEBUG_DEPENDENCIES" : "# END MAVEN_OPTIMIZED_DEPENDENCIES" )
             : "# END CMAKE_DEPENDENCIES" );
+            
+        String beginIncPattern = "# BEGIN MAVEN_INCLUDE_ROOTS";
+        String endIncPattern = "# END MAVEN_INCLUDE_ROOTS";
                     
         // reset file content if needed
-        if ( StringUtils.isEmpty( content ) || content.indexOf( beginPattern ) == -1 )
+        if ( StringUtils.isEmpty( content ) || content.indexOf( beginDepsPattern ) == -1 )
         {
             getLog().info( file.getAbsolutePath() + " content full update" );
             try
             { 
                 dependenciesStream = getClass().getResourceAsStream(
-                    ( bMavenDependencies ? "/cmake-cxx-project/CMakeMavenDependencies.txt"
-                    : "/cmake-cxx-project/CMakeDependencies.txt" ) );
+                    ( bMavenDependencies ? "/cmake-cpp-project/CMakeMavenDependencies.txt"
+                    : "/cmake-cpp-project/CMakeDependencies.txt" ) );
                 content = IOUtils.toString( dependenciesStream, "UTF8" );
             }
             catch ( IOException e )
@@ -547,24 +558,52 @@ public class CMakeMojo extends AbstractLaunchMojo
             {
                 String cmakeDep = generalizeDependencyFileName( dep, false );         
                 allDepsBuilder.append( 
-                    "# If a \"" + cmakeDep 
-                    + "\" target has been define, this means we are building an amalgamed cmake project"
-                    + simpleIndentation + "# but maven dependencies can be used too" + simpleIndentation
-                    + "if(TARGET " + cmakeDep + ")" + doubleIndentation + "message(\"Adding direct" 
-                    + cmakeDep + "cmake dependencies to target '${target}'\")" + doubleIndentation
+                    "# If a \"" + cmakeDep + "\" target has been define, this means we are building "
+                    + "an amalgamed cmake project" + simpleIndentation
+                    + "# but maven dependencies can be used too" + simpleIndentation
+                    + "if(TARGET " + cmakeDep + ")" + doubleIndentation 
+                    + "message(\"Adding direct " + cmakeDep + " cmake dependencies to target '${target}'\")"
+                    + doubleIndentation
                     + "target_link_libraries(${target} " + cmakeDep + ")" + simpleIndentation
                     + "endif()" + simpleIndentation );
             }
         }
+        
+        // adding additionalIncludeRoots in cmake maven dependencies file
+        StringBuilder addIncsBuilder = new StringBuilder( doubleIndentation );
+        if ( bMavenDependencies && additionalIncludeRoots.size() > 0 )
+        {
+            addIncsBuilder.append( "include_directories( " + doubleIndentation );
+            for ( String includeRoot : (List<String>) additionalIncludeRoots )
+            {
+                addIncsBuilder.append("\"" + includeRoot + "\"" + doubleIndentation );
+            }
+            addIncsBuilder.append( ")" + doubleIndentation );
+            for ( String includeRoot : (List<String>) additionalIncludeRoots )
+            {
+                addIncsBuilder.append( "message(\"Adding '" + includeRoot + "' additional include root.\")"
+                    + doubleIndentation );
+            }
+        }
             
         getLog().debug( dependencieFile + " depfile was : " + content );
+        
         String allDeps = allDepsBuilder.toString().replace( "$", "\\$" ); // Matcher replaceAll() is a bit rigid !
         getLog().debug( dependencieFile + " injected dependency will be : " + allDeps );
         // regexp multi-line replace, see http://stackoverflow.com/questions/4154239/java-regex-replaceall-multiline
-        Pattern p1 = Pattern.compile( beginPattern + ".*" + endPattern, Pattern.DOTALL );
+        Pattern p1 = Pattern.compile( beginDepsPattern + ".*" + endDepsPattern, Pattern.DOTALL );
         Matcher m1 = p1.matcher( content );
-        content = m1.replaceAll( beginPattern + allDeps + endPattern );
-            
+        content = m1.replaceAll( beginDepsPattern + allDeps + endDepsPattern );
+        
+        if ( bMavenDependencies && additionalIncludeRoots.size() > 0 )
+        {
+            String addIncs = addIncsBuilder.toString().replace( "$", "\\$" ); // Matcher replaceAll() is a bit rigid !
+            getLog().debug( dependencieFile + " injected includes Roots will be : " + addIncs );
+            Pattern p2 = Pattern.compile( beginIncPattern + ".*" + endIncPattern, Pattern.DOTALL );
+            Matcher m2 = p2.matcher( content );
+            content = m2.replaceAll( beginIncPattern + addIncs + endIncPattern );
+        }
+        
         getLog().debug( dependencieFile + " depfile now is : " + content );
         OutputStream outStream = null;
         try
@@ -612,67 +651,64 @@ public class CMakeMojo extends AbstractLaunchMojo
     protected void preExecute( Executor exec, CommandLine commandLine, Map enviro )
         throws MojoExecutionException
     {
-        if ( injectMavenDependencies )
+        Map dependenciesRoots = new HashMap<String, String>();
+        
+        Iterator<String> itAdditionnalDeps = additionalDependenciesRoots.iterator();
+        while ( itAdditionnalDeps.hasNext() )
         {
-            Map dependenciesRoots = new HashMap<String, String>();
-            
-            Iterator<String> itAdditionnalDeps = additionalDependenciesRoots.iterator();
-            while ( itAdditionnalDeps.hasNext() )
+            String cur = itAdditionnalDeps.next() + File.separator + targetClassifier + File.separator
+                + buildConfig;
+            dependenciesRoots.put( cur, cur );
+            getLog().info( "add additional Dependency Root: \"" + cur + "\"" );
+        }
+        
+        // enhanced auto-detection of dependency root dir with artifacts classifier :
+        Set<Artifact> dependencyArtifacts = project.getDependencyArtifacts();
+        Iterator<Artifact> itDeps = dependencyArtifacts.iterator();
+        while ( itDeps.hasNext() )
+        {
+            Artifact cur = itDeps.next();
+            String artifactId = cur.getArtifactId();
+            String classifer = cur.getClassifier();
+            if ( 0 == classifer.indexOf( "bin" ) )
             {
-                String cur = itAdditionnalDeps.next() + File.separator + targetClassifier + File.separator
-                    + buildConfig;
-                dependenciesRoots.put( cur, cur );
-                getLog().info( "add additional Dependency Root: \"" + cur + "\"" );
-            }
-            
-            // enhanced auto-detection of dependency root dir with artifacts classifier :
-            Set<Artifact> dependencyArtifacts = project.getDependencyArtifacts();
-            Iterator<Artifact> itDeps = dependencyArtifacts.iterator();
-            while ( itDeps.hasNext() )
-            {
-                Artifact cur = itDeps.next();
-                String artifactId = cur.getArtifactId();
-                String classifer = cur.getClassifier();
-                if ( 0 == classifer.indexOf( "bin" ) )
+                String artifactBuildConfig = extractBuildConfig( cur.getClassifier() );
+                String artifactBuildConfigGeneralized = artifactBuildConfig;
+                if ( StringUtils.isEmpty( artifactBuildConfig ) || artifactBuildConfig.equals( buildConfig ) )
                 {
-                    String artifactBuildConfig = extractBuildConfig( cur.getClassifier() );
-                    String artifactBuildConfigGeneralized = artifactBuildConfig;
-                    if ( StringUtils.isEmpty( artifactBuildConfig ) || artifactBuildConfig.equals( buildConfig ) )
-                    {
-                        artifactBuildConfig = buildConfig;
-                        artifactBuildConfigGeneralized = buildConfig; //"${CMAKE_BUILD_TYPE}";
-                    }
+                    artifactBuildConfig = buildConfig;
+                    artifactBuildConfigGeneralized = buildConfig; //"${CMAKE_BUILD_TYPE}";
+                }
+                
+                String artifactSubClassifier = extractSubClassifier( cur.getClassifier() );
+                String artifactSubClassifierGeneralized = artifactSubClassifier;
+                if ( StringUtils.isEmpty( artifactSubClassifier ) 
+                    || artifactSubClassifier.equals( targetClassifier ) )
+                {
+                    artifactSubClassifier = targetClassifier;
+                    artifactSubClassifierGeneralized = "${TARGET_CLASSIFIER}";
+                }
+                
+                String newDepRoot = getProjectDependenciesDirectory() + File.separator
+                    + artifactSubClassifier + File.separator + artifactBuildConfig + File.separator + artifactId;
                     
-                    String artifactSubClassifier = extractSubClassifier( cur.getClassifier() );
-                    String artifactSubClassifierGeneralized = artifactSubClassifier;
-                    if ( StringUtils.isEmpty( artifactSubClassifier ) 
-                        || artifactSubClassifier.equals( targetClassifier ) )
-                    {
-                        artifactSubClassifier = targetClassifier;
-                        artifactSubClassifierGeneralized = "${TARGET_CLASSIFIER}";
-                    }
-                    
-                    String newDepRoot = getProjectDependenciesDirectory() + File.separator
-                        + artifactSubClassifier + File.separator + artifactBuildConfig + File.separator + artifactId;
-                        
-                    String newDepRootGeneralized = "${DEPENDENCY_DIR}" + File.separator
-                        + artifactSubClassifierGeneralized + File.separator + artifactBuildConfigGeneralized
-                        + File.separator + artifactId;
-                    
-                    if ( !dependenciesRoots.containsKey( newDepRoot ) )
-                    {
-                        dependenciesRoots.put( newDepRoot, newDepRootGeneralized );
-                        getLog().info( "add Dependency Root: \"" + newDepRoot + "\" <=> \""
-                            + newDepRootGeneralized + "\"" );
-                    }
+                String newDepRootGeneralized = "${DEPENDENCY_DIR}" + File.separator
+                    + artifactSubClassifierGeneralized + File.separator + artifactBuildConfigGeneralized
+                    + File.separator + artifactId;
+                
+                if ( !dependenciesRoots.containsKey( newDepRoot ) )
+                {
+                    dependenciesRoots.put( newDepRoot, newDepRootGeneralized );
+                    getLog().info( "add Dependency Root: \"" + newDepRoot + "\" <=> \""
+                        + newDepRootGeneralized + "\"" );
                 }
             }
-            
-            ArrayList dependenciesLib = new ArrayList();
-            findDependencies( dependenciesRoots, dependenciesLib );
-            
-            updateOrCreateCMakeDependenciesFile( dependenciesLib, true );
-            updateOrCreateCMakeDependenciesFile( dependenciesLib, false );
         }
+        
+        ArrayList dependenciesLib = new ArrayList();
+        findDependencies( dependenciesRoots, dependenciesLib );
+        
+        updateOrCreateCMakeDependenciesFile( dependenciesLib, true ); // maven dependencies
+        updateOrCreateCMakeDependenciesFile( dependenciesLib, false ); // cmake project dependencies
     }
 }
