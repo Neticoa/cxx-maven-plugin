@@ -12,7 +12,7 @@
   <groupId>org.codehaus.mojo</groupId>
   <artifactId>cxx-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>0.0.5-SNAPSHOT</version>
+  <version>0.0.5</version>
   <name>cxx-maven-plugin Maven Mojo</name>
   <description>A plugin to allow C++ code compilation and code checking with maven</description>
   <url>https://github.com/franckbonin/cxx-maven-plugin</url>
