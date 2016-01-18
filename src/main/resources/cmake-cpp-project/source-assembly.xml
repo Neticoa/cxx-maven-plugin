@@ -36,6 +36,7 @@ limitations under the License.
         <include>**/*.cpp</include>
         <include>**/*.cxx</include>
         <include>**/*.c</include>
+        <include>**/*.cc</include>
         <include>**/*.hpp</include>
         <include>**/*.hxx</include>
         <include>**/*.h</include>

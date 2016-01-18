@@ -23,7 +23,7 @@
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
 ########################################################################################
-# TARGET INITIALISATION
+# TARGET INITIALISATION (not requiring project() command)
 
 get_directory_property(hasParent PARENT_DIRECTORY)
 
@@ -57,7 +57,11 @@ endif()
 
 # MAVEN Mandatory : DEPENDENCY_DIR point to target/dependency
 if(NOT DEPENDENCY_DIR)
-    set(DEPENDENCY_DIR "${PROJECT_SOURCE_DIR}")
+    if(NOT PROJECT_SOURCE_DIR)
+        set(DEPENDENCY_DIR "${CMAKE_SOURCE_DIR}")
+    else()
+        set(DEPENDENCY_DIR "${PROJECT_SOURCE_DIR}")
+    endif()
     message(WARNING "default DEPENDENCY_DIR is ${DEPENDENCY_DIR}")
 endif()
 
@@ -68,29 +72,100 @@ if(NOT TARGET_VERSION)
 endif()
 add_definitions(-DTARGET_VERSION=${TARGET_VERSION})
 
+########################################################################################
+# TARGET INITIALISATION (requiring project() command)
+
+# CMAKE Mandatory : define project
+project(${TARGET_ID} VERSION ${TARGET_VERSION})
+
+# CMAKE Mandatory : detect project target platform and architecture
+if(WIN32)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(CMAKE_TARGET_PLATFORM "win64")
+    set(CMAKE_TARGET_ARCHITECTURE "amd64")
+    set(CMAKE_TARGET_CLASSIFIER "win64")
+  else()
+    set(CMAKE_TARGET_PLATFORM "win32")
+    set(CMAKE_TARGET_ARCHITECTURE "x86")
+    set(CMAKE_TARGET_CLASSIFIER "win32")
+  endif()
+elseif(UNIX AND NOT APPLE)
+  if(CMAKE_SYSTEM_NAME MATCHES ".*Linux")
+    set(CMAKE_TARGET_PLATFORM "linux")
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+      set(CMAKE_TARGET_ARCHITECTURE "x86_64")
+      set(CMAKE_TARGET_CLASSIFIER "linux-x86_64")
+    else()
+      set(CMAKE_TARGET_ARCHITECTURE "i686")
+      set(CMAKE_TARGET_CLASSIFIER "linux-i686")
+    endif()
+#  elseif(CMAKE_SYSTEM_NAME MATCHES "kFreeBSD.*")
+#  elseif(CMAKE_SYSTEM_NAME MATCHES "kNetBSD.*|NetBSD.*")
+#  elseif(CMAKE_SYSTEM_NAME MATCHES "kOpenBSD.*|OpenBSD.*")
+#  elseif(CMAKE_SYSTEM_NAME MATCHES ".*GNU.*")
+#  elseif(CMAKE_SYSTEM_NAME MATCHES ".*BSDI.*")
+#  elseif(CMAKE_SYSTEM_NAME MATCHES "DragonFly.*|FreeBSD")
+#  elseif(CMAKE_SYSTEM_NAME MATCHES "SYSV5.*")
+#  elseif(CMAKE_SYSTEM_NAME MATCHES "Solaris.*")
+#  elseif(CMAKE_SYSTEM_NAME MATCHES "HP-UX.*")
+#  elseif(CMAKE_SYSTEM_NAME MATCHES "AIX.*")
+#  elseif(CMAKE_SYSTEM_NAME MATCHES "Minix.*")
+  else()
+    message(WARNING "Unknown UNIX '${CMAKE_SYSTEM_NAME}' platform")
+  endif()
+elseif(APPLE)
+  if(CMAKE_SYSTEM_NAME MATCHES ".*Darwin.*" OR CMAKE_SYSTEM_NAME MATCHES ".*MacOS.*")
+    set(CMAKE_TARGET_PLATFORM "mac")
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+      set(CMAKE_TARGET_ARCHITECTURE "x86_64")
+      set(CMAKE_TARGET_CLASSIFIER "mac-x86_64")
+    else()
+      set(CMAKE_TARGET_ARCHITECTURE "i386")
+      set(CMAKE_TARGET_CLASSIFIER "mac-i386")
+    endif()
+  # TODO: iOS?
+  else()
+    message(WARNING "Unknown APPLE '${CMAKE_SYSTEM_NAME}' platform")
+  endif()
+#elseif(CMAKE_SYSTEM_NAME MATCHES "BeOS.*")
+#elseif(CMAKE_SYSTEM_NAME MATCHES "Haiku.*")
+else()
+  message(WARNING "Unknown '${CMAKE_SYSTEM_NAME}' platform")
+endif()
+message("CMake self-detected '${CMAKE_TARGET_PLATFORM}' platform, '${CMAKE_TARGET_ARCHITECTURE}' architecture, '${CMAKE_TARGET_CLASSIFIER}' classifier")
+
 # MAVEN Mandatory : TARGET_PLATFORM is setted by maven (or you !)
 if(NOT TARGET_PLATFORM)
-    # ${CMAKE_SYSTEM_NAME} is not safe !
-    message(FATAL_ERROR "Please provide a target platform name using TARGET_PLATFORM properties {win32, win64, linux, mac}")
+    if (NOT CMAKE_TARGET_PLATFORM)
+        message(FATAL_ERROR "Please provide a target platform name using TARGET_PLATFORM properties {win32, win64, linux, mac}")
+    else()
+        set(TARGET_PLATFORM ${CMAKE_TARGET_PLATFORM})
+    endif()
 endif()
 add_definitions(-DTARGET_PLATFORM=${TARGET_PLATFORM})
 
 # MAVEN Mandatory : TARGET_ARCHITECTURE is setted by maven (or you !)
 if(NOT TARGET_ARCHITECTURE)
-    # there is no safe way to set a target architecture under cmake
-    message(FATAL_ERROR "Please provide a target architecture using TARGET_ARCHITECTURE properties {x86, amd64, i386, i686, x86_64}")
+    if (NOT CMAKE_TARGET_ARCHITECTURE)
+        message(FATAL_ERROR "Please provide a target architecture using TARGET_ARCHITECTURE properties {x86, amd64, i386, i686, x86_64}")
+    else()
+        set(TARGET_ARCHITECTURE ${CMAKE_TARGET_ARCHITECTURE})
+    endif()
 endif()
 add_definitions(-DTARGET_ARCHITECTURE=${TARGET_ARCHITECTURE})
 
 # MAVEN Mandatory : TARGET_CLASSIFIER is setted by maven (or you !)
 if(NOT TARGET_CLASSIFIER)
     # target classifier is a conjonction of target platform and target architecture
-    message(FATAL_ERROR "Please provide a target classifier using TARGET_CLASSIFIER properties {win32, win64, linux-i686, linux-x86_64, mac-i386, mac-x86_64}")
+    if (NOT CMAKE_TARGET_CLASSIFIER)
+         message(FATAL_ERROR "Please provide a target classifier using TARGET_CLASSIFIER properties {win32, win64, linux-i686, linux-x86_64, mac-i386, mac-x86_64}")
+    else()
+        set(TARGET_CLASSIFIER ${CMAKE_TARGET_CLASSIFIER})
+    endif()
 endif()
 add_definitions(-DTARGET_CLASSIFIER=${TARGET_CLASSIFIER})
 
-# CMAKE Mandatory : project definition
-project(${TARGET_ID} VERSION ${TARGET_VERSION})
+message("CMake build for '${TARGET_PLATFORM}' platform, '${TARGET_ARCHITECTURE}' architecture, '${TARGET_CLASSIFIER}' classifier")
 
 # MAVEN Mandatory : CMakeMavenDependencies.txt file define a cmake function 
 # named "add_maven_dependencies" that you shall call on your targets.
