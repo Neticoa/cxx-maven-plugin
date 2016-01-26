@@ -670,9 +670,9 @@ public class CMakeMojo extends AbstractLaunchMojo
             Artifact cur = itDeps.next();
             String artifactId = cur.getArtifactId();
             String classifer = cur.getClassifier();
-            if ( 0 == classifer.indexOf( "bin" ) )
+            if ( !StringUtils.isEmpty(classifer) && 0 == classifer.indexOf( "bin" ) )
             {
-                String artifactBuildConfig = extractBuildConfig( cur.getClassifier() );
+                String artifactBuildConfig = extractBuildConfig( classifer );
                 String artifactBuildConfigGeneralized = artifactBuildConfig;
                 if ( StringUtils.isEmpty( artifactBuildConfig ) || artifactBuildConfig.equals( buildConfig ) )
                 {
@@ -680,7 +680,7 @@ public class CMakeMojo extends AbstractLaunchMojo
                     artifactBuildConfigGeneralized = buildConfig; //"${CMAKE_BUILD_TYPE}";
                 }
                 
-                String artifactSubClassifier = extractSubClassifier( cur.getClassifier() );
+                String artifactSubClassifier = extractSubClassifier( classifer );
                 String artifactSubClassifierGeneralized = artifactSubClassifier;
                 if ( StringUtils.isEmpty( artifactSubClassifier ) 
                     || artifactSubClassifier.equals( targetClassifier ) )

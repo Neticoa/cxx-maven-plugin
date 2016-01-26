@@ -34,7 +34,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 
 /* rewrite of  UnpackDependenciesMojo from maven-dependency plugin, goal 'unpack-dependencies' */
-import org.apache.maven.plugin.dependency.fromDependencies.AbstractFromDependenciesMojo;
+//import org.apache.maven.plugin.dependency.fromDependencies.AbstractFromDependenciesMojo;
 
 /* Use enhanced FileSet and FileManager (not the one provided in this project)*/
 import org.apache.commons.lang.StringUtils;
@@ -85,35 +85,9 @@ import org.apache.maven.project.ProjectBuildingException;
 @Mojo( name = "unpack-dependencies", requiresDependencyResolution = ResolutionScope.TEST,
        defaultPhase = LifecyclePhase.PROCESS_SOURCES, threadSafe = true )
 public class UnpackDependenciesMojo
-    extends AbstractFromDependenciesMojo
+    extends org.apache.maven.plugin.dependency.fromDependencies.UnpackDependenciesMojo
 {
-    /**
-     * A comma separated list of file patterns to include when unpacking the
-     * artifact.  i.e. <code>**\/*.xml,**\/*.properties</code>
-     * NOTE: Excludes patterns override the includes.
-     * (component code = <code>return isIncluded( name ) AND !isExcluded( name );</code>)
-     * 
-     * origin : org.apache.maven.plugin.dependency.fromDependencies.UnpackDependenciesMojo
-     *
-     * @since 0.0.6
-     */
-    @Parameter( property = "mdep.unpack.includes" )
-    private String includes;
-
-    /**
-     * A comma separated list of file patterns to exclude when unpacking the
-     * artifact.  i.e. <code>**\/*.xml,**\/*.properties</code>
-     * NOTE: Excludes patterns override the includes.
-     * (component code = <code>return isIncluded( name ) AND !isExcluded( name );</code>)
-     * 
-     * origin : org.apache.maven.plugin.dependency.fromDependencies.UnpackDependenciesMojo
-     *
-     * @since 0.0.6
-     */
-    @Parameter( property = "mdep.unpack.excludes" )
-    private String excludes;
-    
-    
+   
     /**
      * To look up ArchiveContentLister implementations
      * 
@@ -252,6 +226,8 @@ public class UnpackDependenciesMojo
     */
     /**
      * flat copy the archive content.
+     * 
+     * origin : derived from org.apache.maven.plugin.dependency.AbstractDependencyMojo::unpack()
      *
      * @param artifact File to be unpacked.
      * @param srcRoot  Location where the whole archive was unpacked.
@@ -358,7 +334,7 @@ public class UnpackDependenciesMojo
     }
     
     /**
-     * origin : org.apache.maven.plugin.dependency.fromDependencies.UnpackDependenciesMojo
+     * origin : derived from org.apache.maven.plugin.dependency.AbstractDependencyMojo::silenceUnarchiver()
      */
     private void silenceArchiveContentLister( ArchiveContentLister archiveContentLister )
     {
@@ -481,7 +457,7 @@ public class UnpackDependenciesMojo
      * also transforms the dependencies if classifier is set. The dependencies
      * are filtered in least specific to most specific order
      * 
-     * origin : org.apache.maven.plugin.dependency.fromDependencies.AbstractDependencyFilterMojo
+     * origin : derived from org.apache.maven.plugin.dependency.fromDependencies.AbstractDependencyFilterMojo
      *
      * @param stopOnFailure
      * @return DependencyStatusSets - Bean of TreeSets that contains information
@@ -558,6 +534,8 @@ public class UnpackDependenciesMojo
     /**
      * Main entry into mojo. This method gets the dependencies and iterates
      * through each one passing it to DependencyUtil.unpackFile().
+     * 
+     *  origin : derived from org.apache.maven.plugin.dependency.fromDependencies.UnpackDependenciesMojo
      *
      * @throws MojoExecutionException with a message if an error occurs.
      * @see #getDependencies
@@ -601,43 +579,5 @@ public class UnpackDependenciesMojo
     {
         return new MarkerFileFilter( this.overWriteReleases, this.overWriteSnapshots, this.overWriteIfNewer,
                                      new DefaultFileMarkerHandler( this.markersDirectory ) );
-    }
-
-    /**
-     * origin : org.apache.maven.plugin.dependency.fromDependencies.UnpackDependenciesMojo
-     * @return Returns a comma separated list of excluded items
-     */
-    public String getExcludes()
-    {
-        return DependencyUtil.cleanToBeTokenizedString( this.excludes );
-    }
-
-    /**
-     * origin : org.apache.maven.plugin.dependency.fromDependencies.UnpackDependenciesMojo
-     * @param excludes A comma separated list of items to exclude
-     *                 i.e. <code>**\/*.xml, **\/*.properties</code>
-     */
-    public void setExcludes( String excludes )
-    {
-        this.excludes = excludes;
-    }
-
-    /**
-     * origin : org.apache.maven.plugin.dependency.fromDependencies.UnpackDependenciesMojo
-     * @return Returns a comma separated list of included items
-     */
-    public String getIncludes()
-    {
-        return DependencyUtil.cleanToBeTokenizedString( this.includes );
-    }
-
-    /**
-     * origin : org.apache.maven.plugin.dependency.fromDependencies.UnpackDependenciesMojo
-     * @param includes A comma separated list of items to include
-     *                 i.e. <code>**\/*.xml, **\/*.properties</code>
-     */
-    public void setIncludes( String includes )
-    {
-        this.includes = includes;
     }
 }
