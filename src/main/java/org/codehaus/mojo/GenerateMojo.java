@@ -67,7 +67,7 @@ public class GenerateMojo
 {
 
     /**
-     * The archetype's artifactId {cmake-cpp-project | aggregator-pom | project-parent-pom | cpp-super-pom}
+     * The archetype's artifactId {cmake-cpp-project | source-project | aggregator-pom | project-parent-pom | cpp-super-pom }
      * 
      * @since 0.0.6
      */

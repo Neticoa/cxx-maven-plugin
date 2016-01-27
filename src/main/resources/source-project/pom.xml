@@ -33,7 +33,7 @@ limitations under the License.
   <packaging>pom</packaging>
   <name>$(artifactName)</name>
   <version>$(version)</version>
-  <description>Aggregated build of ${project.artifactId}</description>
+  <description>Source description only of ${project.artifactId}</description>
 
   <!-- set scm project location here -->
   <!--
@@ -45,46 +45,17 @@ limitations under the License.
 
   <profiles>
     <profile>
-      <!-- profile to manage source dependencies from scm, only using this pom file -->
       <activation>
         <property>
-          <name>source</name>
+          <name>!buildConfig</name>
         </property>
       </activation>
-      <id>source</id>
+      <id>pom-only</id>
+      
       <dependencies>
-        <!-- add root pom (source) dependencies here -->
+        <!-- add pom (source) dependencies here -->
       </dependencies>
-   
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>get-pom-dependencies</id>
-                <phase>validate</phase>
-                <goals>
-                  <goal>copy-dependencies</goal>
-                </goals>
-                <configuration>
-                  <!--compile scope is dependencies default scope.-->
-                  <includeScope>compile</includeScope>
-                  <!--<outputDirectory>${project.build.directory}/dependency</outputDirectory>-->
-                  <overWriteReleases>true</overWriteReleases>
-                  <overWriteSnapshots>true</overWriteSnapshots>
-                  <overWriteIfNewer>true</overWriteIfNewer>
-                  <includeTypes>pom</includeTypes>
-                </configuration>
-              </execution>
-             </executions>
-          </plugin>
-          <!-- TODO perform svn:externals update step here according to pom dependencies -->
-          <!-- TODO scm:update step here -->
-
-        </plugins> 
-      </build>
+  
     </profile>
     
     <profile>
@@ -92,16 +63,13 @@ limitations under the License.
         <activeByDefault>true</activeByDefault>
       </activation>
       <id>buildConfig</id>
-       <!-- add custom default build step and/or config here -->
+      
+      <dependencies>
+        <!-- add bin and interface dependencies here -->
+      </dependencies>
+      
+       <!-- custom default build step and/or config here -->
     </profile>
   </profiles>
   
-  <!-- add relative path to aggregated components here -->
-  <modules>
-    <!--
-    <module>./component1</module>
-    <module>./component2</module>
-    <module>./component3</module>
-    -->
-  </modules>
 </project>
