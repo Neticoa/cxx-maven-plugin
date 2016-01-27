@@ -77,7 +77,7 @@ limitations under the License.
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
-      <id>build-with-buildConfig</id>
+      <id>buildConfig</id>
 
       <dependencies>
         <!-- add bin and interface dependencies here -->

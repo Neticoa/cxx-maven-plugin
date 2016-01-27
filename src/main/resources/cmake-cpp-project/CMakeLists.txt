@@ -17,10 +17,13 @@
 ########################################################################################
 # A TYPICAL MAVENIZED CMAKE PROJECT
 # see https://cmake.org/cmake/help/v3.0/
+# see https://cmake.org/cmake/help/v2.8.12/cmake.html
 ########################################################################################
 ########################################################################################
 
 cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
+# CMAKE 2.8 : requirement
+#cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 ########################################################################################
 # TARGET INITIALISATION (not requiring project() command)
@@ -77,6 +80,8 @@ add_definitions(-DTARGET_VERSION=${TARGET_VERSION})
 
 # CMAKE Mandatory : define project
 project(${TARGET_ID} VERSION ${TARGET_VERSION})
+# CMAKE 2.8 : VERSION parameter is not allowed
+#project(${TARGET_ID})
 
 # CMAKE Mandatory : detect project target platform and architecture
 if(WIN32)

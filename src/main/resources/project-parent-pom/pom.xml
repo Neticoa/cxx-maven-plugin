@@ -67,7 +67,7 @@ limitations under the License.
 
   <dependencyManagement>
     <dependencies>
-      <!-- add bin and interface dependencies version here -->
+      <!-- add pom, bin and interface dependencies version here -->
       <!--
       <dependency>
           <groupId>$(groupId)</groupId>
@@ -127,6 +127,7 @@ limitations under the License.
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
+          <version>2.6</version>
         </plugin>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
@@ -134,7 +135,7 @@ limitations under the License.
         </plugin>
         <plugin>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>2.9</version>
+          <version>2.10</version>
         </plugin>
         <plugin>
           <artifactId>maven-antrun-plugin</artifactId>
@@ -147,6 +148,14 @@ limitations under the License.
         <plugin>
           <artifactId>gmaven-plugin</artifactId>
           <version>1.5</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-scm-plugin</artifactId>
+          <version>1.9.4</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.5.3</version>
         </plugin>
         -->
       </plugins>

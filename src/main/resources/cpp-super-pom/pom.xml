@@ -825,7 +825,7 @@ limitations under the License.
   </dependencyManagement>
    
   <build>
-    <!-- To define the plugin version in your parent POM -->
+    <!-- Define here your maven plugin version or in your project parent POM -->
     <pluginManagement>
       <plugins>
         <plugin>
@@ -850,7 +850,7 @@ limitations under the License.
         </plugin>
         <plugin>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>2.9</version>
+          <version>2.10</version>
         </plugin>
         <plugin>
           <artifactId>maven-antrun-plugin</artifactId>
@@ -864,7 +864,27 @@ limitations under the License.
           <artifactId>gmaven-plugin</artifactId>
           <version>1.5</version>
         </plugin>
+        <plugin>
+          <artifactId>maven-scm-plugin</artifactId>
+          <version>1.9.4</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.5.3</version>
+        </plugin>
       </plugins>
     </pluginManagement>
+
+    <!-- Global rule for checkout or bootstrap -->
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-plugin</artifactId>
+        <configuration>
+          <checkoutDirectory>${basedir}/${project.artifactId}-${project.version}</checkoutDirectory>
+          <skipCheckoutIfExists>true</skipCheckoutIfExists>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>

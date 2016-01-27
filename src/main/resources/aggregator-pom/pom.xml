@@ -45,13 +45,13 @@ limitations under the License.
 
   <profiles>
     <profile>
-      <!-- profile to retrieve source from scm only using this pom file -->
+      <!-- profile to manage source dependencies from scm, only using this pom file -->
       <activation>
         <property>
-          <name>checkout</name>
+          <name>source</name>
         </property>
       </activation>
-      <id>checkout</id>
+      <id>source</id>
       <dependencies>
         <!-- add root pom (source) dependencies here -->
       </dependencies>
@@ -91,7 +91,7 @@ limitations under the License.
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
-      <id>normal</id>
+      <id>buildConfig</id>
        <!-- add custom default build step and/or config here -->
     </profile>
   </profiles>
