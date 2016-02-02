@@ -353,11 +353,12 @@ public class CMakeMojo extends AbstractLaunchMojo
             
             for ( int j = 0; null != found && j < found.length; j++ )
             {
+                // $FB always use unix path separator with cmake even under windows !
                 getLog().info( "Found dependencies Lib : " + found[j] );
-                getLog().info( "Found dependencies Lib full path : " + dependencyRoot + File.separator + found[j] );
+                getLog().info( "Found dependencies Lib full path : " + dependencyRoot + "/" + found[j] );
                 getLog().info( "Found dependencies Lib generalized path : " + entry.getValue() 
-                    + File.separator + found[j] );
-                aoDependenciesLib.add( entry.getValue() + File.separator + found[j] );
+                    + "/" + found[j] );
+                aoDependenciesLib.add( entry.getValue() + "/" + found[j] );
             }
         }
     }
@@ -451,6 +452,7 @@ public class CMakeMojo extends AbstractLaunchMojo
         {
             sGeneralizedName = baseNameAsSharedModule( sName, bMavenDependency );
         }
+        // $FB always use unix path separator with cmake even under windows !
         return ( bMavenDependency ? fullPath + "/" : "" ) 
             + ( StringUtils.isEmpty( sGeneralizedName ) ? sName : sGeneralizedName );
     }
@@ -467,7 +469,8 @@ public class CMakeMojo extends AbstractLaunchMojo
         File file = new File( dependencieFile );
         if ( !file.isAbsolute() ) 
         {
-            fullDependenciesFile = getProjectDir() + File.separator + dependencieFile;
+            // $FB always use unix path separator with cmake even under windows !
+            fullDependenciesFile = getProjectDir() + "/" + dependencieFile;
         }
         file = new File( fullDependenciesFile );
       
@@ -588,7 +591,7 @@ public class CMakeMojo extends AbstractLaunchMojo
             
         getLog().debug( dependencieFile + " depfile was : " + content );
         
-        String allDeps = allDepsBuilder.toString().replace( "$", "\\$" ); // Matcher replaceAll() is a bit rigid !
+        String allDeps = Matcher.quoteReplacement(allDepsBuilder.toString());//.replace( "$", "\\$" ); // Matcher replaceAll() is a bit rigid !
         getLog().debug( dependencieFile + " injected dependency will be : " + allDeps );
         // regexp multi-line replace, see http://stackoverflow.com/questions/4154239/java-regex-replaceall-multiline
         Pattern p1 = Pattern.compile( beginDepsPattern + ".*" + endDepsPattern, Pattern.DOTALL );
@@ -597,7 +600,7 @@ public class CMakeMojo extends AbstractLaunchMojo
         
         if ( bMavenDependencies && additionalIncludeRoots.size() > 0 )
         {
-            String addIncs = addIncsBuilder.toString().replace( "$", "\\$" ); // Matcher replaceAll() is a bit rigid !
+            String addIncs = Matcher.quoteReplacement(addIncsBuilder.toString());//.replace( "$", "\\$" ); // Matcher replaceAll() is a bit rigid !
             getLog().debug( dependencieFile + " injected includes Roots will be : " + addIncs );
             Pattern p2 = Pattern.compile( beginIncPattern + ".*" + endIncPattern, Pattern.DOTALL );
             Matcher m2 = p2.matcher( content );
@@ -656,7 +659,8 @@ public class CMakeMojo extends AbstractLaunchMojo
         Iterator<String> itAdditionnalDeps = additionalDependenciesRoots.iterator();
         while ( itAdditionnalDeps.hasNext() )
         {
-            String cur = itAdditionnalDeps.next() + File.separator + targetClassifier + File.separator
+            // $FB always use unix path separator with cmake even under windows !
+            String cur = itAdditionnalDeps.next() + "/" + targetClassifier + "/"
                 + buildConfig;
             dependenciesRoots.put( cur, cur );
             getLog().info( "add additional Dependency Root: \"" + cur + "\"" );
@@ -688,13 +692,13 @@ public class CMakeMojo extends AbstractLaunchMojo
                     artifactSubClassifier = targetClassifier;
                     artifactSubClassifierGeneralized = "${TARGET_CLASSIFIER}";
                 }
-                
-                String newDepRoot = getProjectDependenciesDirectory() + File.separator
-                    + artifactSubClassifier + File.separator + artifactBuildConfig + File.separator + artifactId;
+                // $FB always use unix path separator with cmake even under windows !
+                String newDepRoot = getProjectDependenciesDirectory() + "/"
+                    + artifactSubClassifier + "/" + artifactBuildConfig + "/" + artifactId;
                     
-                String newDepRootGeneralized = "${DEPENDENCY_DIR}" + File.separator
-                    + artifactSubClassifierGeneralized + File.separator + artifactBuildConfigGeneralized
-                    + File.separator + artifactId;
+                String newDepRootGeneralized = "${DEPENDENCY_DIR}" + "/"
+                    + artifactSubClassifierGeneralized + "/" + artifactBuildConfigGeneralized
+                    + "/" + artifactId;
                 
                 if ( !dependenciesRoots.containsKey( newDepRoot ) )
                 {
