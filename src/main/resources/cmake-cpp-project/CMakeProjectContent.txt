@@ -77,8 +77,13 @@ SET(INTERNAL_HDRS
 # CMAKE Convention : Add your private compilable resource files here !
 # Example :
 SET(INTERNAL_RC
-#    "${INTERNAL_SRC_DIR}/sample.ui"
 #    "${INTERNAL_SRC_DIR}/sample.qrc"
+)
+
+# CMAKE Convention : Add your private compilable ui files here !
+# Example :
+SET(INTERNAL_UI
+#    "${INTERNAL_SRC_DIR}/sample.ui"
 )
 
 # CMAKE Convention : Add your private static/final resource files here !
@@ -103,6 +108,7 @@ SOURCE_GROUP(src FILES
 # CMAKE Convention : Group the files here !
 SOURCE_GROUP(res FILES 
     ${INTERNAL_RC}
+    ${INTERNAL_UI}
     ${INTERNAL_EMBD_RC}
 )
         
@@ -124,6 +130,15 @@ SOURCE_GROUP(include FILES
 )
 
 ########################################################################################
+# Qt special case
+
+# CMake 2.8 need qt5_wrap_ui() but qt5_wrap_cpp() and qt5_add_resource() are not needed()
+# CMake 3.0 don't need that anymore, see CMAKE_AUTOMOC at the begining of this file
+#qt5_wrap_cpp(INTERNAL_MOC_HDRS ${INTERNAL_HDRS})
+#qt5_wrap_ui(INTERNAL_UIC_SRC ${INTERNAL_UI})
+#qt5_add_resources(INTERNAL_RCC_SRC ${INTERNAL_RC})
+
+########################################################################################
 # TARGET DEFINITION
 
 # CMAKE Recommendation : Executable target definition depends on current platform
@@ -141,16 +156,24 @@ endif()
 #    ${INTERNAL_SRC}
 #    ${INTERNAL_HDRS}
 #    ${INTERNAL_RC}
+#    ${INTERNAL_UI}
 #    ${INTERNAL_EMBD_RC}
+#    ${INTERNAL_MOC_HDRS} # not needed with CMake 3.0.0 and above
+#    ${INTERNAL_UIC_SRC} # not needed with CMake 3.0.0 and above
+#    ${INTERNAL_RCC_SRC} # not needed with CMake 3.0.0 and above
 #    ${PUBLIC_HDRS}
 #)
 
-# OR CMAKE Mandatory: Shared library target definition
-#add_library(${TARGET_NAME} SHARED
+# OR CMAKE Mandatory: Shared/Static library target definition
+#add_library(${TARGET_NAME} SHARED|STATIC
 #    ${INTERNAL_SRC}
 #    ${INTERNAL_HDRS}
 #    ${INTERNAL_RC}
+#    ${INTERNAL_UI}
 #    ${INTERNAL_EMBD_RC}
+#    ${INTERNAL_MOC_HDRS} # not needed with CMake 3.0.0 and above
+#    ${INTERNAL_UIC_SRC} # not needed with CMake 3.0.0 and above
+#    ${INTERNAL_RCC_SRC} # not needed with CMake 3.0.0 and above
 #    ${PUBLIC_HDRS}
 #)
 # CMAKE Recommendation : C++ preprocessor definition to let linker export shared symbols

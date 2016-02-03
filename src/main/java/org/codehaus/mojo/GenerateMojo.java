@@ -166,6 +166,14 @@ public class GenerateMojo
     @Parameter( property = "version", defaultValue = "0.0.0.1" )
     private String version;
     
+    /**
+     * The generated CMakeLists file CMake min version.
+     * 
+     * @since 0.0.6
+     */
+    @Parameter( property = "cmakeMinVersion", defaultValue = "3.0.0" )
+    private String cmakeMinVersion;
+    
     protected Map<String, String> listResourceFolderContent( String path, Map valuesMap )
     {
         String location = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
@@ -244,6 +252,14 @@ public class GenerateMojo
         //Properties userProperties = session.getUserProperties();
         //Properties properties = session.getExecutionProperties();
         
+        org.apache.maven.artifact.versioning.DefaultArtifactVersion defautCMakeVersion =
+            new org.apache.maven.artifact.versioning.DefaultArtifactVersion( "3.0.0" );
+        org.apache.maven.artifact.versioning.DefaultArtifactVersion askedCMakeVersion =
+            new org.apache.maven.artifact.versioning.DefaultArtifactVersion( cmakeMinVersion );
+        boolean bCMake3OrAbove = ( askedCMakeVersion.compareTo( defautCMakeVersion ) >= 0 );
+        
+        getLog().debug( "CMake 3 or above asked (" + cmakeMinVersion + ") ? " + ( bCMake3OrAbove ? "yes" : "no" ) );
+        
         Map valuesMap = new HashMap();
         valuesMap.put( "parentGroupId", parentGroupId );
         valuesMap.put( "parentArtifactId", parentArtifactId );
@@ -252,6 +268,9 @@ public class GenerateMojo
         valuesMap.put( "artifactId", artifactId );
         valuesMap.put( "artifactName", artifactName );
         valuesMap.put( "version", version );
+        valuesMap.put( "cmakeMinVersion", cmakeMinVersion );
+        valuesMap.put( "parentScope", bCMake3OrAbove ? "PARENT_SCOPE" : "" );
+        valuesMap.put( "projectVersion", bCMake3OrAbove ? "VERSION ${TARGET_VERSION}" : "" );
 
 //1/ search for properties
 // -DgroupId=fr.neticoa -DartifactName=QtUtils -DartifactId=qtutils -Dversion=1.0-SNAPSHOT

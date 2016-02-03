@@ -21,9 +21,7 @@
 ########################################################################################
 ########################################################################################
 
-cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
-# CMAKE 2.8 : requirement
-#cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+cmake_minimum_required(VERSION $(cmakeMinVersion) FATAL_ERROR) # CMake min version, default set to 3.0.0
 
 ########################################################################################
 # TARGET INITIALISATION (not requiring project() command)
@@ -33,7 +31,7 @@ get_directory_property(hasParent PARENT_DIRECTORY)
 # MAVEN Mandatory : TARGET_NAME can be named what ever you want 
 if (hasParent)
     message(WARNING "TARGET_NAME reset since current project has parent")
-    unset(TARGET_NAME PARENT_SCOPE)
+    unset(TARGET_NAME $(parentScope)) # PARENT_SCOPE supported only with CMake 3.0.0 and above
     unset(TARGET_NAME CACHE)
 endif()
 if(NOT TARGET_NAME)
@@ -48,7 +46,7 @@ endif()
 # usualy used as project componant source root
 if (hasParent)
     message(WARNING "TARGET_ID reset since current project has parent")
-    unset(TARGET_ID PARENT_SCOPE)
+    unset(TARGET_ID $(parentScope)) # PARENT_SCOPE supported only with  CMake 3.0.0 and above
     unset(TARGET_ID CACHE)
 endif()
 if(NOT TARGET_ID)
@@ -79,9 +77,7 @@ add_definitions(-DTARGET_VERSION=${TARGET_VERSION})
 # TARGET INITIALISATION (requiring project() command)
 
 # CMAKE Mandatory : define project
-project(${TARGET_ID} VERSION ${TARGET_VERSION})
-# CMAKE 2.8 : VERSION parameter is not allowed
-#project(${TARGET_ID})
+project(${TARGET_ID} $(projectVersion)) # VERSION ${TARGET_VERSION} supported only with CMake 3.0.0 and above
 
 # CMAKE Mandatory : detect project target platform and architecture
 if(WIN32)
