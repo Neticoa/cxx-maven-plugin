@@ -43,6 +43,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.net.URL;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.jar.JarFile;
@@ -280,6 +282,7 @@ public class GenerateMojo
         getLog().info( "basdir = " + basedir );
         
         StrSubstitutor substitutor = new StrSubstitutor( valuesMap, "$(", ")" );
+        String sExecutionDate = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss.SSS").format(new Date());
         for ( Map.Entry<String, String> entry : resources.entrySet() )
         {
             String curRes = entry.getKey();
@@ -310,9 +313,11 @@ public class GenerateMojo
                     { 
                         if ( !newFile.createNewFile() )
                         {
+                           
                             // duplicate existing file
                             FileInputStream inStream = new FileInputStream( newFile );
-                            File backFile = File.createTempFile( newFile.getName(), ".back", newFile.getParentFile() );
+                            File backFile = File.createTempFile( newFile.getName() + ".",
+                                "." + sExecutionDate + ".back", newFile.getParentFile() );
                             FileOutputStream outStream = new FileOutputStream( backFile );
                             
                             IOUtils.copy( inStream, outStream );
