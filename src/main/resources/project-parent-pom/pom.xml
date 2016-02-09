@@ -35,6 +35,14 @@ limitations under the License.
   <!-- set the Main project name here -->
   <name>$(artifactName)</name>
   <version>$(version)</version>
+  
+  <!-- set scm project location here -->
+  <!--
+  <scm>
+    <connection></connection>
+    <developerConnection></developerConnection>
+  </scm>
+  -->
 
   <properties>
   </properties>

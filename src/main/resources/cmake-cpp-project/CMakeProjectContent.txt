@@ -50,8 +50,8 @@
 # INTERNAL SOURCES DEFINITION (source that are private and not visible from the outside)
 
 # CMAKE Recommendation : Add your custom include path in this list
-# manage_maven_dependencies.cmake whill update current project dependencies include directory, 
-# see below
+# MAVEN Mandatory : provided default include directories are used for Maven interfaces dependencies.
+# Maven will fill current project dependencies include directory
 include_directories(
     "${PROJECT_SOURCE_DIR}"
     "${PROJECT_SOURCE_DIR}/${TARGET_ID}/include"

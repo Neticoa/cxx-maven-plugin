@@ -28,6 +28,14 @@ limitations under the License.
   
   <!-- minimal requirement : Apache Maven 3.0.4 -->
   
+  <!-- set scm project location here -->
+  <!--
+  <scm>
+    <connection></connection>
+    <developerConnection></developerConnection>
+  </scm>
+  -->
+  
   <properties>
     <!-- override general.excludes in child pom -->
     <general.excludes>
