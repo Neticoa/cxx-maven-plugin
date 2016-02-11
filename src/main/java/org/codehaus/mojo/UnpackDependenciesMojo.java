@@ -36,7 +36,6 @@ import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 /* rewrite of  UnpackDependenciesMojo from maven-dependency plugin, goal 'unpack-dependencies' */
 //import org.apache.maven.plugin.dependency.fromDependencies.AbstractFromDependenciesMojo;
 
-/* Use enhanced FileSet and FileManager (not the one provided in this project)*/
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
@@ -62,7 +61,7 @@ import org.codehaus.plexus.archiver.ArchiveContentEntry;
 import org.codehaus.plexus.archiver.manager.ArchiveContentListerManager;
 
 import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException;
-import org.apache.maven.shared.artifact.filter.collection.AbstractArtifactFeatureFilter;
+import org.codehaus.utils.ClassifierRegexFilter;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactIdFilter;
 import org.apache.maven.shared.artifact.filter.collection.ClassifierFilter;
 import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
@@ -412,43 +411,6 @@ public class UnpackDependenciesMojo
             {
                 throw new MojoExecutionException( e.getMessage(), e );
             }
-        }
-    }
-    
-    /**
-     * Our personnal dependencies classifier filter with regexp capabilities
-     */
-    protected class ClassifierRegexFilter
-    extends AbstractArtifactFeatureFilter
-    {
-        /**
-         * @param include comma separated list with includes.
-         * @param exclude comma separated list with excludes.
-         */
-        public ClassifierRegexFilter( String include, String exclude )
-        {
-            super( include, exclude );
-        }
-
-        /** {@inheritDoc} */
-        protected String getArtifactFeature( Artifact artifact )
-        {
-            return artifact.getClassifier();
-        }
-        
-        /**
-         * Allows Feature comparison to be customized
-         * 
-         * @param lhs String artifact's feature
-         * @param rhs String feature from exclude or include list
-         * @return boolean true if features match
-         */
-        protected boolean compareFeatures( String lhs, String rhs )
-        {
-            getLog().debug( "check if '" + lhs + "' (artifact's classifier feature) Regex match '"
-                + rhs + "' (exclude or include pattern)" );
-            // If lhs is null, check that rhs is null. Otherwise check if strings are equal.
-            return ( lhs == null ? rhs == null : lhs.matches( rhs ) /*lhs.equals( rhs )*/ );
         }
     }
 
