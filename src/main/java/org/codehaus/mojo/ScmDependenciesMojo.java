@@ -38,6 +38,7 @@ import org.apache.commons.lang.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -77,6 +78,13 @@ import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.model.Scm;
 
 import org.codehaus.utils.ExecutorService;
+
+import org.apache.maven.settings.Server;
+import org.apache.maven.settings.Settings;
+import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
+import org.apache.maven.settings.crypto.SettingsDecrypter;
+import org.apache.maven.settings.crypto.SettingsDecryptionRequest;
+import org.apache.maven.settings.crypto.SettingsDecryptionResult; 
 
 /**
  * Goal that retrieve source dependencies from the SCM.
@@ -287,20 +295,46 @@ public class ScmDependenciesMojo
         return status;
     }
     
+    /**
+     * Maven settings.
+     */
+    @Component
+    private Settings settings;
+    /**
+     * The decrypter for passwords.
+     */
+    @Component
+    private SettingsDecrypter settingsDecrypter;
+
+    /**
+     * Returns the list of servers with decrypted passwords.
+     *
+     * @return list of servers with decrypted passwords.
+     */
+    List<Server> getDecryptedServers()
+    {
+        final SettingsDecryptionRequest settingsDecryptionRequest = new DefaultSettingsDecryptionRequest();
+        settingsDecryptionRequest.setServers( settings.getServers() );
+        final SettingsDecryptionResult decrypt = settingsDecrypter.decrypt( settingsDecryptionRequest );
+        return decrypt.getServers();
+    } 
+
     protected class SvnInfo extends DefaultHandler
     {
         private String root = null;
         private String relativeUrl = null;
+        private long revision = -1;
         
         public void reset()
         {
             root = null;
             relativeUrl = null;
+            revision = -1;
         }
         
         public boolean isValide()
         {
-            return root != null && relativeUrl != null;
+            return root != null && relativeUrl != null && revision != -1;
         }
         
         public String getSvnRoot()
@@ -312,6 +346,16 @@ public class ScmDependenciesMojo
         {
             return relativeUrl;
         }
+         
+        public long getRevision()
+        {
+            return revision;
+        }
+        
+        public String toString()
+        {
+           return "r" + revision + " " + root + " " + relativeUrl;
+        }
         
         private boolean bRoot = false;
         private boolean bRelativeUrl = false;
@@ -320,7 +364,19 @@ public class ScmDependenciesMojo
         public void startElement(String uri, String localName, String qName, Attributes attributes)
             throws SAXException
         {
-            if ( qName.equalsIgnoreCase( "root" ) )
+            if ( qName.equalsIgnoreCase( "entry" ) )
+            {
+                String sRev = attributes.getValue( "revision" );
+                try
+                {
+                    revision = Long.parseLong( sRev );
+                }
+                catch ( Exception e )
+                {
+                    throw new SAXException( "URI or folder svn revision not found", e );
+                } 
+            }
+            else if ( qName.equalsIgnoreCase( "root" ) )
             {
                 bRoot = true;
             }
@@ -346,7 +402,7 @@ public class ScmDependenciesMojo
         }
     }
     
-    protected SvnInfo getSvnInfo(File externalsDir) throws MojoExecutionException
+    protected SvnInfo getSvnInfo(String uri) throws MojoExecutionException
     {
         // svn info <externalsDir> --xml
         Map enviro = null;
@@ -358,9 +414,11 @@ public class ScmDependenciesMojo
         {
             getLog().error( "Could not assign default system enviroment variables.", x );
         }      
-        CommandLine commandLine = ExecutorService.getExecutablePath( "svn", enviro, externalsDir );
+        CommandLine commandLine = ExecutorService.getExecutablePath( "svn", enviro, basedir );
         
-        commandLine.addArguments( new String[] {"info", externalsDir.getAbsolutePath(), "--xml"} );
+        // TODO use --non-interactive --no-auth-cache --username XXXX --password YYYY
+        // using server
+        commandLine.addArguments( new String[] {"info", uri, "--xml"} );
 
         Executor exec = new DefaultExecutor();
         
@@ -368,16 +426,17 @@ public class ScmDependenciesMojo
         
         try
         {
+            getLog().debug( "Execute command '" + commandLine + "'");
             int resultCode = ExecutorService.executeCommandLine( exec, commandLine, enviro, out,
                 System.err, System.in );
         }
         catch ( ExecuteException e )
         {
-            throw new MojoExecutionException( "Command execution failed.", e );
+            throw new MojoExecutionException( "Command '" + commandLine + "' execution failed.", e );
         }
         catch ( IOException e )
         {
-            throw new MojoExecutionException( "Command execution failed.", e );
+            throw new MojoExecutionException( "Command '" + commandLine + "' execution failed.", e );
         }
         
         SvnInfo svnInfo = new SvnInfo();
@@ -387,7 +446,7 @@ public class ScmDependenciesMojo
             SAXParser parser = sfactory.newSAXParser();
             XMLReader xmlparser = parser.getXMLReader();
             xmlparser.setContentHandler( svnInfo );
-            xmlparser.parse( new InputSource( out.toString( "UTF8" ) ) );
+            xmlparser.parse( new InputSource( new ByteArrayInputStream( out.toByteArray( ) ) ) );
         }
         catch ( Exception e )
         {
@@ -400,15 +459,26 @@ public class ScmDependenciesMojo
         throws MojoExecutionException
     {
         DependencyStatusSets dss = getDependencySets( true );
+        
+        // if we use svn, we need an externals dir
+        SvnInfo externalsSvnInfo = null;
 
         for ( Artifact artifact : dss.getResolvedDependencies() )
         {
+            StringBuffer dependencyStr = new StringBuffer();
+            dependencyStr.append( artifact.getGroupId() );
+            dependencyStr.append( ":" );
+            dependencyStr.append( artifact.getArtifactId() );
+            dependencyStr.append( ":" );
+            dependencyStr.append( artifact.getVersion() );
+            dependencyStr.append( ":" );
+            dependencyStr.append( artifact.getType() );
+          
             MavenProject project = buildProjectFromArtifact( artifact );
             Scm scm = project.getScm();
 
             if ( scm == null ) {
-                getLog().error( "No SCM specified for " + artifact.getArtifactId() );
-                throw new IllegalStateException();
+                throw new MojoExecutionException( "No SCM specified for artifact " + dependencyStr );
             }
 
             String scmUri = scm.getConnection();
@@ -419,43 +489,54 @@ public class ScmDependenciesMojo
             
             if ( StringUtils.isEmpty( scmUri ) )
             {
-                getLog().error( "No SCM Uri specified for " + artifact.getArtifactId() );
-                throw new IllegalStateException();
+                throw new MojoExecutionException( "No SCM Uri specified for artifact " + dependencyStr );
             }
             
-            String[] scmType = scmUri.split( ":", 2 );
+            String[] scmType = scmUri.split( ":", 3 );
             
-            if ( scmType.length < 2 || ! StringUtils.equalsIgnoreCase( scmType[0], "scm" ) )
+            if ( scmType.length < 3 || ! StringUtils.equalsIgnoreCase( scmType[0], "scm" ) )
             {
-                getLog().error( "SCM Uri content invalide " + scmUri );
-                throw new IllegalStateException();
+                throw new MojoExecutionException( "SCM Uri content invalide : " + scmUri );
             }
             
             if ( StringUtils.equalsIgnoreCase( scmType[1], "svn" ) )
             {
-                // check svn::externals dir 
-                File externalsDir = new File( basedir.toString() + File.separator + svnExternalsPropertyDir );
-                if ( ! externalsDir.isDirectory() )
-                {
-                    getLog().error( "Svn externals dir does not exists or is not a directory " + externalsDir );
-                    throw new IllegalStateException();
-                }
+                String dependencySvnUri = scmType[2];
                 
-                SvnInfo svnInfo = getSvnInfo(externalsDir);
-                
-                if ( ! svnInfo.isValide() )
+                // check svn::externals dir only once
+                if ( null == externalsSvnInfo )
                 {
-                    getLog().error( "Svn info not available for externals dir " + externalsDir );
-                    throw new IllegalStateException();
+                    File externalsDir = new File( basedir.toString() + File.separator + svnExternalsPropertyDir );
+                    if ( ! externalsDir.isDirectory() )
+                    {
+                        throw new MojoExecutionException( "Svn externals dir does not exists or is not a directory : "
+                            + externalsDir );
+                    }
+                    
+                    externalsSvnInfo = getSvnInfo( externalsDir.getAbsolutePath() );
+                    
+                    if ( ! externalsSvnInfo.isValide() )
+                    {
+                        throw new MojoExecutionException( "Svn info not available for externals dir : " + externalsDir );
+                    }
+                                     
+                    getLog().info( "Svn externals dir is '" + externalsSvnInfo.toString() + "'");
                 }
                 
                 // todo la suite dans #15816, point 5
-
+                
+                SvnInfo dependencySvnInfo = getSvnInfo(dependencySvnUri);
+                
+                if ( ! dependencySvnInfo.isValide() )
+                {
+                    throw new MojoExecutionException( "Svn info not available for dependency : "
+                        + dependencyStr + " at " + dependencySvnUri );
+                }
+                getLog().info( "Svn info for dependency : " + dependencyStr + " are " + dependencySvnInfo.toString() );
             } 
             else
             {
-                getLog().error( "SCM unsupported yet " + scmType[1] );
-                throw new IllegalStateException();
+                throw new MojoExecutionException( "SCM unsupported yet : " + scmType[1] );
             }
         }  
     }

@@ -279,7 +279,17 @@ limitations under the License.
     	<groupId>org.apache.maven</groupId>
     	<artifactId>maven-toolchain</artifactId>
     	<version>${mavenVersion}</version>
-    </dependency>  
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-settings</artifactId>
+      <version>${mavenVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-settings-builder</artifactId>
+      <version>3.0.5</version>
+    </dependency> 
     
     <dependency>
       <groupId>org.apache.maven.shared</groupId>
