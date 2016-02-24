@@ -39,13 +39,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.Map;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
@@ -59,8 +57,6 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.Executor;
-import org.apache.commons.exec.OS;
-import org.apache.commons.exec.PumpStreamHandler;
 
 import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException;
 import org.codehaus.utils.ClassifierRegexFilter;
@@ -81,10 +77,13 @@ import org.codehaus.utils.ExecutorService;
 
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
-import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
+// require Maven 3 API :
+/*import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
 import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.settings.crypto.SettingsDecryptionRequest;
-import org.apache.maven.settings.crypto.SettingsDecryptionResult; 
+import org.apache.maven.settings.crypto.SettingsDecryptionResult;*/
+import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
+import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 
 /**
  * Goal that retrieve source dependencies from the SCM.
@@ -138,6 +137,38 @@ public class ScmDependenciesMojo
      */
     @Parameter( property = "connectionType", defaultValue = "connection" )
     protected String connectionType;
+    
+    /**
+     * The user name (used by svn).
+     */
+    @Parameter( property = "username" )
+    private String username = null;
+
+    /**
+     * The user password (used by svn).
+     */
+    @Parameter( property = "password" )
+    private String password = null;
+    
+    /**
+     * Maven settings.
+     */
+    @Parameter( defaultValue = "${settings}", readonly = true )
+    private Settings settings;
+    //@Component
+    //private Settings settings;
+        
+    /**
+     * The decrypter for passwords.
+     */
+    /**
+     * When this plugin requires Maven 3.0 as minimum, this component can be removed and o.a.m.s.c.SettingsDecrypter be
+     * used instead.
+     */
+    @Component( hint = "mng-4384" )
+    private SecDispatcher secDispatcher;
+    //@Component
+    //private SettingsDecrypter settingsDecrypter;
     
     
     /**
@@ -294,39 +325,182 @@ public class ScmDependenciesMojo
 
         return status;
     }
-    
-    /**
-     * Maven settings.
-     */
-    @Component
-    private Settings settings;
-    /**
-     * The decrypter for passwords.
-     */
-    @Component
-    private SettingsDecrypter settingsDecrypter;
 
     /**
      * Returns the list of servers with decrypted passwords.
      *
      * @return list of servers with decrypted passwords.
      */
-    List<Server> getDecryptedServers()
+    /*List<Server> getDecryptedServers()
     {
         final SettingsDecryptionRequest settingsDecryptionRequest = new DefaultSettingsDecryptionRequest();
         settingsDecryptionRequest.setServers( settings.getServers() );
         final SettingsDecryptionResult decrypt = settingsDecrypter.decrypt( settingsDecryptionRequest );
         return decrypt.getServers();
-    } 
+    }*/
+    
+    final class Credential
+    {
+        private String username;
+        private String password;
 
+        public Credential( String username, String password )
+        {
+            this.username = username;
+            this.password = password;
+        }
+
+        public String getUsername()
+        {
+            return username;
+        }
+
+        public String getPassword()
+        {
+            return password;
+        }
+        
+        public void setUsername( String username )
+        {
+            this.username = username;
+        }
+
+        public void setPassword( String password )
+        {
+            this.password = password;
+        }
+    }
+    
+    /**
+     * Load username password from settings if user has not set them in JVM properties
+     * 
+     * @see http://blog.sonatype.com/2009/10/maven-tips-and-tricks-encrypting-passwords
+     * 
+     * origin : derived from org.apache.maven.scm.plugin.AbstractScmMojo::loadInfosFromSettings()
+     *
+     * @param url not null
+     */
+    private Credential loadInfosFromSettings( String url /*ScmProviderRepositoryWithHost repo*/ )
+    {
+        Credential ret = new Credential( username, password );
+        if ( username == null || password == null )
+        {
+            URL aURL = null;
+            try
+            {
+                aURL = new URL( url );
+            }
+            catch ( MalformedURLException e )
+            {
+                getLog().warn( "Failed to parse url " + url );
+                return ret;
+            }
+
+            String host = /*repo*/aURL.getHost();
+
+            int port = /*repo*/aURL.getPort();
+
+            if ( port > 0 )
+            {
+                host += ":" + port;
+            }
+
+            Server server = this.settings.getServer( host );
+
+            if ( server != null )
+            {
+                if ( username == null )
+                {
+                    //username = server.getUsername();
+                    ret.setUsername( server.getUsername() );
+                }
+
+                if ( password == null )
+                {
+                    //password = decrypt( server.getPassword(), host );
+                    ret.setPassword( decrypt( server.getPassword(), host ) );
+                }
+
+                /*if ( privateKey == null )
+                {
+                    privateKey = server.getPrivateKey();
+                }
+
+                if ( passphrase == null )
+                {
+                    passphrase = decrypt( server.getPassphrase(), host );
+                }*/
+            }
+        }
+        return ret;
+    }
+
+    private String decrypt( String str, String server )
+    {
+        try
+        {
+            return secDispatcher.decrypt( str );
+        }
+        catch ( SecDispatcherException e )
+        {
+            getLog().warn( "Failed to decrypt password/passphrase for server " + server + ", using auth token as is" );
+            return str;
+        }
+    }
+    
+    private Map getDefaultSvnCommandLineEnv()
+    {
+        Map enviro = null;
+        try
+        {
+            enviro = ExecutorService.getEnvs();
+            enviro.put( "LC_MESSAGES", "C" );
+        }
+        catch ( IOException e )
+        {
+            getLog().error( "Could not assign default system enviroment variables.", e );
+        }
+        return enviro;     
+    }
+    
+    private CommandLine getDefaultSvnCommandLine( String uri, Map enviro )
+    {
+        CommandLine commandLine = ExecutorService.getExecutablePath( "svn", enviro, basedir );
+        
+        Credential cred = loadInfosFromSettings( uri );
+        
+        if ( cred != null && ! StringUtils.isEmpty( cred.getUsername() ) )
+        {
+            commandLine.addArguments( new String[] { "--username", cred.getUsername() } );
+        }
+        if ( cred != null && ! StringUtils.isEmpty( cred.getPassword() ) )
+        {
+            commandLine.addArguments( new String[] { "--password", cred.getPassword() } );
+        }
+        /* TODO later :
+        commandLine.addArguments( new String[] {"--config-dir", "todo" } );
+        commandLine.addArgument( "--no-auth-cache" ); 
+        commandLine.addArgument( "--non-interactive" );
+        commandLine.addArgument( "--trust-server-cert" );
+        */
+        
+        return commandLine;
+    }
+    
+    /**
+     * svn info <uri> request result
+     * 
+     */
     protected class SvnInfo extends DefaultHandler
     {
+        private String url = null;
         private String root = null;
         private String relativeUrl = null;
         private long revision = -1;
         
         public void reset()
         {
+            url = null;
             root = null;
             relativeUrl = null;
             revision = -1;
@@ -334,7 +508,12 @@ public class ScmDependenciesMojo
         
         public boolean isValide()
         {
-            return root != null && relativeUrl != null && revision != -1;
+            return url != null && root != null && relativeUrl != null && revision != -1;
+        }
+        
+        public String getSvnUrl()
+        {
+            return url;
         }
         
         public String getSvnRoot()
@@ -357,11 +536,12 @@ public class ScmDependenciesMojo
            return "r" + revision + " " + root + " " + relativeUrl;
         }
         
+        private boolean bUrl = false;
         private boolean bRoot = false;
         private boolean bRelativeUrl = false;
         
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes)
+        public void startElement( String uri, String localName, String qName, Attributes attributes )
             throws SAXException
         {
             if ( qName.equalsIgnoreCase( "entry" ) )
@@ -376,6 +556,10 @@ public class ScmDependenciesMojo
                     throw new SAXException( "URI or folder svn revision not found", e );
                 } 
             }
+            else if ( qName.equalsIgnoreCase( "url" ) )
+            {
+                bUrl = true;
+            }
             else if ( qName.equalsIgnoreCase( "root" ) )
             {
                 bRoot = true;
@@ -387,14 +571,19 @@ public class ScmDependenciesMojo
         }
         
         @Override
-        public void characters(char ch[], int start, int length) throws SAXException
+        public void characters( char ch[], int start, int length ) throws SAXException
         {
-            if (bRoot)
+            if ( bUrl )
+            {
+                url = new String( ch, start, length );
+                bUrl = false;
+            }
+            else if ( bRoot )
             {
                 root = new String( ch, start, length );
                 bRoot = false;
             }
-            else if (bRelativeUrl)
+            else if ( bRelativeUrl )
             {
                 relativeUrl = new String( ch, start, length );
                 bRelativeUrl = false;
@@ -402,31 +591,21 @@ public class ScmDependenciesMojo
         }
     }
     
-    protected SvnInfo getSvnInfo(String uri) throws MojoExecutionException
+    protected SvnInfo getSvnInfo( String uri ) throws MojoExecutionException
     {
-        // svn info <externalsDir> --xml
-        Map enviro = null;
-        try
-        {
-            enviro = ExecutorService.getEnvs();
-        }
-        catch ( IOException x )
-        {
-            getLog().error( "Could not assign default system enviroment variables.", x );
-        }      
-        CommandLine commandLine = ExecutorService.getExecutablePath( "svn", enviro, basedir );
-        
-        // TODO use --non-interactive --no-auth-cache --username XXXX --password YYYY
-        // using server
-        commandLine.addArguments( new String[] {"info", uri, "--xml"} );
+        Map enviro = getDefaultSvnCommandLineEnv();
+        CommandLine commandLine = getDefaultSvnCommandLine( uri, enviro );
 
+        // svn info <uri> --xml
+        commandLine.addArguments( new String[] {"info", uri, "--xml"} );
+        
         Executor exec = new DefaultExecutor();
         
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         
         try
         {
-            getLog().debug( "Execute command '" + commandLine + "'");
+            getLog().debug( "Execute command '" + commandLine + "'" );
             int resultCode = ExecutorService.executeCommandLine( exec, commandLine, enviro, out,
                 System.err, System.in );
         }
@@ -455,6 +634,19 @@ public class ScmDependenciesMojo
         return svnInfo;
     }
     
+    public String artifactToString( Artifact artifact )
+    {
+        StringBuffer dependencyStr = new StringBuffer();
+        dependencyStr.append( artifact.getGroupId() );
+        dependencyStr.append( ":" );
+        dependencyStr.append( artifact.getArtifactId() );
+        dependencyStr.append( ":" );
+        dependencyStr.append( artifact.getVersion() );
+        dependencyStr.append( ":" );
+        dependencyStr.append( artifact.getType() );
+        return dependencyStr.toString();
+    }
+    
     protected void doExecute()
         throws MojoExecutionException
     {
@@ -465,24 +657,18 @@ public class ScmDependenciesMojo
 
         for ( Artifact artifact : dss.getResolvedDependencies() )
         {
-            StringBuffer dependencyStr = new StringBuffer();
-            dependencyStr.append( artifact.getGroupId() );
-            dependencyStr.append( ":" );
-            dependencyStr.append( artifact.getArtifactId() );
-            dependencyStr.append( ":" );
-            dependencyStr.append( artifact.getVersion() );
-            dependencyStr.append( ":" );
-            dependencyStr.append( artifact.getType() );
+            String dependencyStr = artifactToString( artifact );
           
             MavenProject project = buildProjectFromArtifact( artifact );
             Scm scm = project.getScm();
 
-            if ( scm == null ) {
+            if ( scm == null )
+            {
                 throw new MojoExecutionException( "No SCM specified for artifact " + dependencyStr );
             }
 
             String scmUri = scm.getConnection();
-            if (StringUtils.equals( connectionType, "developerConnection" ) )
+            if ( StringUtils.equals( connectionType, "developerConnection" ) )
             {
                 scmUri = scm.getDeveloperConnection();
             }
@@ -517,15 +703,16 @@ public class ScmDependenciesMojo
                     
                     if ( ! externalsSvnInfo.isValide() )
                     {
-                        throw new MojoExecutionException( "Svn info not available for externals dir : " + externalsDir );
+                        throw new MojoExecutionException( "Svn info not available for externals dir : "
+                            + externalsDir );
                     }
                                      
-                    getLog().info( "Svn externals dir is '" + externalsSvnInfo.toString() + "'");
+                    getLog().info( "Svn externals dir is '" + externalsSvnInfo.toString() + "'" );
                 }
                 
                 // todo la suite dans #15816, point 5
                 
-                SvnInfo dependencySvnInfo = getSvnInfo(dependencySvnUri);
+                SvnInfo dependencySvnInfo = getSvnInfo( dependencySvnUri );
                 
                 if ( ! dependencySvnInfo.isValide() )
                 {
