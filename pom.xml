@@ -208,6 +208,9 @@ limitations under the License.
           <excludes>
             <exclude>**/src/main/java/**/*Snappy*.java</exclude>
           </excludes>
+          <compilerArgs>
+            <arg>-Xlint</arg>
+          </compilerArgs>
         </configuration>
       </plugin>
       
@@ -226,10 +229,19 @@ limitations under the License.
             <exclude>geany_projet</exclude>
             <exclude>SAMPLE/**</exclude>
             <exclude>**/gcovr.py</exclude>
+            <exclude>config/*-header.txt</exclude>
           </excludes>
         </configuration>
       </plugin>
       
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <headerLocation>config/cxx-header.txt</headerLocation>
+          <failOnViolation>false</failOnViolation>
+        </configuration>
+      </plugin>
+
     </plugins>
   </build>
   
@@ -237,6 +249,7 @@ limitations under the License.
     <mavenVersion>2.2.1</mavenVersion>
     <doxiaVersion>1.4</doxiaVersion>
     <pluginTestingVersion>2.1</pluginTestingVersion>
+    <checkstyle.violation.ignore>VisibilityModifier,RedundantThrows,NewlineAtEndOfFile,ParameterNumber,MethodLength,FileLength</checkstyle.violation.ignore>
   </properties>
   
   <prerequisites>
@@ -306,11 +319,6 @@ limitations under the License.
       <groupId>org.apache.maven.plugins</groupId>
       <artifactId>maven-dependency-plugin</artifactId>
       <version>2.10</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.plugin-tools</groupId>
-      <artifactId>maven-plugin-annotations</artifactId>
-      <version>3.4</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>

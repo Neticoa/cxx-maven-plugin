@@ -37,11 +37,16 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.Set;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.net.URL;
 import java.net.MalformedURLException;
 
@@ -74,6 +79,7 @@ import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.model.Scm;
 
 import org.codehaus.utils.ExecutorService;
+import org.codehaus.utils.External;
 
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
@@ -113,6 +119,32 @@ public class ScmDependenciesMojo
     protected String svnExternalsPropertyDir;
     
     /**
+     * svn:externals url shall use svn revisions
+     * 
+     * @since 0.0.6
+     */
+    @Parameter( property = "svnExternalsFreezeRevision", defaultValue = "false" )    
+    protected boolean svnExternalsFreezeRevision;
+    
+    /**
+     * String prefix to remove when creating externals target dirs
+     * Part of option 1 (lowest priority). For each source dependency, target path are derived
+     * from their "groupId:artifactId" string
+     * 
+     * @since 0.0.6
+     */
+    @Parameter( property = "svnExternalsRemoveTargetPrefix", defaultValue = "" )       
+    protected String svnExternalsRemoveTargetPrefix;
+    
+    /**
+     * Option 3 (highest priority). Provide explicit target path for each source dependency
+     * 
+     * @since 0.0.6
+     */
+    @Parameter( )
+    private External[] externals;
+    
+    /**
      * Comma Separated list of Classifiers to include. Empty String indicates
      * include everything (default).
      *
@@ -140,18 +172,24 @@ public class ScmDependenciesMojo
     
     /**
      * The user name (used by svn).
+     *
+     * @since 0.0.6
      */
     @Parameter( property = "username" )
     private String username = null;
 
     /**
      * The user password (used by svn).
+     *
+     * @since 0.0.6
      */
     @Parameter( property = "password" )
     private String password = null;
     
     /**
      * Maven settings.
+     *
+     * @since 0.0.6
      */
     @Parameter( defaultValue = "${settings}", readonly = true )
     private Settings settings;
@@ -160,8 +198,7 @@ public class ScmDependenciesMojo
         
     /**
      * The decrypter for passwords.
-     */
-    /**
+     * 
      * When this plugin requires Maven 3.0 as minimum, this component can be removed and o.a.m.s.c.SettingsDecrypter be
      * used instead.
      */
@@ -169,7 +206,6 @@ public class ScmDependenciesMojo
     private SecDispatcher secDispatcher;
     //@Component
     //private SettingsDecrypter settingsDecrypter;
-    
     
     /**
      * origin : derived from org.apache.maven.plugin.dependency.fromDependencies.UnpackDependenciesMojo
@@ -447,8 +483,10 @@ public class ScmDependenciesMojo
             return str;
         }
     }
+        
     
-    private Map getDefaultSvnCommandLineEnv()
+    protected void execSvnCommand( String uri, String[] specificParams, OutputStream out )
+        throws MojoExecutionException
     {
         Map enviro = null;
         try
@@ -458,13 +496,9 @@ public class ScmDependenciesMojo
         }
         catch ( IOException e )
         {
-            getLog().error( "Could not assign default system enviroment variables.", e );
+            getLog().error( "Could not assign default system environment variables.", e );
         }
-        return enviro;     
-    }
-    
-    private CommandLine getDefaultSvnCommandLine( String uri, Map enviro )
-    {
+        
         CommandLine commandLine = ExecutorService.getExecutablePath( "svn", enviro, basedir );
         
         Credential cred = loadInfosFromSettings( uri );
@@ -483,8 +517,25 @@ public class ScmDependenciesMojo
         commandLine.addArgument( "--non-interactive" );
         commandLine.addArgument( "--trust-server-cert" );
         */
+
+        commandLine.addArguments( specificParams );
         
-        return commandLine;
+        Executor exec = new DefaultExecutor();
+        
+        try
+        {
+            getLog().debug( "Execute command '" + commandLine + "'" );
+            int resultCode = ExecutorService.executeCommandLine( exec, commandLine, enviro, out,
+                System.err, System.in );
+        }
+        catch ( ExecuteException e )
+        {
+            throw new MojoExecutionException( "Command '" + commandLine + "' execution failed.", e );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException( "Command '" + commandLine + "' execution failed.", e );
+        }
     }
     
     /**
@@ -593,30 +644,9 @@ public class ScmDependenciesMojo
     
     protected SvnInfo getSvnInfo( String uri ) throws MojoExecutionException
     {
-        Map enviro = getDefaultSvnCommandLineEnv();
-        CommandLine commandLine = getDefaultSvnCommandLine( uri, enviro );
-
-        // svn info <uri> --xml
-        commandLine.addArguments( new String[] {"info", uri, "--xml"} );
-        
-        Executor exec = new DefaultExecutor();
-        
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         
-        try
-        {
-            getLog().debug( "Execute command '" + commandLine + "'" );
-            int resultCode = ExecutorService.executeCommandLine( exec, commandLine, enviro, out,
-                System.err, System.in );
-        }
-        catch ( ExecuteException e )
-        {
-            throw new MojoExecutionException( "Command '" + commandLine + "' execution failed.", e );
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "Command '" + commandLine + "' execution failed.", e );
-        }
+        execSvnCommand( uri, new String[] {"info", uri, "--xml"}, out );
         
         SvnInfo svnInfo = new SvnInfo();
         try
@@ -632,6 +662,55 @@ public class ScmDependenciesMojo
             throw new MojoExecutionException( "svn info xml parsing failed.", e );
         }        
         return svnInfo;
+    }
+    
+    private class ExternalEntry
+    {
+        public String revision = null;
+        public String origin = null;
+        public String targetDir = null;
+    }
+    
+
+    protected Map<String, ExternalEntry> loadSvnExternals( String uri ) throws MojoExecutionException
+    {
+        Map<String, ExternalEntry> properties = new HashMap<String, ExternalEntry>();
+      
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        
+        execSvnCommand( uri, new String[] {"propget", "svn:externals"}, out );
+        
+        BufferedReader in = new BufferedReader( new StringReader( out.toString( ) ) );
+        
+        String line = null;
+        
+        try
+        {
+            // revision<space>origin<space>target_dir
+            while ( null != ( line = in.readLine() ) )
+            {
+                /*line = line.trim();
+
+                int indexOf = line.indexOf( ' ' );
+
+                if ( indexOf == -1 )
+                {
+                    break;
+                }*/
+
+                ExternalEntry entry = new ExternalEntry();
+                entry.revision = "r";
+                entry.origin = "^/someWhere";
+                entry.targetDir = "target/dir";
+                properties.put( entry.targetDir, entry );
+            }
+        }
+        catch ( IOException e )
+        {
+            getLog().warn( "Failed to parse svn:externals of " + uri + " : " + e );
+        }
+        
+        return properties;
     }
     
     public String artifactToString( Artifact artifact )
@@ -654,13 +733,14 @@ public class ScmDependenciesMojo
         
         // if we use svn, we need an externals dir
         SvnInfo externalsSvnInfo = null;
+        Map<String, ExternalEntry> externalEntries = null;
 
         for ( Artifact artifact : dss.getResolvedDependencies() )
         {
             String dependencyStr = artifactToString( artifact );
           
-            MavenProject project = buildProjectFromArtifact( artifact );
-            Scm scm = project.getScm();
+            MavenProject dependencyProject = buildProjectFromArtifact( artifact );
+            Scm scm = dependencyProject.getScm();
 
             if ( scm == null )
             {
@@ -708,6 +788,8 @@ public class ScmDependenciesMojo
                     }
                                      
                     getLog().info( "Svn externals dir is '" + externalsSvnInfo.toString() + "'" );
+                    
+                    externalEntries = loadSvnExternals( externalsDir.getAbsolutePath() );
                 }
                 
                 // todo la suite dans #15816, point 5
@@ -720,6 +802,12 @@ public class ScmDependenciesMojo
                         + dependencyStr + " at " + dependencySvnUri );
                 }
                 getLog().info( "Svn info for dependency : " + dependencyStr + " are " + dependencySvnInfo.toString() );
+                
+                //check Options to modify externalEntries :
+                
+                // if this.externals contains artifact // option 3
+                // else if dependencyProject.getProperties() contains 'scm.dependencies.svn.externals.targetDir' // option 2
+                // else use artifact.getGroupId().artifact.getArtifactId() - this.svnExternalsRemoveTargetPrefix // option 1
             } 
             else
             {

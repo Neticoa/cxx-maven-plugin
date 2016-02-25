@@ -4,8 +4,6 @@ package org.codehaus.mojo;
  * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
  *
- * Copyright (C) 2005-2006, The Codehaus
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
