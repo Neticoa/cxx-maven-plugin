@@ -42,23 +42,22 @@ public class SvnExternalsTokenizerTest
     /**
      * @throws Exception if any
      */
-    public void testSomething()
-        throws Exception
+    public void test1() throws Exception
     {
-        String s = "r455 dfg sdfgsd ";
+        String s = "r455 source target ";
         
         StringCharacterIterator iter = new StringCharacterIterator(s);
         SvnExternalsTokenizer m = new SvnExternalsTokenizer(iter);
 
         SvnExternalsTokenizer.Token t1 = m.nextToken();
-        assertEquals( SvnExternalsTokenizer.TokenType.libelle, t1.tokenType );
+        assertEquals( SvnExternalsTokenizer.TokenType.revision, t1.tokenType );
         assertEquals( "r455", t1.value.toString() );
         SvnExternalsTokenizer.Token t2 = m.nextToken();
         assertEquals( SvnExternalsTokenizer.TokenType.libelle, t2.tokenType );
-        assertEquals( "dfg", t2.value.toString() );
+        assertEquals( "source", t2.value.toString() );
         SvnExternalsTokenizer.Token t3 = m.nextToken();
         assertEquals( SvnExternalsTokenizer.TokenType.libelle, t3.tokenType );
-        assertEquals( "sdfgsd", t3.value.toString() );
+        assertEquals( "target", t3.value.toString() );
         SvnExternalsTokenizer.Token t4 = m.nextToken();
         assertEquals( SvnExternalsTokenizer.TokenType.empty, t4.tokenType );
         assertEquals( null, t4.value );
@@ -67,5 +66,119 @@ public class SvnExternalsTokenizerTest
         assertEquals( null, t5.value );
         
     }
+    
+    /**
+     * @throws Exception if any
+     */
+    public void test2() throws Exception
+    {
+        String s = "r2 \"^/source2\" target    ";
+        
+        StringCharacterIterator iter = new StringCharacterIterator(s);
+        SvnExternalsTokenizer m = new SvnExternalsTokenizer(iter);
+
+        SvnExternalsTokenizer.Token t1 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.revision, t1.tokenType );
+        assertEquals( "r2", t1.value.toString() );
+        SvnExternalsTokenizer.Token t2 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.libelle, t2.tokenType );
+        assertEquals( "\"^/source2\"", t2.value.toString() );
+        SvnExternalsTokenizer.Token t3 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.libelle, t3.tokenType );
+        assertEquals( "target", t3.value.toString() );
+        SvnExternalsTokenizer.Token t4 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.empty, t4.tokenType );
+        assertEquals( null, t4.value );
+        SvnExternalsTokenizer.Token t5 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.empty, t5.tokenType );
+        assertEquals( null, t5.value );
+        
+    }
+    
+    /**
+     * @throws Exception if any
+     */
+    public void test3() throws Exception
+    {
+        String s = " \tr223 ^/source\\ avec\\ espace target2    ";
+        
+        StringCharacterIterator iter = new StringCharacterIterator(s);
+        SvnExternalsTokenizer m = new SvnExternalsTokenizer(iter);
+
+        SvnExternalsTokenizer.Token t1 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.revision, t1.tokenType );
+        assertEquals( "r223", t1.value.toString() );
+        SvnExternalsTokenizer.Token t2 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.libelle, t2.tokenType );
+        assertEquals( "^/source\\ avec\\ espace", t2.value.toString() );
+        SvnExternalsTokenizer.Token t3 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.libelle, t3.tokenType );
+        assertEquals( "target2", t3.value.toString() );
+        SvnExternalsTokenizer.Token t4 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.empty, t4.tokenType );
+        assertEquals( null, t4.value );
+        SvnExternalsTokenizer.Token t5 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.empty, t5.tokenType );
+        assertEquals( null, t5.value );
+        
+    }
+    
+    
+    /**
+     * @throws Exception if any
+     */
+    public void test4() throws Exception
+    {
+        String s = " \tr2230 \"^/source\\ avec\\ espace et quote\"   target3    ";
+        
+        StringCharacterIterator iter = new StringCharacterIterator(s);
+        SvnExternalsTokenizer m = new SvnExternalsTokenizer(iter);
+
+        SvnExternalsTokenizer.Token t1 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.revision, t1.tokenType );
+        assertEquals( "r2230", t1.value.toString() );
+        SvnExternalsTokenizer.Token t2 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.libelle, t2.tokenType );
+        assertEquals( "\"^/source\\ avec\\ espace et quote\"", t2.value.toString() );
+        SvnExternalsTokenizer.Token t3 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.libelle, t3.tokenType );
+        assertEquals( "target3", t3.value.toString() );
+        SvnExternalsTokenizer.Token t4 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.empty, t4.tokenType );
+        assertEquals( null, t4.value );
+        SvnExternalsTokenizer.Token t5 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.empty, t5.tokenType );
+        assertEquals( null, t5.value );
+        
+    }
+    
+    /**
+     * @throws Exception if any
+     */
+    public void test5() throws Exception
+    {
+        String s = " \r\n http://test.server/trunk/ici\\ etLa r2230bad   r0000         ";
+        
+        StringCharacterIterator iter = new StringCharacterIterator(s);
+        SvnExternalsTokenizer m = new SvnExternalsTokenizer(iter);
+
+        SvnExternalsTokenizer.Token t1 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.libelle, t1.tokenType );
+        assertEquals( "http://test.server/trunk/ici\\ etLa", t1.value.toString() );
+        SvnExternalsTokenizer.Token t2 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.libelle, t2.tokenType );
+        assertEquals( "r2230bad", t2.value.toString() );
+        SvnExternalsTokenizer.Token t3 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.revision, t3.tokenType );
+        assertEquals( "r0000", t3.value.toString() );
+        SvnExternalsTokenizer.Token t4 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.empty, t4.tokenType );
+        assertEquals( null, t4.value );
+        SvnExternalsTokenizer.Token t5 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.empty, t5.tokenType );
+        assertEquals( null, t5.value );
+        
+    }
+    
 }
 

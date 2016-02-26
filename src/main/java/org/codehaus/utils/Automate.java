@@ -30,7 +30,7 @@ public abstract class Automate implements ActionExecutor
         /**
          * Etat suivant
          */
-        private int nextState = 0;
+        private int nextState = -1;
         
         /**
          * Action à effectuée
@@ -99,12 +99,14 @@ public abstract class Automate implements ActionExecutor
             return "impossible";
         }
     };
+    
     /**
      * 
      */
     private static int labelCount = 0;
     private static Transition model[][] = null;
     private static Action stateActions[] = null;
+    
     /**
      * 
      */
@@ -117,7 +119,7 @@ public abstract class Automate implements ActionExecutor
      * @param aiLabelCount
      * @throws AutomateException
      */
-    public static void initializeAutomate( final int aiStateCount, final int aiLabelCount ) throws AutomateException
+    protected static void initializeAutomate( final int aiStateCount, final int aiLabelCount ) throws AutomateException
     {
         stateCount = aiStateCount;
         labelCount = aiLabelCount;
@@ -144,9 +146,38 @@ public abstract class Automate implements ActionExecutor
      * @param aiState
      * @param aiAction
      */
-    public static void setState( final int aiState, final Action aiAction )
+    protected static void setState( final int aiState, final Action aiStateAction )
     {
-        stateActions[aiState] = aiAction;
+        setState( aiState, aiStateAction, -1, null );
+    } 
+    
+    /**
+     * @param aiState
+     * @param aiAction
+     * @param aiDefaultAction
+     */
+    protected static void setState( final int aiState, final Action aiStateAction,
+       final int aiDefaultTargetState, final Action aiDefaultAction )
+    {
+        if (null != aiStateAction )
+        {
+            stateActions[aiState] = aiStateAction;
+        }
+        for ( int t = 0; t < labelCount; t++ )
+        {
+            // we focus on unhandled transitions
+            if (null == model[aiState][t].transitionAction || impossible == model[aiState][t].transitionAction )
+            {
+                if ( null != aiDefaultAction )
+                {
+                    model[aiState][t].transitionAction = aiDefaultAction;
+                }
+                if ( aiDefaultTargetState >= 0 )
+                {
+                    model[aiState][t].nextState = aiDefaultTargetState;
+                }
+            }
+        }
     }
 
     /**
@@ -157,7 +188,7 @@ public abstract class Automate implements ActionExecutor
      * @param aiNextState
      * @param aiAction
      */
-    public static void setTransition( final int aiState, final int aiLabel, final int aiNextState,
+    protected static void setTransition( final int aiState, final int aiLabel, final int aiNextState,
                 final Action aiAction )
     {
         model[aiState][aiLabel] = new Transition( aiNextState, aiAction );
@@ -234,6 +265,7 @@ public abstract class Automate implements ActionExecutor
     protected void initializer( final ActionExecutor aiExecutor, final int aiCurrentState, final Object aiParam )
         throws AutomateException
     {
+        System.out.println("Automate.initializer : " + classInititialized + "," + currentState + "," + isInFinalState() );
         if ( classInititialized && ( currentState == -1 || isInFinalState() ) )
         {
             executor = aiExecutor;

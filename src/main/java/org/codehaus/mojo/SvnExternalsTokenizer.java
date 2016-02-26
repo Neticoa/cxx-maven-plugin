@@ -46,6 +46,8 @@ public class SvnExternalsTokenizer extends Automate
         blank,
         backSlack,
         quote,
+        rChar,
+        digit,
         other,
         empty;
 
@@ -68,7 +70,8 @@ public class SvnExternalsTokenizer extends Automate
     public enum TokenType 
     {
         empty,
-        libelle;
+        libelle,
+        revision;
     };
     
     public class Token
@@ -86,7 +89,10 @@ public class SvnExternalsTokenizer extends Automate
         LEXESC,
         QUOBEG,
         QUOEND,
-        FINAL;
+        REV,
+        FINAL_LIBELLE,
+        FINAL_REV,
+        FINAL_EMPTY;
 
         /**
          * 
@@ -150,65 +156,95 @@ public class SvnExternalsTokenizer extends Automate
                 return "nothing";
             }
         };
+        
+        Action tokenTypeLibelle = new Action()
+        {
+            public void action(final ActionExecutor executor, final Object aiParam)
+                throws AutomateException
+            {
+                ( ( SvnExternalsTokenizer ) executor).currentToken.tokenType = TokenType.libelle;
+            }
+
+            public String getName()
+            {
+                return "tokenTypeLibelle";
+            }
+        };
+        
+        Action tokenTypeRevision = new Action()
+        {
+            public void action(final ActionExecutor executor, final Object aiParam)
+                throws AutomateException
+            {
+                ( ( SvnExternalsTokenizer ) executor).currentToken.tokenType = TokenType.revision;
+            }
+
+            public String getName()
+            {
+                return "tokenTypeRevision";
+            }
+        };
 
         try
         {
             Automate.initializeAutomate(MainState.values().length, MainLabel.values().length);
             
+            // override defaut transitions to handle all "other" char with state "default" case
+            Automate.setState( MainState.INIT.ordinal(), null, MainState.LEX.ordinal(), accumulate );
             Automate.setTransition(MainState.INIT.ordinal(), MainLabel.blank.ordinal(),
                 MainState.INIT.ordinal(), drop);
-            Automate.setTransition(MainState.INIT.ordinal(), MainLabel.backSlack.ordinal(),
-                MainState.LEX.ordinal(), accumulate); 
             Automate.setTransition(MainState.INIT.ordinal(), MainLabel.quote.ordinal(),
                 MainState.QUOBEG.ordinal(), accumulate);
-            Automate.setTransition(MainState.INIT.ordinal(), MainLabel.other.ordinal(),
-                MainState.LEX.ordinal(), accumulate);                                    
+            Automate.setTransition(MainState.INIT.ordinal(), MainLabel.rChar.ordinal(),
+                MainState.REV.ordinal(), accumulate);
             Automate.setTransition(MainState.INIT.ordinal(), MainLabel.empty.ordinal(),
-                MainState.FINAL.ordinal(), nothing);
+                MainState.FINAL_EMPTY.ordinal(), nothing);
                 
-            Automate.setTransition(MainState.QUOBEG.ordinal(), MainLabel.blank.ordinal(),
-                MainState.FINAL.ordinal(), drop);
-            Automate.setTransition(MainState.QUOBEG.ordinal(), MainLabel.backSlack.ordinal(),
-                MainState.QUOBEG.ordinal(), accumulate); 
+            // override defaut transitions to handle all "other" char with state "default" case
+            Automate.setState( MainState.QUOBEG.ordinal(), null, MainState.QUOBEG.ordinal(), accumulate );
             Automate.setTransition(MainState.QUOBEG.ordinal(), MainLabel.quote.ordinal(),
-                MainState.QUOEND.ordinal(), accumulate);
-            Automate.setTransition(MainState.QUOBEG.ordinal(), MainLabel.other.ordinal(),
-                MainState.QUOBEG.ordinal(), accumulate);                                    
+                MainState.QUOEND.ordinal(), accumulate);                                  
             Automate.setTransition(MainState.QUOBEG.ordinal(), MainLabel.empty.ordinal(),
-                MainState.FINAL.ordinal(), nothing);
+                MainState.FINAL_LIBELLE.ordinal(), nothing);
 
+            // override defaut transitions to handle all "other" char with state "default" case
+            Automate.setState( MainState.QUOEND.ordinal(), null, MainState.QUOBEG.ordinal(), accumulate );
             Automate.setTransition(MainState.QUOEND.ordinal(), MainLabel.blank.ordinal(),
-                MainState.FINAL.ordinal(), drop);
-            Automate.setTransition(MainState.QUOEND.ordinal(), MainLabel.backSlack.ordinal(),
-                MainState.QUOBEG.ordinal(), accumulate); 
+                MainState.FINAL_LIBELLE.ordinal(), drop);
             Automate.setTransition(MainState.QUOEND.ordinal(), MainLabel.quote.ordinal(),
-                MainState.QUOEND.ordinal(), accumulate);
-            Automate.setTransition(MainState.QUOEND.ordinal(), MainLabel.other.ordinal(),
-                MainState.QUOBEG.ordinal(), accumulate);                                    
+                MainState.QUOEND.ordinal(), accumulate);                               
             Automate.setTransition(MainState.QUOEND.ordinal(), MainLabel.empty.ordinal(),
-                MainState.FINAL.ordinal(), nothing);
+                MainState.FINAL_LIBELLE.ordinal(), nothing);
                 
+            // override defaut transitions to handle all "other" char with state "default" case
+            Automate.setState( MainState.LEX.ordinal(), null, MainState.LEX.ordinal(), accumulate );                
             Automate.setTransition(MainState.LEX.ordinal(), MainLabel.blank.ordinal(),
-                MainState.FINAL.ordinal(), drop);
+                MainState.FINAL_LIBELLE.ordinal(), drop);
             Automate.setTransition(MainState.LEX.ordinal(), MainLabel.backSlack.ordinal(),
-                MainState.LEXESC.ordinal(), accumulate); 
-            Automate.setTransition(MainState.LEX.ordinal(), MainLabel.quote.ordinal(),
-                MainState.LEX.ordinal(), accumulate);
-            Automate.setTransition(MainState.LEX.ordinal(), MainLabel.other.ordinal(),
-                MainState.LEX.ordinal(), accumulate);                                    
+                MainState.LEXESC.ordinal(), accumulate);                                
             Automate.setTransition(MainState.LEX.ordinal(), MainLabel.empty.ordinal(),
-                MainState.FINAL.ordinal(), nothing);
-                
-            Automate.setTransition(MainState.LEXESC.ordinal(), MainLabel.blank.ordinal(),
-                MainState.LEX.ordinal(), accumulate);
+                MainState.FINAL_LIBELLE.ordinal(), nothing);
+
+            // override defaut transitions to handle all "other" char with state "default" case
+            Automate.setState( MainState.LEXESC.ordinal(), null, MainState.LEX.ordinal(), accumulate );                 
             Automate.setTransition(MainState.LEXESC.ordinal(), MainLabel.backSlack.ordinal(),
-                MainState.LEXESC.ordinal(), accumulate); 
-            Automate.setTransition(MainState.LEXESC.ordinal(), MainLabel.quote.ordinal(),
-                MainState.LEX.ordinal(), accumulate);
-            Automate.setTransition(MainState.LEXESC.ordinal(), MainLabel.other.ordinal(),
-                MainState.LEX.ordinal(), accumulate);                                    
+                MainState.LEXESC.ordinal(), accumulate);                                  
             Automate.setTransition(MainState.LEXESC.ordinal(), MainLabel.empty.ordinal(),
-                MainState.FINAL.ordinal(), nothing);                      
+                MainState.FINAL_LIBELLE.ordinal(), nothing);
+                
+            // override defaut transitions to handle all "other" char with state "default" case
+            Automate.setState( MainState.REV.ordinal(), null, MainState.LEX.ordinal(), accumulate );     
+            Automate.setTransition(MainState.REV.ordinal(), MainLabel.digit.ordinal(),
+                MainState.REV.ordinal(), accumulate);
+            Automate.setTransition(MainState.REV.ordinal(), MainLabel.blank.ordinal(),
+                MainState.FINAL_REV.ordinal(), drop);
+            Automate.setTransition(MainState.REV.ordinal(), MainLabel.empty.ordinal(),
+                MainState.FINAL_REV.ordinal(), nothing);
+                              
+            // not needed : empty is defaut token type
+            //Automate.setState( MainState.FINAL_EMPTY.ordinal(), tokenTypeEmpty);
+            Automate.setState( MainState.FINAL_LIBELLE.ordinal(), tokenTypeLibelle);
+            Automate.setState( MainState.FINAL_REV.ordinal(), tokenTypeRevision);
         }
         catch (Exception e)
         {
@@ -237,16 +273,18 @@ public class SvnExternalsTokenizer extends Automate
         do
         {
             char current = iterator.current();
-            int etiquette = MainLabel.empty.ordinal();
-            if ( StringCharacterIterator.DONE != current)
-            {
-                etiquette = Character.isSpaceChar(current) ? MainLabel.blank.ordinal() : 
-                    current == '\\' ? MainLabel.backSlack.ordinal() :
-                        current == '"' ? MainLabel.quote.ordinal() : MainLabel.other.ordinal();
-            }
+            int etiquette = current == StringCharacterIterator.DONE ? MainLabel.empty.ordinal() :
+                current == 'r' ? MainLabel.rChar.ordinal() :
+                current == '\\' ? MainLabel.backSlack.ordinal() :
+                current == '"' ? MainLabel.quote.ordinal() : 
+                Character.isWhitespace(current) ? MainLabel.blank.ordinal() :
+                Character.isDigit(current) ? MainLabel.digit.ordinal() :
+                MainLabel.other.ordinal();
+                    
+            System.out.println("nextToken call event with : " + etiquette + "," + current);
             event(etiquette, new Character(current) ); //  iterator may change here !
         }
-        while ( StringCharacterIterator.DONE != iterator.current() && ! isInFinalState() );
+        while ( ! isInFinalState() );
         
         initializer(MainState.INIT.ordinal(), null);
         currentToken = new Token();
@@ -269,7 +307,6 @@ public class SvnExternalsTokenizer extends Automate
         if (currentToken.value == null)
         {
             currentToken.value = new StringBuilder();
-            currentToken.tokenType = TokenType.libelle; 
         }
         if ( currentToken.value instanceof StringBuilder)
         {
@@ -293,7 +330,9 @@ public class SvnExternalsTokenizer extends Automate
     @Override
     protected boolean isInFinalState()
     {
-        return getCurrentState() == MainState.FINAL.ordinal();
+        return getCurrentState() == MainState.FINAL_LIBELLE.ordinal() ||
+               getCurrentState() == MainState.FINAL_REV.ordinal() ||
+               getCurrentState() == MainState.FINAL_EMPTY.ordinal();
     }
 
     @Override
