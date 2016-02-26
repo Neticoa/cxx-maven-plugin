@@ -265,7 +265,7 @@ public abstract class Automate implements ActionExecutor
     protected void initializer( final ActionExecutor aiExecutor, final int aiCurrentState, final Object aiParam )
         throws AutomateException
     {
-        System.out.println("Automate.initializer : " + classInititialized + "," + currentState + "," + isInFinalState() );
+        //System.out.println("Automate.initializer : " + classInititialized + "," + aiCurrentState + "," + isInFinalState() );
         if ( classInititialized && ( currentState == -1 || isInFinalState() ) )
         {
             executor = aiExecutor;

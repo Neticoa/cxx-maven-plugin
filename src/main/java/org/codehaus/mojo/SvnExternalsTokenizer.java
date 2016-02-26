@@ -46,6 +46,7 @@ public class SvnExternalsTokenizer extends Automate
         blank,
         backSlack,
         quote,
+        minusChar,
         rChar,
         digit,
         other,
@@ -89,7 +90,9 @@ public class SvnExternalsTokenizer extends Automate
         LEXESC,
         QUOBEG,
         QUOEND,
+        MREV,
         REV,
+        PREV,
         FINAL_LIBELLE,
         FINAL_REV,
         FINAL_EMPTY;
@@ -119,9 +122,6 @@ public class SvnExternalsTokenizer extends Automate
                 throws AutomateException
             {
                 ( ( SvnExternalsTokenizer ) executor).accumulate(aiParam);
-                if (aiParam instanceof Character)
-                {
-                }
             }
 
             public String getName()
@@ -195,8 +195,8 @@ public class SvnExternalsTokenizer extends Automate
                 MainState.INIT.ordinal(), drop);
             Automate.setTransition(MainState.INIT.ordinal(), MainLabel.quote.ordinal(),
                 MainState.QUOBEG.ordinal(), accumulate);
-            Automate.setTransition(MainState.INIT.ordinal(), MainLabel.rChar.ordinal(),
-                MainState.REV.ordinal(), accumulate);
+            Automate.setTransition(MainState.INIT.ordinal(), MainLabel.minusChar.ordinal(),
+                MainState.MREV.ordinal(), accumulate);
             Automate.setTransition(MainState.INIT.ordinal(), MainLabel.empty.ordinal(),
                 MainState.FINAL_EMPTY.ordinal(), nothing);
                 
@@ -233,12 +233,30 @@ public class SvnExternalsTokenizer extends Automate
                 MainState.FINAL_LIBELLE.ordinal(), nothing);
                 
             // override defaut transitions to handle all "other" char with state "default" case
+            Automate.setState( MainState.MREV.ordinal(), null, MainState.LEX.ordinal(), accumulate );     
+            Automate.setTransition(MainState.MREV.ordinal(), MainLabel.rChar.ordinal(),
+                MainState.REV.ordinal(), accumulate);
+            Automate.setTransition(MainState.MREV.ordinal(), MainLabel.blank.ordinal(),
+                MainState.FINAL_LIBELLE.ordinal(), drop);
+            Automate.setTransition(MainState.MREV.ordinal(), MainLabel.empty.ordinal(),
+                MainState.FINAL_LIBELLE.ordinal(), nothing);
+                
+            // override defaut transitions to handle all "other" char with state "default" case
             Automate.setState( MainState.REV.ordinal(), null, MainState.LEX.ordinal(), accumulate );     
             Automate.setTransition(MainState.REV.ordinal(), MainLabel.digit.ordinal(),
-                MainState.REV.ordinal(), accumulate);
+                MainState.PREV.ordinal(), accumulate);
             Automate.setTransition(MainState.REV.ordinal(), MainLabel.blank.ordinal(),
-                MainState.FINAL_REV.ordinal(), drop);
+                MainState.FINAL_LIBELLE.ordinal(), drop);
             Automate.setTransition(MainState.REV.ordinal(), MainLabel.empty.ordinal(),
+                MainState.FINAL_LIBELLE.ordinal(), nothing);
+                
+            // override defaut transitions to handle all "other" char with state "default" case
+            Automate.setState( MainState.PREV.ordinal(), null, MainState.LEX.ordinal(), accumulate );     
+            Automate.setTransition(MainState.PREV.ordinal(), MainLabel.digit.ordinal(),
+                MainState.PREV.ordinal(), accumulate);
+            Automate.setTransition(MainState.PREV.ordinal(), MainLabel.blank.ordinal(),
+                MainState.FINAL_REV.ordinal(), drop);
+            Automate.setTransition(MainState.PREV.ordinal(), MainLabel.empty.ordinal(),
                 MainState.FINAL_REV.ordinal(), nothing);
                               
             // not needed : empty is defaut token type
@@ -274,6 +292,7 @@ public class SvnExternalsTokenizer extends Automate
         {
             char current = iterator.current();
             int etiquette = current == StringCharacterIterator.DONE ? MainLabel.empty.ordinal() :
+                current == '-' ? MainLabel.minusChar.ordinal() :
                 current == 'r' ? MainLabel.rChar.ordinal() :
                 current == '\\' ? MainLabel.backSlack.ordinal() :
                 current == '"' ? MainLabel.quote.ordinal() : 
@@ -281,7 +300,7 @@ public class SvnExternalsTokenizer extends Automate
                 Character.isDigit(current) ? MainLabel.digit.ordinal() :
                 MainLabel.other.ordinal();
                     
-            System.out.println("nextToken call event with : " + etiquette + "," + current);
+            //System.out.println("nextToken call event with : " + etiquette + "," + current);
             event(etiquette, new Character(current) ); //  iterator may change here !
         }
         while ( ! isInFinalState() );
@@ -310,11 +329,11 @@ public class SvnExternalsTokenizer extends Automate
         }
         if ( currentToken.value instanceof StringBuilder)
         {
-            System.out.println("accumulate : " + iterator.current() );
+            //System.out.println("accumulate : " + iterator.current() );
             ( (StringBuilder) currentToken.value ).append( iterator.current() );
         }
         char t = iterator.next();
-        System.out.println("accumulate next is : " + iterator.current() );
+        //System.out.println("accumulate next is : " + iterator.current() );
     }
     
     /**
@@ -324,7 +343,7 @@ public class SvnExternalsTokenizer extends Automate
     public void drop(final Object s)
     {
         iterator.next();
-        System.out.println("drop next is : " + iterator.current() );
+        //System.out.println("drop next is : " + iterator.current() );
     }
 
     @Override
@@ -338,6 +357,6 @@ public class SvnExternalsTokenizer extends Automate
     @Override
     protected void notifyCurrentStateChanged()
     {
-        System.out.println("State changed to : " + MainState.fromOrdinal(getCurrentState()));
+        //System.out.println("State changed to : " + MainState.fromOrdinal(getCurrentState()));
     }
 };

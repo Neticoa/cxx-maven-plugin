@@ -47,8 +47,11 @@ import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Pattern;
+import java.util.Collection;
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.text.StringCharacterIterator;
 
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
@@ -134,7 +137,7 @@ public class ScmDependenciesMojo
      * @since 0.0.6
      */
     @Parameter( property = "svnExternalsRemoveTargetPrefix", defaultValue = "" )       
-    protected String svnExternalsRemoveTargetPrefix;
+    protected String svnExternalsRemoveTargetPrefix = "";
     
     /**
      * Option 3 (highest priority). Provide explicit target path for each source dependency
@@ -669,12 +672,46 @@ public class ScmDependenciesMojo
         public String revision = null;
         public String origin = null;
         public String targetDir = null;
+        
+        public String toString()
+        {
+            return "" + ( ( null != revision ) ? revision + " " : "" ) + ( ( null != origin ) ? origin : "" ) +
+                " " + ( ( null != targetDir ) ? targetDir : "" );
+        }
+    }
+    
+    private class ExternalsEntries
+    {
+        private HashMap<String, ExternalEntry> fromOrigin = new HashMap<String, ExternalEntry>();
+        private HashMap<String, ExternalEntry> fromTargetDir = new HashMap<String, ExternalEntry>();
+        
+        void put(ExternalEntry ee)
+        {
+            if ( fromOrigin.containsKey( ee.origin ) )
+            {
+                ExternalEntry eeo = fromOrigin.get(ee.origin);
+                fromTargetDir.remove(eeo.targetDir);
+            }
+            if ( fromTargetDir.containsKey( ee.targetDir ) )
+            {
+                ExternalEntry eetd = fromTargetDir.get(ee.targetDir);
+                fromOrigin.remove(eetd.origin);
+            }
+            
+            fromOrigin.put(ee.origin, ee);
+            fromTargetDir.put(ee.targetDir, ee);
+        }
+        
+        Collection<ExternalEntry>	values()
+        {
+            return fromOrigin.values();
+        }
     }
     
 
-    protected Map<String, ExternalEntry> loadSvnExternals( String uri ) throws MojoExecutionException
+    protected ExternalsEntries loadSvnExternals( String uri ) throws MojoExecutionException
     {
-        Map<String, ExternalEntry> properties = new HashMap<String, ExternalEntry>();
+        ExternalsEntries properties = new ExternalsEntries();
       
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         
@@ -686,31 +723,87 @@ public class ScmDependenciesMojo
         
         try
         {
-            // revision<space>origin<space>target_dir
+            // [revision] origin target_dir
             while ( null != ( line = in.readLine() ) )
             {
-                /*line = line.trim();
+                StringCharacterIterator iter = new StringCharacterIterator(line);
+                SvnExternalsTokenizer m = new SvnExternalsTokenizer(iter);
+                ExternalEntry external = new ExternalEntry();
 
-                int indexOf = line.indexOf( ' ' );
-
-                if ( indexOf == -1 )
+                SvnExternalsTokenizer.Token tok = m.nextToken();
+                if ( SvnExternalsTokenizer.TokenType.revision == tok.tokenType )
                 {
-                    break;
-                }*/
-
-                ExternalEntry entry = new ExternalEntry();
-                entry.revision = "r";
-                entry.origin = "^/someWhere";
-                entry.targetDir = "target/dir";
-                properties.put( entry.targetDir, entry );
+                    external.revision = tok.value.toString();
+                    
+                    tok = m.nextToken();
+                    external.origin = SvnExternalsTokenizer.TokenType.libelle == tok.tokenType ?
+                        tok.value.toString() : null; 
+                    
+                    tok = m.nextToken();
+                    external.targetDir = SvnExternalsTokenizer.TokenType.libelle == tok.tokenType ?
+                        tok.value.toString() : null; 
+                }
+                else if ( SvnExternalsTokenizer.TokenType.libelle == tok.tokenType )
+                {
+                    external.origin = tok.value.toString();
+                    
+                    tok = m.nextToken();
+                    external.targetDir = SvnExternalsTokenizer.TokenType.libelle == tok.tokenType ?
+                        tok.value.toString() : null; 
+                }
+                
+                if ( null != external.origin && null != external.targetDir)
+                {
+                    properties.put(external);
+                }
+                else
+                {
+                    getLog().warn( "unrecognized svn:externals entry of " + uri + " : " + line );
+                }
             }
         }
-        catch ( IOException e )
+        catch ( Exception e )
         {
             getLog().warn( "Failed to parse svn:externals of " + uri + " : " + e );
         }
         
         return properties;
+    }
+    
+    
+    ExternalEntry buildCurrentDependencyExternalFromPluginsConfig( Artifact artifact, MavenProject dependencyProject,
+       SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
+    {
+        // if this.externals contains dependencyProject // option 3
+        return null;
+    }
+    
+    ExternalEntry buildCurrentDependencyFromDependencieConfig( Artifact artifact, MavenProject dependencyProject,
+       SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
+    {
+        // if dependencyProject.getProperties() contains 'scm.dependencies.svn.externals.targetDir' // option 2
+        return null;
+    }
+    
+    ExternalEntry buildCurrentDependencyExternalDefault( Artifact artifact, MavenProject dependencyProject,
+       SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
+    {
+        ExternalEntry external = new ExternalEntry();
+        // use artifact.getGroupId().artifact.getArtifactId() - this.svnExternalsRemoveTargetPrefix // option 1
+        external.targetDir = dependencyProject.getGroupId() + "." + dependencyProject.getArtifactId();
+        external.targetDir = external.targetDir.replaceFirst("^" + Pattern.quote( svnExternalsRemoveTargetPrefix ), "" );
+        external.targetDir = external.targetDir.replaceAll( Pattern.quote("."), "/" );
+        external.targetDir = external.targetDir.replaceFirst("^" + Pattern.quote( svnExternalsRemoveTargetPrefix ), "" );
+        external.targetDir = external.targetDir.replaceFirst("^/", "" );
+        
+        external.origin = StringUtils.equals( rootSvnInfo.getSvnRoot(), dependencySvnInfo.getSvnRoot() ) ?
+            dependencySvnInfo.getSvnRelativeUrl() : dependencySvnInfo.getSvnUrl();
+            
+        external.revision = svnExternalsFreezeRevision ? "-r" + String.valueOf( dependencySvnInfo.getRevision() ) : null;
+        
+        getLog().info( "Dependency " + artifactToString(artifact) + " defaut computed external entry is : " + external.toString() );
+        
+        return external;
     }
     
     public String artifactToString( Artifact artifact )
@@ -733,7 +826,7 @@ public class ScmDependenciesMojo
         
         // if we use svn, we need an externals dir
         SvnInfo externalsSvnInfo = null;
-        Map<String, ExternalEntry> externalEntries = null;
+        ExternalsEntries externalsEntries = null;
 
         for ( Artifact artifact : dss.getResolvedDependencies() )
         {
@@ -789,10 +882,10 @@ public class ScmDependenciesMojo
                                      
                     getLog().info( "Svn externals dir is '" + externalsSvnInfo.toString() + "'" );
                     
-                    externalEntries = loadSvnExternals( externalsDir.getAbsolutePath() );
+                    externalsEntries = loadSvnExternals( externalsDir.getAbsolutePath() );
+                    
+                    getLog().info( "Svn initial externals are '" + externalsEntries.values().toString() + "'" );
                 }
-                
-                // todo la suite dans #15816, point 5
                 
                 SvnInfo dependencySvnInfo = getSvnInfo( dependencySvnUri );
                 
@@ -803,11 +896,30 @@ public class ScmDependenciesMojo
                 }
                 getLog().info( "Svn info for dependency : " + dependencyStr + " are " + dependencySvnInfo.toString() );
                 
+                // todo la suite dans #15816, point 5
                 //check Options to modify externalEntries :
                 
-                // if this.externals contains artifact // option 3
-                // else if dependencyProject.getProperties() contains 'scm.dependencies.svn.externals.targetDir' // option 2
-                // else use artifact.getGroupId().artifact.getArtifactId() - this.svnExternalsRemoveTargetPrefix // option 1
+                ExternalEntry ee = buildCurrentDependencyExternalFromPluginsConfig( artifact, dependencyProject,
+                         dependencySvnInfo, externalsSvnInfo );
+                if ( null == ee )
+                {
+                    ee = buildCurrentDependencyFromDependencieConfig( artifact, dependencyProject,
+                         dependencySvnInfo, externalsSvnInfo );
+                }
+                if ( null == ee )
+                {
+                    ee = buildCurrentDependencyExternalDefault( artifact, dependencyProject, dependencySvnInfo,
+                          externalsSvnInfo );
+                }
+                
+                if ( null != ee )
+                {
+                    externalsEntries.put( ee );
+                }
+                else
+                {
+                    throw new MojoExecutionException( "Unable to build external for : " + dependencyStr );
+                }
             } 
             else
             {
