@@ -21,7 +21,15 @@ package org.codehaus.utils;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugins.annotations.Parameter;
 
-public class External
+import org.apache.maven.artifact.Artifact;
+import org.apache.commons.lang.StringUtils;
+
+/**
+ * 
+ * @author fbonin
+ * 
+ */
+public class SourceTarget
 {
     /**
      * Option 3 (highest priority). Provide explicit target path for each source dependency
@@ -29,7 +37,7 @@ public class External
      * @since 0.0.6
      */
     @Parameter( )
-    public String path;
+    public String targetDir;
 
     /**
      * Option 3 (highest priority). Provide explicit target path for each source dependency
@@ -38,4 +46,22 @@ public class External
      */
     @Parameter( )
     public Dependency dependency;
+    
+    /**
+     * test if provides artifact match this external dependency
+     * 
+     * @since 0.0.6
+     */
+    public boolean dependencyMatch( Artifact artifact )
+    {
+        return dependency != null && artifact != null
+            && StringUtils.equals( dependency.getGroupId(), artifact.getGroupId() )
+            && StringUtils.equals( dependency.getArtifactId(), artifact.getArtifactId() )
+            && ( StringUtils.isEmpty( dependency.getVersion() )
+                || StringUtils.equals( dependency.getVersion(), artifact.getVersion() ) )
+            // ignore type since if not provided, Dependency class force it to "jar"
+            // but for source dependencies it is always "pom"
+            /*&& ( StringUtils.isEmpty( dependency.getType() )
+                || StringUtils.equals( dependency.getType(), artifact.getType() ) )*/;
+    }
 }

@@ -24,8 +24,6 @@ import org.codehaus.utils.Action;
 import org.codehaus.utils.ActionExecutor;
 
 import java.text.StringCharacterIterator;
-import java.lang.Character;
-import java.lang.StringBuilder;
 
 // @formatter:off
 /**
@@ -68,6 +66,9 @@ public class SvnExternalsTokenizer extends Automate
         }
     };
     
+    /**
+     * token types
+     */
     public enum TokenType 
     {
         empty,
@@ -75,6 +76,9 @@ public class SvnExternalsTokenizer extends Automate
         revision;
     };
     
+    /**
+     * a token descriptor
+     */
     public class Token
     {      
         public TokenType tokenType = TokenType.empty;
@@ -84,7 +88,8 @@ public class SvnExternalsTokenizer extends Automate
     /**
      * define automate states
      */
-    private enum MainState {
+    private enum MainState
+    {
         INIT,
         LEX,
         LEXESC,
@@ -102,11 +107,11 @@ public class SvnExternalsTokenizer extends Automate
          * @param i
          * @return enum
          */
-        public static MainState fromOrdinal(final int i)
+        public static MainState fromOrdinal( final int i )
         {
-            if ((i < 0) || (i >= MainState.values().length))
+            if ( ( i < 0 ) || ( i >= MainState.values().length ) )
             {
-                throw new IndexOutOfBoundsException("Invalid ordinal");
+                throw new IndexOutOfBoundsException( "Invalid ordinal" );
             }
             return MainState.values()[i];
         }
@@ -118,10 +123,10 @@ public class SvnExternalsTokenizer extends Automate
     static {
         Action accumulate = new Action()
         {
-            public void action(final ActionExecutor executor, final Object aiParam)
+            public void action( final ActionExecutor executor, final Object aiParam )
                 throws AutomateException
             {
-                ( ( SvnExternalsTokenizer ) executor).accumulate(aiParam);
+                ( ( SvnExternalsTokenizer ) executor ).accumulate( aiParam );
             }
 
             public String getName()
@@ -132,10 +137,10 @@ public class SvnExternalsTokenizer extends Automate
         
         Action drop = new Action()
         {
-            public void action(final ActionExecutor executor, final Object aiParam)
+            public void action( final ActionExecutor executor, final Object aiParam )
                 throws AutomateException
             {
-                ( ( SvnExternalsTokenizer ) executor).drop(aiParam);
+                ( ( SvnExternalsTokenizer ) executor ).drop( aiParam );
             }
 
             public String getName()
@@ -146,7 +151,7 @@ public class SvnExternalsTokenizer extends Automate
         
         Action nothing = new Action()
         {
-            public void action(final ActionExecutor executor, final Object aiParam)
+            public void action( final ActionExecutor executor, final Object aiParam )
                 throws AutomateException
             {
             }
@@ -159,10 +164,10 @@ public class SvnExternalsTokenizer extends Automate
         
         Action tokenTypeLibelle = new Action()
         {
-            public void action(final ActionExecutor executor, final Object aiParam)
+            public void action( final ActionExecutor executor, final Object aiParam )
                 throws AutomateException
             {
-                ( ( SvnExternalsTokenizer ) executor).currentToken.tokenType = TokenType.libelle;
+                ( ( SvnExternalsTokenizer ) executor ).currentToken.tokenType = TokenType.libelle;
             }
 
             public String getName()
@@ -173,10 +178,10 @@ public class SvnExternalsTokenizer extends Automate
         
         Action tokenTypeRevision = new Action()
         {
-            public void action(final ActionExecutor executor, final Object aiParam)
+            public void action( final ActionExecutor executor, final Object aiParam )
                 throws AutomateException
             {
-                ( ( SvnExternalsTokenizer ) executor).currentToken.tokenType = TokenType.revision;
+                ( ( SvnExternalsTokenizer ) executor ).currentToken.tokenType = TokenType.revision;
             }
 
             public String getName()
@@ -187,84 +192,84 @@ public class SvnExternalsTokenizer extends Automate
 
         try
         {
-            Automate.initializeAutomate(MainState.values().length, MainLabel.values().length);
+            Automate.initializeAutomate( MainState.values().length, MainLabel.values().length );
             
             // override defaut transitions to handle all "other" char with state "default" case
             Automate.setState( MainState.INIT.ordinal(), null, MainState.LEX.ordinal(), accumulate );
-            Automate.setTransition(MainState.INIT.ordinal(), MainLabel.blank.ordinal(),
-                MainState.INIT.ordinal(), drop);
-            Automate.setTransition(MainState.INIT.ordinal(), MainLabel.quote.ordinal(),
-                MainState.QUOBEG.ordinal(), accumulate);
-            Automate.setTransition(MainState.INIT.ordinal(), MainLabel.minusChar.ordinal(),
-                MainState.MREV.ordinal(), accumulate);
-            Automate.setTransition(MainState.INIT.ordinal(), MainLabel.empty.ordinal(),
-                MainState.FINAL_EMPTY.ordinal(), nothing);
+            Automate.setTransition( MainState.INIT.ordinal(), MainLabel.blank.ordinal(),
+                MainState.INIT.ordinal(), drop );
+            Automate.setTransition( MainState.INIT.ordinal(), MainLabel.quote.ordinal(),
+                MainState.QUOBEG.ordinal(), accumulate );
+            Automate.setTransition( MainState.INIT.ordinal(), MainLabel.minusChar.ordinal(),
+                MainState.MREV.ordinal(), accumulate );
+            Automate.setTransition( MainState.INIT.ordinal(), MainLabel.empty.ordinal(),
+                MainState.FINAL_EMPTY.ordinal(), nothing );
                 
             // override defaut transitions to handle all "other" char with state "default" case
             Automate.setState( MainState.QUOBEG.ordinal(), null, MainState.QUOBEG.ordinal(), accumulate );
-            Automate.setTransition(MainState.QUOBEG.ordinal(), MainLabel.quote.ordinal(),
-                MainState.QUOEND.ordinal(), accumulate);                                  
-            Automate.setTransition(MainState.QUOBEG.ordinal(), MainLabel.empty.ordinal(),
-                MainState.FINAL_LIBELLE.ordinal(), nothing);
+            Automate.setTransition( MainState.QUOBEG.ordinal(), MainLabel.quote.ordinal(),
+                MainState.QUOEND.ordinal(), accumulate );                                  
+            Automate.setTransition( MainState.QUOBEG.ordinal(), MainLabel.empty.ordinal(),
+                MainState.FINAL_LIBELLE.ordinal(), nothing );
 
             // override defaut transitions to handle all "other" char with state "default" case
             Automate.setState( MainState.QUOEND.ordinal(), null, MainState.QUOBEG.ordinal(), accumulate );
-            Automate.setTransition(MainState.QUOEND.ordinal(), MainLabel.blank.ordinal(),
-                MainState.FINAL_LIBELLE.ordinal(), drop);
-            Automate.setTransition(MainState.QUOEND.ordinal(), MainLabel.quote.ordinal(),
-                MainState.QUOEND.ordinal(), accumulate);                               
-            Automate.setTransition(MainState.QUOEND.ordinal(), MainLabel.empty.ordinal(),
-                MainState.FINAL_LIBELLE.ordinal(), nothing);
+            Automate.setTransition( MainState.QUOEND.ordinal(), MainLabel.blank.ordinal(),
+                MainState.FINAL_LIBELLE.ordinal(), drop );
+            Automate.setTransition( MainState.QUOEND.ordinal(), MainLabel.quote.ordinal(),
+                MainState.QUOEND.ordinal(), accumulate );                               
+            Automate.setTransition( MainState.QUOEND.ordinal(), MainLabel.empty.ordinal(),
+                MainState.FINAL_LIBELLE.ordinal(), nothing );
                 
             // override defaut transitions to handle all "other" char with state "default" case
             Automate.setState( MainState.LEX.ordinal(), null, MainState.LEX.ordinal(), accumulate );                
-            Automate.setTransition(MainState.LEX.ordinal(), MainLabel.blank.ordinal(),
-                MainState.FINAL_LIBELLE.ordinal(), drop);
-            Automate.setTransition(MainState.LEX.ordinal(), MainLabel.backSlack.ordinal(),
-                MainState.LEXESC.ordinal(), accumulate);                                
-            Automate.setTransition(MainState.LEX.ordinal(), MainLabel.empty.ordinal(),
-                MainState.FINAL_LIBELLE.ordinal(), nothing);
+            Automate.setTransition( MainState.LEX.ordinal(), MainLabel.blank.ordinal(),
+                MainState.FINAL_LIBELLE.ordinal(), drop );
+            Automate.setTransition( MainState.LEX.ordinal(), MainLabel.backSlack.ordinal(),
+                MainState.LEXESC.ordinal(), accumulate );                                
+            Automate.setTransition( MainState.LEX.ordinal(), MainLabel.empty.ordinal(),
+                MainState.FINAL_LIBELLE.ordinal(), nothing );
 
             // override defaut transitions to handle all "other" char with state "default" case
             Automate.setState( MainState.LEXESC.ordinal(), null, MainState.LEX.ordinal(), accumulate );                 
-            Automate.setTransition(MainState.LEXESC.ordinal(), MainLabel.backSlack.ordinal(),
-                MainState.LEXESC.ordinal(), accumulate);                                  
-            Automate.setTransition(MainState.LEXESC.ordinal(), MainLabel.empty.ordinal(),
-                MainState.FINAL_LIBELLE.ordinal(), nothing);
+            Automate.setTransition( MainState.LEXESC.ordinal(), MainLabel.backSlack.ordinal(),
+                MainState.LEXESC.ordinal(), accumulate );                                  
+            Automate.setTransition( MainState.LEXESC.ordinal(), MainLabel.empty.ordinal(),
+                MainState.FINAL_LIBELLE.ordinal(), nothing );
                 
             // override defaut transitions to handle all "other" char with state "default" case
             Automate.setState( MainState.MREV.ordinal(), null, MainState.LEX.ordinal(), accumulate );     
-            Automate.setTransition(MainState.MREV.ordinal(), MainLabel.rChar.ordinal(),
-                MainState.REV.ordinal(), accumulate);
-            Automate.setTransition(MainState.MREV.ordinal(), MainLabel.blank.ordinal(),
-                MainState.FINAL_LIBELLE.ordinal(), drop);
-            Automate.setTransition(MainState.MREV.ordinal(), MainLabel.empty.ordinal(),
-                MainState.FINAL_LIBELLE.ordinal(), nothing);
+            Automate.setTransition( MainState.MREV.ordinal(), MainLabel.rChar.ordinal(),
+                MainState.REV.ordinal(), accumulate );
+            Automate.setTransition( MainState.MREV.ordinal(), MainLabel.blank.ordinal(),
+                MainState.FINAL_LIBELLE.ordinal(), drop );
+            Automate.setTransition( MainState.MREV.ordinal(), MainLabel.empty.ordinal(),
+                MainState.FINAL_LIBELLE.ordinal(), nothing );
                 
             // override defaut transitions to handle all "other" char with state "default" case
             Automate.setState( MainState.REV.ordinal(), null, MainState.LEX.ordinal(), accumulate );     
-            Automate.setTransition(MainState.REV.ordinal(), MainLabel.digit.ordinal(),
-                MainState.PREV.ordinal(), accumulate);
-            Automate.setTransition(MainState.REV.ordinal(), MainLabel.blank.ordinal(),
-                MainState.FINAL_LIBELLE.ordinal(), drop);
-            Automate.setTransition(MainState.REV.ordinal(), MainLabel.empty.ordinal(),
-                MainState.FINAL_LIBELLE.ordinal(), nothing);
+            Automate.setTransition( MainState.REV.ordinal(), MainLabel.digit.ordinal(),
+                MainState.PREV.ordinal(), accumulate );
+            Automate.setTransition( MainState.REV.ordinal(), MainLabel.blank.ordinal(),
+                MainState.FINAL_LIBELLE.ordinal(), drop );
+            Automate.setTransition( MainState.REV.ordinal(), MainLabel.empty.ordinal(),
+                MainState.FINAL_LIBELLE.ordinal(), nothing );
                 
             // override defaut transitions to handle all "other" char with state "default" case
             Automate.setState( MainState.PREV.ordinal(), null, MainState.LEX.ordinal(), accumulate );     
-            Automate.setTransition(MainState.PREV.ordinal(), MainLabel.digit.ordinal(),
-                MainState.PREV.ordinal(), accumulate);
-            Automate.setTransition(MainState.PREV.ordinal(), MainLabel.blank.ordinal(),
-                MainState.FINAL_REV.ordinal(), drop);
-            Automate.setTransition(MainState.PREV.ordinal(), MainLabel.empty.ordinal(),
-                MainState.FINAL_REV.ordinal(), nothing);
+            Automate.setTransition( MainState.PREV.ordinal(), MainLabel.digit.ordinal(),
+                MainState.PREV.ordinal(), accumulate );
+            Automate.setTransition( MainState.PREV.ordinal(), MainLabel.blank.ordinal(),
+                MainState.FINAL_REV.ordinal(), drop );
+            Automate.setTransition( MainState.PREV.ordinal(), MainLabel.empty.ordinal(),
+                MainState.FINAL_REV.ordinal(), nothing );
                               
             // not needed : empty is defaut token type
             //Automate.setState( MainState.FINAL_EMPTY.ordinal(), tokenTypeEmpty);
-            Automate.setState( MainState.FINAL_LIBELLE.ordinal(), tokenTypeLibelle);
-            Automate.setState( MainState.FINAL_REV.ordinal(), tokenTypeRevision);
+            Automate.setState( MainState.FINAL_LIBELLE.ordinal(), tokenTypeLibelle );
+            Automate.setState( MainState.FINAL_REV.ordinal(), tokenTypeRevision );
         }
-        catch (Exception e)
+        catch ( Exception e )
         {
             e.printStackTrace();
         }
@@ -279,9 +284,9 @@ public class SvnExternalsTokenizer extends Automate
      * 
      * @throws AutomateException
      */
-    public SvnExternalsTokenizer(StringCharacterIterator iterator) throws AutomateException
+    public SvnExternalsTokenizer( StringCharacterIterator iterator ) throws AutomateException
     {
-        super(MainState.INIT.ordinal(), null);
+        super( MainState.INIT.ordinal(), null );
         this.iterator = iterator;
     }
      
@@ -291,21 +296,21 @@ public class SvnExternalsTokenizer extends Automate
         do
         {
             char current = iterator.current();
-            int etiquette = current == StringCharacterIterator.DONE ? MainLabel.empty.ordinal() :
-                current == '-' ? MainLabel.minusChar.ordinal() :
-                current == 'r' ? MainLabel.rChar.ordinal() :
-                current == '\\' ? MainLabel.backSlack.ordinal() :
-                current == '"' ? MainLabel.quote.ordinal() : 
-                Character.isWhitespace(current) ? MainLabel.blank.ordinal() :
-                Character.isDigit(current) ? MainLabel.digit.ordinal() :
-                MainLabel.other.ordinal();
+            int etiquette = current == StringCharacterIterator.DONE ? MainLabel.empty.ordinal()
+                : current == '-' ? MainLabel.minusChar.ordinal()
+                : current == 'r' ? MainLabel.rChar.ordinal()
+                : current == '\\' ? MainLabel.backSlack.ordinal()
+                : current == '"' ? MainLabel.quote.ordinal()
+                : Character.isWhitespace( current ) ? MainLabel.blank.ordinal()
+                : Character.isDigit( current ) ? MainLabel.digit.ordinal()
+                : MainLabel.other.ordinal();
                     
             //System.out.println("nextToken call event with : " + etiquette + "," + current);
-            event(etiquette, new Character(current) ); //  iterator may change here !
+            event( etiquette, new Character( current ) ); //  iterator may change here !
         }
         while ( ! isInFinalState() );
         
-        initializer(MainState.INIT.ordinal(), null);
+        initializer( MainState.INIT.ordinal(), null );
         currentToken = new Token();
         
         return ret;
@@ -321,13 +326,13 @@ public class SvnExternalsTokenizer extends Automate
      * @param s
      * 
      */
-    public void accumulate(final Object s)
+    public void accumulate( final Object s )
     {
-        if (currentToken.value == null)
+        if ( currentToken.value == null )
         {
             currentToken.value = new StringBuilder();
         }
-        if ( currentToken.value instanceof StringBuilder)
+        if ( currentToken.value instanceof StringBuilder )
         {
             //System.out.println("accumulate : " + iterator.current() );
             ( (StringBuilder) currentToken.value ).append( iterator.current() );
@@ -340,7 +345,7 @@ public class SvnExternalsTokenizer extends Automate
      * @param s
      * 
      */
-    public void drop(final Object s)
+    public void drop( final Object s )
     {
         iterator.next();
         //System.out.println("drop next is : " + iterator.current() );
@@ -349,9 +354,9 @@ public class SvnExternalsTokenizer extends Automate
     @Override
     protected boolean isInFinalState()
     {
-        return getCurrentState() == MainState.FINAL_LIBELLE.ordinal() ||
-               getCurrentState() == MainState.FINAL_REV.ordinal() ||
-               getCurrentState() == MainState.FINAL_EMPTY.ordinal();
+        return getCurrentState() == MainState.FINAL_LIBELLE.ordinal()
+               || getCurrentState() == MainState.FINAL_REV.ordinal()
+               || getCurrentState() == MainState.FINAL_EMPTY.ordinal();
     }
 
     @Override

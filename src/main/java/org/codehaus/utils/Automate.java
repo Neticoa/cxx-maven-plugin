@@ -159,14 +159,14 @@ public abstract class Automate implements ActionExecutor
     protected static void setState( final int aiState, final Action aiStateAction,
        final int aiDefaultTargetState, final Action aiDefaultAction )
     {
-        if (null != aiStateAction )
+        if ( null != aiStateAction )
         {
             stateActions[aiState] = aiStateAction;
         }
         for ( int t = 0; t < labelCount; t++ )
         {
             // we focus on unhandled transitions
-            if (null == model[aiState][t].transitionAction || impossible == model[aiState][t].transitionAction )
+            if ( null == model[aiState][t].transitionAction || impossible == model[aiState][t].transitionAction )
             {
                 if ( null != aiDefaultAction )
                 {
@@ -210,13 +210,13 @@ public abstract class Automate implements ActionExecutor
     private boolean objectInitialized = false;
     
 
-    protected Automate(final ActionExecutor aiExecutor, final int aiCurrentState,
+    protected Automate( final ActionExecutor aiExecutor, final int aiCurrentState,
                 final Object aioParam ) throws AutomateException
     {
         initializer( aiExecutor, aiCurrentState, aioParam );
     }
 
-    protected Automate(final int aiCurrentState, final Object aioParam )
+    protected Automate( final int aiCurrentState, final Object aioParam )
                 throws AutomateException 
     {
         initializer( this, aiCurrentState, aioParam );
@@ -256,16 +256,17 @@ public abstract class Automate implements ActionExecutor
         return currentState;
     }
     
-    protected void initializer(final int aiCurrentState, final Object aiParam )
+    protected void initializer( final int aiCurrentState, final Object aiParam )
         throws AutomateException
     {
-        initializer(this, aiCurrentState, aiParam );
+        initializer( this, aiCurrentState, aiParam );
     }
 
     protected void initializer( final ActionExecutor aiExecutor, final int aiCurrentState, final Object aiParam )
         throws AutomateException
     {
-        //System.out.println("Automate.initializer : " + classInititialized + "," + aiCurrentState + "," + isInFinalState() );
+        //System.out.println("Automate.initializer : " + classInititialized + "," + aiCurrentState
+        //    + "," + isInFinalState() );
         if ( classInititialized && ( currentState == -1 || isInFinalState() ) )
         {
             executor = aiExecutor;
