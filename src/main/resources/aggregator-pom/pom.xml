@@ -42,10 +42,15 @@ limitations under the License.
     <developerConnection></developerConnection>
   </scm>
   -->
+  <properties>
+    <!-- use scm.dependencies.source.targetDir to force a sub dir when importing this artifact source from SCM infos -->
+    <!-- <scm.dependencies.source.targetDir></scm.dependencies.source.targetDir> -->
+  </properties>
 
   <profiles>
     <profile>
       <!-- profile to manage source dependencies from scm, only using this pom file -->
+      <!-- call using 'mvn -N -D source validate' -->
       <activation>
         <property>
           <name>source</name>
@@ -58,31 +63,56 @@ limitations under the License.
    
       <build>
         <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
+          <!-- perform svn:externals update step here according to pom dependencies -->
+          <plugin>    
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>cxx-maven-plugin</artifactId>
             <executions>
               <execution>
-                <id>get-pom-dependencies</id>
+                <id>scm-sources-dependencies</id>
                 <phase>validate</phase>
                 <goals>
-                  <goal>copy-dependencies</goal>
+                  <goal>scm-dependencies</goal>
                 </goals>
                 <configuration>
                   <!--compile scope is dependencies default scope.-->
                   <includeScope>compile</includeScope>
                   <!--<outputDirectory>${project.build.directory}/dependency</outputDirectory>-->
-                  <overWriteReleases>true</overWriteReleases>
-                  <overWriteSnapshots>true</overWriteSnapshots>
-                  <overWriteIfNewer>true</overWriteIfNewer>
-                  <includeTypes>pom</includeTypes>
+                  <!--
+                  <sourceSubdir>externals</sourceSubdir>
+                  <sourceFreezeRevision>true</sourceFreezeRevision>
+                  <sourceTargetDirRemovePrefixes>
+                    <sourceRemoveTargetPrefixe>fr/neticoa</sourceRemoveTargetPrefixe>
+                    <sourceRemoveTargetPrefixe>module</sourceRemoveTargetPrefixe>
+                  </sourceTargetDirRemovePrefixes>
+                  -->
+                  <sourceTargets>
+                    <sourceTarget>
+                      <dependency>
+                        <groupId>fr.neticoa</groupId>
+                        <artifactId>modulea</artifactId>
+                      </dependency>
+                      <targetDir>config_path_4_moduleA</targetDir>
+                    </sourceTarget>
+                  </sourceTargets>
                 </configuration>
               </execution>
-             </executions>
+            </executions>
           </plugin>
-          <!-- TODO perform svn:externals update step here according to pom dependencies -->
-          <!-- TODO scm:update step here -->
-
+          <!-- then, perform svn update step -->
+          <plugin>    
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-scm-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>scm-sources-dependencies-update</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>update</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
         </plugins> 
       </build>
     </profile>

@@ -141,14 +141,14 @@ public class ScmDependenciesMojo
     protected boolean sourceFreezeRevision;
     
     /**
-     * String prefix to remove when creating externals target dirs
+     * List of String prefix to remove when creating externals target dirs
      * Part of option 1 (lowest priority). For each source dependency, target path are derived
      * from their "groupId:artifactId" string
      * 
      * @since 0.0.6
      */
-    @Parameter( property = "sourceRemoveTargetPrefix", defaultValue = "" )       
-    protected String sourceRemoveTargetPrefix = "";
+    @Parameter( )       
+    protected String[] sourceTargetDirRemovePrefixes = null;
     
     /**
      * Option 3 (highest priority). Provide explicit target path for each source dependency
@@ -156,7 +156,7 @@ public class ScmDependenciesMojo
      * @since 0.0.6
      */
     @Parameter( )
-    private SourceTarget[] sourceTargets;
+    private SourceTarget[] sourceTargets = null;
     
     /**
      * Comma Separated list of Classifiers to include. Empty String indicates
@@ -186,6 +186,9 @@ public class ScmDependenciesMojo
     
     /**
      * The user name (used by svn).
+     * 
+     * You may use maven setting to store username. 
+     * See http://maven.apache.org/guides/mini/guide-encryption.html
      *
      * @since 0.0.6
      */
@@ -194,11 +197,26 @@ public class ScmDependenciesMojo
 
     /**
      * The user password (used by svn).
+     * 
+     * You may use maven setting to store encrypted password. 
+     * See http://maven.apache.org/guides/mini/guide-encryption.html
      *
      * @since 0.0.6
      */
     @Parameter( property = "password" )
     private String password = null;
+    
+    /**
+     * The server id to use in maven settings to retrieve credential.
+     * Optionnal, by defaut each scm url "hostname[:port]" is taken as server id to search potential
+     * credentials in maven settings
+     * 
+     * See http://maven.apache.org/guides/mini/guide-encryption.html
+     *
+     * @since 0.0.6
+     */
+    @Parameter( property = "settingsServerId" )
+    private String settingsServerId = null;
     
     /**
      * Maven settings.
@@ -435,25 +453,29 @@ public class ScmDependenciesMojo
         Credential ret = new Credential( username, password );
         if ( username == null || password == null )
         {
-            URL aURL = null;
-            try
+            String host = settingsServerId;
+            if ( StringUtils.isEmpty( host ) )
             {
-                aURL = new URL( url );
-            }
-            catch ( MalformedURLException e )
-            {
-                getLog().warn( "Failed to parse url '" + url
-                    + "' while trying to find associated maven credentials info from maven settings" );
-                return ret;
-            }
+                URL aURL = null;
+                try
+                {
+                    aURL = new URL( url );
+                }
+                catch ( MalformedURLException e )
+                {
+                    getLog().warn( "Failed to parse url '" + url
+                        + "' while trying to find associated maven credentials info from maven settings" );
+                    return ret;
+                }
 
-            String host = /*repo*/aURL.getHost();
+                host = /*repo*/aURL.getHost();
 
-            int port = /*repo*/aURL.getPort();
+                int port = /*repo*/aURL.getPort();
 
-            if ( port > 0 )
-            {
-                host += ":" + port;
+                if ( port > 0 )
+                {
+                    host += ":" + port;
+                }
             }
 
             Server server = this.settings.getServer( host );
@@ -841,10 +863,16 @@ public class ScmDependenciesMojo
     ExternalEntry buildExternalEntryFromProvidedInfos( String targetDir, Artifact artifact,
         MavenProject dependencyProject, SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
     {
-        targetDir = targetDir.replaceFirst( "^" + Pattern.quote( sourceRemoveTargetPrefix ), "" );
-        targetDir = targetDir.replaceAll( Pattern.quote( "." ), "/" );
-        targetDir = targetDir.replaceFirst( "^" + Pattern.quote( sourceRemoveTargetPrefix ), "" );
-        targetDir = targetDir.replaceFirst( "^/", "" );
+        if ( null != sourceTargetDirRemovePrefixes )
+        {
+            for ( String sourceTargetDirRemovePrefix : sourceTargetDirRemovePrefixes )
+            {
+                targetDir = targetDir.replaceFirst( "^" + Pattern.quote( sourceTargetDirRemovePrefix ), "" );
+                targetDir = targetDir.replaceAll( Pattern.quote( "." ), "/" );
+                targetDir = targetDir.replaceFirst( "^" + Pattern.quote( sourceTargetDirRemovePrefix ), "" );
+                targetDir = targetDir.replaceFirst( "^/", "" );
+            }
+        }
       
         ExternalEntry external = null;
         File f = new File( targetDir );
@@ -935,7 +963,7 @@ public class ScmDependenciesMojo
        SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
     {
         ExternalEntry external = null;
-        // Option 1 : use artifact.getGroupId().artifact.getArtifactId() - this.sourceRemoveTargetPrefix 
+        // Option 1 : use artifact.getGroupId().artifact.getArtifactId()
         String targetDir = dependencyProject.getGroupId() + "." + dependencyProject.getArtifactId();
         
         external = buildExternalEntryFromProvidedInfos( targetDir, artifact,

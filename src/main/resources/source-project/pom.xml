@@ -42,6 +42,11 @@ limitations under the License.
     <developerConnection></developerConnection>
   </scm>
   -->
+  
+  <properties>
+    <!-- use scm.dependencies.source.targetDir to force a sub dir when importing this artifact source from SCM infos -->
+    <!-- <scm.dependencies.source.targetDir></scm.dependencies.source.targetDir> -->
+  </properties>
 
   <profiles>
     <profile>

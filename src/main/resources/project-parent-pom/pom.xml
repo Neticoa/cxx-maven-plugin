@@ -45,6 +45,8 @@ limitations under the License.
   -->
 
   <properties>
+    <!-- use scm.dependencies.source.targetDir to force a sub dir when importing this artifact source from SCM infos -->
+    <!-- <scm.dependencies.source.targetDir></scm.dependencies.source.targetDir> -->
   </properties>
   
   <!-- This profile allow usage of mixed link config for some component of you choice 
