@@ -31,17 +31,14 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Iterator;
 import java.io.OutputStream;
-import java.util.Locale;
 
 import org.codehaus.plexus.util.cli.CommandLineUtils;
+import org.codehaus.utils.ExecutorService;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.Executor;
-import org.apache.commons.exec.OS;
-import org.apache.commons.exec.PumpStreamHandler;
-import org.apache.commons.lang.StringUtils;
 
 import org.apache.maven.plugins.annotations.Parameter;
 
@@ -66,26 +63,27 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
     @Parameter( property = "basedir", readonly = true, required = true )
     protected File basedir;
     
-    protected abstract List getArgsList();
+    protected abstract List<String> getArgsList();
+    
     protected abstract String getCommandArgs();
-    private List getCommandLineArgs() throws MojoExecutionException
+    
+    private List<String> getCommandLineArgs() throws MojoExecutionException
     {
-        List commandArguments = new ArrayList();
+        ArrayList<String> commandArguments = new ArrayList<String>();
         
         if ( getCommandArgs() != null )
         {
             String[] args = parseCommandlineArgs( getCommandArgs() );
-            for ( int i = 0; i < args.length; i++ )
+            for ( String argument : args )
             {
-                 commandArguments.add( args[i] );
+                 commandArguments.add( argument );
             }
         }
         else if ( getArgsList() != null )
         {
-            for ( int i = 0; i < getArgsList().size(); i++ )
+            List<String> args = getArgsList();
+            for ( String argument : args )
             {
-                Object argument = getArgsList().get( i );
-                String arg;
                 if ( argument == null )
                 {
                     throw new MojoExecutionException( "Misconfigured argument, value is null. "
@@ -93,8 +91,7 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
                 }
                 else
                 {
-                    arg = argument.toString();
-                    commandArguments.add( arg );
+                    commandArguments.add( argument );
                 }
             }
         }
@@ -134,11 +131,11 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
         Properties enviro = new Properties();
         try
         {
-            enviro = CommandLineUtils.getSystemEnvVars();
+            enviro = ExecutorService.getSystemEnvVars();
         }
-        catch ( IOException x )
+        catch ( IOException e )
         {
-            getLog().error( "Could not assign default system enviroment variables.", x );
+            getLog().error( "Could not assign default system enviroment variables.", e );
         }
     
         if ( getMoreEnvironmentVariables() != null )
@@ -176,74 +173,6 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
      */
     //@Parameter( defaultValue = "${session}", readonly = true )
     //protected MavenSession session;
-
-    CommandLine getExecutablePath( Properties enviro, File dir )
-    {
-        File execFile = new File( getExecutable() );
-        String exec = null;
-        if ( execFile.exists() )
-        {
-            getLog().debug( "Toolchains are ignored, 'executable' parameter is set to " + getExecutable() );
-            exec = execFile.getAbsolutePath();
-        }
-        else
-        {
-            if ( OS.isFamilyWindows() )
-            {
-                String ex = getExecutable().indexOf( "." ) < 0 ? getExecutable() + ".bat" : getExecutable();
-                File f = new File( dir, ex );
-                if ( f.exists() )
-                {
-                    exec = ex;
-                }
-                else
-                {
-                    // now try to figure the path from PATH, PATHEXT env vars
-                    // if bat file, wrap in cmd /c
-                    String path = (String) enviro.get( "PATH" );
-                    if ( path != null )
-                    {
-                        String[] elems = StringUtils.split( path, File.pathSeparator );
-                        for ( int i = 0; i < elems.length; i++ )
-                        {
-                            f = new File( new File( elems[i] ), ex );
-                            if ( f.exists() )
-                            {
-                                exec = ex;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        if ( exec == null )
-        {
-            exec = getExecutable();
-        }
-
-        CommandLine toRet;
-        if ( OS.isFamilyWindows() && exec.toLowerCase( Locale.getDefault() ).endsWith( ".bat" ) )
-        {
-            toRet = new CommandLine( "cmd" );
-            toRet.addArgument( "/c" );
-            toRet.addArgument( exec );
-        }
-        else
-        {
-            toRet = new CommandLine( exec );
-        }
-
-        return toRet;
-    }
-        
-    protected int executeCommandLine( Executor exec, CommandLine commandLine, Properties enviro, OutputStream out,
-            OutputStream err,  InputStream in ) throws ExecuteException, IOException
-    {
-        exec.setStreamHandler( new PumpStreamHandler( out, err, in ) );
-        return exec.execute( commandLine, enviro );
-    }
     
     protected abstract List getSuccesCode();
     
@@ -307,13 +236,13 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
             throw new IllegalStateException( "basedir is null. Should not be possible." );
         }
 
-        List commandArguments = getCommandLineArgs();
+        List<String> commandArguments = getCommandLineArgs();
         
         Properties enviro = getEnvs();
         
         ensureExistWorkingDirectory();
 
-        CommandLine commandLine = getExecutablePath( enviro, getWorkingDir() );
+        CommandLine commandLine = ExecutorService.getExecutablePath( getExecutable(), enviro, getWorkingDir() );
 
         Executor exec = new DefaultExecutor();
        
@@ -327,7 +256,7 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
             
             preExecute( exec, commandLine, enviro );
 
-            int resultCode = executeCommandLine( exec, commandLine, enviro, getOutputStreamOut(),
+            int resultCode = ExecutorService.executeCommandLine( exec, commandLine, enviro, getOutputStreamOut(),
                 getOutputStreamErr(), getInputStream() );
               
             postExecute( resultCode );

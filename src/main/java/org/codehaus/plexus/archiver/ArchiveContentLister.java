@@ -39,7 +39,7 @@ public interface ArchiveContentLister
     List<ArchiveContentEntry> list()
         throws ArchiverException;
         
-    /**
+    /*
      * Take a path into the archive and list it (futur).
      * 
      * @param path

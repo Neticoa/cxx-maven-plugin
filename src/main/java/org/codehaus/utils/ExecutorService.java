@@ -40,7 +40,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class ExecutorService
 {
-    public static Properties getEnvs() throws IOException
+    public static Properties getSystemEnvVars() throws IOException
     {
         return CommandLineUtils.getSystemEnvVars();
     }

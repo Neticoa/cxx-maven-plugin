@@ -62,7 +62,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 public class CMakeMojo extends AbstractLaunchMojo
 {
     @Override
-    protected List getArgsList()
+    protected List<String> getArgsList()
     {
         return null;
     }

@@ -169,9 +169,9 @@ public class VisualStudioMojo extends AbstractLaunchMojo
     }
     
     @Override
-    protected List getArgsList()
+    protected List<String> getArgsList()
     {
-        ArrayList args = new ArrayList();
+        ArrayList<String> args = new ArrayList<String>();
         
         args.add( getSolutionDir() );
         args.add( solutionFileName );

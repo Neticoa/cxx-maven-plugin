@@ -49,7 +49,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 public class CppCheckMojo extends AbstractLaunchMojo
 {
     @Override
-    protected List getArgsList()
+    protected List<String> getArgsList()
     {
         return null;
     }

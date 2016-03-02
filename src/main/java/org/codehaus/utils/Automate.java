@@ -144,7 +144,7 @@ public abstract class Automate implements ActionExecutor
     /**
      * 
      * @param aiState
-     * @param aiAction
+     * @param aiStateAction
      */
     protected static void setState( final int aiState, final Action aiStateAction )
     {

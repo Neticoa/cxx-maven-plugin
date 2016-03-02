@@ -40,7 +40,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 public class QMakeMojo extends AbstractLaunchMojo
 {
     @Override
-    protected List getArgsList()
+    protected List<String> getArgsList()
     {
         return null;
     }

@@ -54,6 +54,8 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import org.codehaus.utils.ExecutorService;
+
 /**
  * Goal which vera++ check sources.
  *
@@ -63,7 +65,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 public class VeraxxMojo extends AbstractLaunchMojo
 {
     @Override
-    protected List getArgsList()
+    protected List<String> getArgsList()
     {
         return null;
     }
@@ -87,7 +89,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
         int res = 0;
         try
         {
-            res = executeCommandLine( execCheck, commandLineCheck, enviro,
+            res = ExecutorService.executeCommandLine( execCheck, commandLineCheck, enviro,
                 outStream/*getOutputStreamOut()*/, errStream/*getOutputStreamErr()*/, getInputStream() );
         }
         catch ( ExecuteException e )

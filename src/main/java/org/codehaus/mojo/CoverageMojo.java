@@ -40,6 +40,8 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import org.codehaus.utils.ExecutorService;
+
 /**
  * Goal which gcovr execution.
  *
@@ -170,7 +172,7 @@ public class CoverageMojo extends LaunchMojo
         {
             getLog().info( "Executing command line: " + commandLine );
 
-            int res = executeCommandLine( exec, commandLine, getEnvs(),
+            int res = ExecutorService.executeCommandLine( exec, commandLine, getEnvs(),
                 outStream/*getOutputStreamOut()*/, getOutputStreamErr(), pyScript/*getInputStream()*/ );
             // this is a hugly workaround against a random bugs from hudson cobertura plugin.
             // hudson cobertura plugin randomly truncat coverage reports file to a 1024 size multiple

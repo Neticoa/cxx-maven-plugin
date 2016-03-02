@@ -48,11 +48,11 @@ public class LaunchMojo extends AbstractLaunchMojo
      * @since 0.0.4
      */
     @Parameter()
-    private List arguments;
+    private List<String> arguments;
     
     
     @Override
-    protected List getArgsList()
+    protected List<String> getArgsList()
     {
         return arguments;
     }

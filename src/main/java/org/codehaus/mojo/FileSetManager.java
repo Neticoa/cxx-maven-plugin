@@ -44,8 +44,8 @@ public class FileSetManager
 
         DirectoryScanner scanner = new DirectoryScanner();
 
-        List includesList = fileSet.getIncludes();
-        List excludesList = fileSet.getExcludes();
+        List<String> includesList = fileSet.getIncludes();
+        List<String> excludesList = fileSet.getExcludes();
 
         if ( includesList.size() > 0 )
         {

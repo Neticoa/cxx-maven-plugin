@@ -546,7 +546,7 @@ public class ScmDependenciesMojo
         Properties enviro = null;
         try
         {
-            enviro = ExecutorService.getEnvs();
+            enviro = ExecutorService.getSystemEnvVars();
             enviro.put( "LC_MESSAGES", "C" );
         }
         catch ( IOException e )
