@@ -54,6 +54,7 @@ public class AddSourceMojo extends AbstractMojo
     @Parameter( property = "project", readonly = true, required = true )
     private MavenProject project;
 
+    @Override
     public void execute()
     {   
         getLog().info( "Cxx Maven Plugin AddSource " );

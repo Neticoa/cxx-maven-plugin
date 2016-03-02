@@ -50,6 +50,8 @@ public class LaunchMojo extends AbstractLaunchMojo
     @Parameter()
     private List arguments;
     
+    
+    @Override
     protected List getArgsList()
     {
         return arguments;
@@ -62,6 +64,7 @@ public class LaunchMojo extends AbstractLaunchMojo
     @Parameter( property = "launch.args" )
     private String commandArgs;
     
+    @Override
     protected String getCommandArgs()
     {
         return commandArgs;
@@ -76,6 +79,7 @@ public class LaunchMojo extends AbstractLaunchMojo
     @Parameter( property = "launch.executable", required = true )
     private String executable;
     
+    @Override
     protected String getExecutable()
     {
         return executable;
@@ -89,6 +93,7 @@ public class LaunchMojo extends AbstractLaunchMojo
     @Parameter()
     private Map environmentVariables = new HashMap();
     
+    @Override
     protected Map getMoreEnvironmentVariables()
     {
         return environmentVariables;
@@ -103,6 +108,7 @@ public class LaunchMojo extends AbstractLaunchMojo
     @Parameter()
     private List successCodes;
     
+    @Override
     protected List getSuccesCode()
     {
         return successCodes;
@@ -116,6 +122,7 @@ public class LaunchMojo extends AbstractLaunchMojo
     @Parameter( property = "launch.workingdir" )
     private File workingDir;
     
+    @Override
     protected File getWorkingDir()
     {
         if ( null == workingDir )
@@ -143,6 +150,7 @@ public class LaunchMojo extends AbstractLaunchMojo
     @Parameter()
     private List excludeOS;
     
+    @Override
     protected boolean isSkip()
     {
         String sOsName = System.getProperty( "os.name" );
@@ -172,6 +180,7 @@ public class LaunchMojo extends AbstractLaunchMojo
     @Parameter( property = "launch.outputStreamOut", defaultValue = "" )
     private File outputStreamOut;
     
+    @Override
     protected OutputStream getOutputStreamOut()
     {
         String sOutputStreamOut = new String();
@@ -216,6 +225,7 @@ public class LaunchMojo extends AbstractLaunchMojo
     @Parameter( property = "launch.outputStreamErr", defaultValue = "" )
     private File outputStreamErr;
     
+    @Override
     protected OutputStream getOutputStreamErr()
     {
         String sOutputStreamErr = new String();
@@ -260,6 +270,7 @@ public class LaunchMojo extends AbstractLaunchMojo
     @Parameter( property = "launch.inputStream", defaultValue = "" )
     private File inputStream;
     
+    @Override
     protected InputStream getInputStream()
     {
         String sInputStream = new String();

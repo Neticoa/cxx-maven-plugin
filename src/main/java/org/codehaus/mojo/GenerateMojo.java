@@ -247,7 +247,7 @@ public class GenerateMojo
         return resources;
     }
 
-
+    @Override
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {

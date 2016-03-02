@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,6 +62,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 @Mojo( name = "veraxx", defaultPhase = LifecyclePhase.TEST )
 public class VeraxxMojo extends AbstractLaunchMojo
 {
+    @Override
     protected List getArgsList()
     {
         return null;
@@ -68,7 +70,8 @@ public class VeraxxMojo extends AbstractLaunchMojo
     
     private int veraxxVersion = 0;
     
-    protected void preExecute( Executor exec, CommandLine commandLine, Map enviro ) throws MojoExecutionException
+    @Override
+    protected void preExecute( Executor exec, CommandLine commandLine, Properties enviro ) throws MojoExecutionException
     {
         OutputStream outStream = /*System.out;*/new ByteArrayOutputStream();
         OutputStream errStream = new ByteArrayOutputStream();
@@ -139,6 +142,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
     @Parameter( property = "veraxx.args", defaultValue = "-nodup -showrules" )
     private String commandArgs;
     
+    @Override
     protected String getCommandArgs()
     {
         String params = "- " + commandArgs + " ";
@@ -166,6 +170,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
         return "vera++-result-" + reportIdentifier + ".xml";
     }
     
+    @Override
     protected OutputStream getOutputStreamErr()
     {
         String outputReportName = new String();
@@ -321,6 +326,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
     @Parameter()
     private List sourceDirs = new ArrayList();
     
+    @Override
     protected InputStream getInputStream()
     {
         StringBuilder sourceListString = new StringBuilder();
@@ -359,6 +365,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
         return is;
     }
 
+    @Override
     protected String getExecutable()
     {
         return "vera++";
@@ -371,11 +378,14 @@ public class VeraxxMojo extends AbstractLaunchMojo
      */
     @Parameter()
     private Map environmentVariables = new HashMap();
+    
+    @Override
     protected Map getMoreEnvironmentVariables()
     {
         return environmentVariables;
     }
 
+    @Override
     protected List getSuccesCode()
     {
         return null;
@@ -388,6 +398,8 @@ public class VeraxxMojo extends AbstractLaunchMojo
      */
     @Parameter( property = "veraxx.workingdir" )
     private File workingDir;
+    
+    @Override
     protected File getWorkingDir()
     {
         if ( null == workingDir )
@@ -416,6 +428,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
     @Parameter( property = "maven.test.skip", defaultValue = "false" )
     protected boolean skip;
     
+    @Override
     protected boolean isSkip()
     {
         return skipTests || skip;

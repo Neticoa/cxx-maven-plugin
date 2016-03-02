@@ -27,7 +27,6 @@ import java.io.InputStream;
 
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Iterator;
@@ -130,13 +129,12 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
 
     protected abstract Map getMoreEnvironmentVariables();
 
-    protected Map getEnvs()
+    protected Properties getEnvs()
     {
-        Map enviro = new HashMap();
+        Properties enviro = new Properties();
         try
         {
-            Properties systemEnvVars = CommandLineUtils.getSystemEnvVars();
-            enviro.putAll( systemEnvVars );
+            enviro = CommandLineUtils.getSystemEnvVars();
         }
         catch ( IOException x )
         {
@@ -179,7 +177,7 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
     //@Parameter( defaultValue = "${session}", readonly = true )
     //protected MavenSession session;
 
-    CommandLine getExecutablePath( Map enviro, File dir )
+    CommandLine getExecutablePath( Properties enviro, File dir )
     {
         File execFile = new File( getExecutable() );
         String exec = null;
@@ -240,7 +238,7 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
         return toRet;
     }
         
-    protected int executeCommandLine( Executor exec, CommandLine commandLine, Map enviro, OutputStream out,
+    protected int executeCommandLine( Executor exec, CommandLine commandLine, Properties enviro, OutputStream out,
             OutputStream err,  InputStream in ) throws ExecuteException, IOException
     {
         exec.setStreamHandler( new PumpStreamHandler( out, err, in ) );
@@ -283,7 +281,7 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
         return System.in;
     }
     
-    protected void preExecute( Executor exec, CommandLine commandLine, Map enviro ) throws MojoExecutionException
+    protected void preExecute( Executor exec, CommandLine commandLine, Properties enviro ) throws MojoExecutionException
     {
     }
     
@@ -295,6 +293,7 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
         }
     }
     
+    @Override
     public void execute() throws MojoExecutionException
     {
         if ( isSkip() )
@@ -310,7 +309,7 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
 
         List commandArguments = getCommandLineArgs();
         
-        Map enviro = getEnvs();
+        Properties enviro = getEnvs();
         
         ensureExistWorkingDirectory();
 

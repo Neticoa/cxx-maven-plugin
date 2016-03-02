@@ -35,7 +35,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 @Mojo( name = "make", defaultPhase = LifecyclePhase.COMPILE )
 public class MakeMojo extends AbstractLaunchMojo
 {
-
+    @Override
     protected List getArgsList()
     {
         return null;
@@ -49,6 +49,7 @@ public class MakeMojo extends AbstractLaunchMojo
     @Parameter( property = "make.args" )
     private String commandArgs;
     
+    @Override
     protected String getCommandArgs()
     {
         return commandArgs;
@@ -63,6 +64,7 @@ public class MakeMojo extends AbstractLaunchMojo
     @Parameter()
     private Map makecommandPerOS = new HashMap();
     
+    @Override
     protected String getExecutable()
     {
         String sOsName = System.getProperty( "os.name" );
@@ -93,11 +95,13 @@ public class MakeMojo extends AbstractLaunchMojo
     @Parameter()
     private Map environmentVariables = new HashMap();
     
+    @Override
     protected Map getMoreEnvironmentVariables()
     {
         return environmentVariables;
     }
 
+    @Override
     protected List getSuccesCode()
     {
         return null;
@@ -111,6 +115,7 @@ public class MakeMojo extends AbstractLaunchMojo
     @Parameter( property = "make.projectdir" )
     private File projectDir;
     
+    @Override
     protected File getWorkingDir()
     {
         if ( null == projectDir )
@@ -120,6 +125,7 @@ public class MakeMojo extends AbstractLaunchMojo
         return projectDir;
     }
     
+    @Override
     public boolean isSkip()
     {
         return false;

@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Set;
+import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -60,7 +61,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 @Mojo( name = "cmake", defaultPhase = LifecyclePhase.GENERATE_SOURCES )
 public class CMakeMojo extends AbstractLaunchMojo
 {
-
+    @Override
     protected List getArgsList()
     {
         return null;
@@ -114,6 +115,7 @@ public class CMakeMojo extends AbstractLaunchMojo
         return sResult;
     }
     
+    @Override
     protected String getCommandArgs()
     {
         String result = new String();
@@ -141,7 +143,7 @@ public class CMakeMojo extends AbstractLaunchMojo
         return result;
     }
 
-
+    @Override
     protected String getExecutable()
     {
         return "cmake";
@@ -155,11 +157,14 @@ public class CMakeMojo extends AbstractLaunchMojo
      */
     @Parameter()
     private Map environmentVariables = new HashMap();
+    
+    @Override
     protected Map getMoreEnvironmentVariables()
     {
         return environmentVariables;
     }
 
+    @Override
     protected List getSuccesCode()
     {
         return null;
@@ -174,6 +179,7 @@ public class CMakeMojo extends AbstractLaunchMojo
     @Parameter( property = "cmake.outsourcedir" )
     private File outsourceDir;
     
+    @Override
     protected File getWorkingDir()
     {
         if ( null == outsourceDir )
@@ -183,6 +189,7 @@ public class CMakeMojo extends AbstractLaunchMojo
         return outsourceDir;
     }
 
+    @Override
     public boolean isSkip()
     {
         return false;
@@ -653,7 +660,8 @@ public class CMakeMojo extends AbstractLaunchMojo
         return  null;
     }
     
-    protected void preExecute( Executor exec, CommandLine commandLine, Map enviro )
+    @Override
+    protected void preExecute( Executor exec, CommandLine commandLine, Properties enviro )
         throws MojoExecutionException
     {
         HashMap<String, String> dependenciesRoots = new HashMap<String, String>();

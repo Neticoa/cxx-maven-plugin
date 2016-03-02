@@ -39,7 +39,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 @Mojo( name = "qmake", defaultPhase = LifecyclePhase.GENERATE_SOURCES )
 public class QMakeMojo extends AbstractLaunchMojo
 {
-
+    @Override
     protected List getArgsList()
     {
         return null;
@@ -88,6 +88,7 @@ public class QMakeMojo extends AbstractLaunchMojo
     @Parameter( property = "qmake.args", defaultValue = "" )
     private String commandArgs;
     
+    @Override
     protected String getCommandArgs()
     {
         String result = new String( "-makefile " );
@@ -113,6 +114,7 @@ public class QMakeMojo extends AbstractLaunchMojo
     @Parameter()
     private Map qmakecommandPerOS = new HashMap();
     
+    @Override
     protected String getExecutable()
     {
         String sOsName = System.getProperty( "os.name" );
@@ -143,11 +145,13 @@ public class QMakeMojo extends AbstractLaunchMojo
     @Parameter()
     private Map environmentVariables = new HashMap();
     
+    @Override
     protected Map getMoreEnvironmentVariables()
     {
         return environmentVariables;
     }
 
+    @Override
     protected List getSuccesCode()
     {
         return null;
@@ -161,6 +165,7 @@ public class QMakeMojo extends AbstractLaunchMojo
     @Parameter( property = "qmake.outsourcedir" )
     private File outsourceDir;
     
+    @Override
     protected File getWorkingDir()
     {
         if ( null == outsourceDir )
@@ -170,6 +175,7 @@ public class QMakeMojo extends AbstractLaunchMojo
         return outsourceDir;
     }
 
+    @Override
     public boolean isSkip()
     {
         return false;

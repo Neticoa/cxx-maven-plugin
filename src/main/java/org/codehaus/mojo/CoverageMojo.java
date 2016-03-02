@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -77,7 +77,8 @@ public class CoverageMojo extends LaunchMojo
     @Parameter( property = "coverage.preclean", defaultValue = "true" )
     private boolean preclean;
     
-    protected void preExecute( Executor exec, CommandLine commandLine, Map enviro ) throws MojoExecutionException
+    @Override
+    protected void preExecute( Executor exec, CommandLine commandLine, Properties enviro ) throws MojoExecutionException
     {
         if ( preclean )
         {
@@ -129,6 +130,7 @@ public class CoverageMojo extends LaunchMojo
     @Parameter( property = "coverage.args", defaultValue = "-x -d" )
     private String gcovrArgs;
     
+    @Override
     protected void postExecute( int resultCode ) throws MojoExecutionException
     {
         String outputReportName = new String();
@@ -217,6 +219,7 @@ public class CoverageMojo extends LaunchMojo
     @Parameter( property = "maven.test.skip", defaultValue = "false" )
     protected boolean skip;
     
+    @Override
     protected boolean isSkip()
     {
         return super.isSkip() || skipTests || skip;

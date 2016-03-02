@@ -22,7 +22,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.Executor;
@@ -49,7 +49,8 @@ public class XUnitMojo extends LaunchMojo
     @Parameter( property = "xunit.reportsfilePath", defaultValue = "xunit-reports" )
     private File reportsfileDir;
     
-    protected void preExecute( Executor exec, CommandLine commandLine, Map enviro ) throws MojoExecutionException
+    @Override
+    protected void preExecute( Executor exec, CommandLine commandLine, Properties enviro ) throws MojoExecutionException
     {
         // this
         String outputReportDir = new String();

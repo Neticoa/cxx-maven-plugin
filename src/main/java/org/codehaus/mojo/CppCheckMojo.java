@@ -48,6 +48,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 @Mojo( name = "cppcheck", defaultPhase = LifecyclePhase.TEST )
 public class CppCheckMojo extends AbstractLaunchMojo
 {
+    @Override
     protected List getArgsList()
     {
         return null;
@@ -105,6 +106,7 @@ public class CppCheckMojo extends AbstractLaunchMojo
     @Parameter( property = "cppcheck.args", defaultValue = "-v --enable=style --force --xml" )
     private String commandArgs;
 
+    @Override
     protected String getCommandArgs()
     {
         String params = commandArgs + " ";
@@ -172,7 +174,7 @@ public class CppCheckMojo extends AbstractLaunchMojo
         return params;
     }
     
-    //override
+    @Override
     protected OutputStream getOutputStreamErr()
     {
         String outputReportName = new String();
@@ -204,6 +206,7 @@ public class CppCheckMojo extends AbstractLaunchMojo
         return output;
     }
 
+    @Override
     protected String getExecutable()
     {
         return "cppcheck";
@@ -217,11 +220,13 @@ public class CppCheckMojo extends AbstractLaunchMojo
     @Parameter()
     private Map environmentVariables = new HashMap();
     
+    @Override
     protected Map getMoreEnvironmentVariables()
     {
         return environmentVariables;
     }
 
+    @Override
     protected List getSuccesCode()
     {
         return null;
@@ -235,6 +240,7 @@ public class CppCheckMojo extends AbstractLaunchMojo
     @Parameter( property = "cppcheck.workingdir" )
     private File workingDir;
     
+    @Override
     protected File getWorkingDir()
     {
         if ( null == workingDir )
@@ -263,6 +269,7 @@ public class CppCheckMojo extends AbstractLaunchMojo
     @Parameter( property = "maven.test.skip", defaultValue = "false" )
     protected boolean skip;
     
+    @Override
     protected boolean isSkip()
     {
         return skipTests || skip;

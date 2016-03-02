@@ -162,11 +162,13 @@ public class VisualStudioMojo extends AbstractLaunchMojo
     @Parameter( property = "visualstudio.compilerOptions", defaultValue = "" )
     private String compilerOptions;
     
+    @Override
     protected String getCommandArgs()
     {
         return null;
     }
     
+    @Override
     protected List getArgsList()
     {
         ArrayList args = new ArrayList();
@@ -187,6 +189,7 @@ public class VisualStudioMojo extends AbstractLaunchMojo
         return args;
     }
     
+    @Override
     protected String getExecutable()
     {
         InputStream batchScriptStream = getClass().getResourceAsStream( "/build.bat" );
@@ -216,21 +219,26 @@ public class VisualStudioMojo extends AbstractLaunchMojo
      */
     @Parameter()
     private Map environmentVariables = new HashMap();
+    
+    @Override
     protected Map getMoreEnvironmentVariables()
     {
         return environmentVariables;
     }
 
+    @Override
     protected List getSuccesCode()
     {
         return null;
     }
     
+    @Override
     protected File getWorkingDir()
     {
         return new File( solutionDir );
     }
 
+    @Override
     public boolean isSkip()
     {
         return false;

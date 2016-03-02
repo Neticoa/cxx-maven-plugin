@@ -39,6 +39,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 @Mojo( name = "cppncss", defaultPhase = LifecyclePhase.TEST )
 public class CppNcssMojo extends AbstractLaunchMojo
 {
+    @Override
     protected List getArgsList()
     {
         return null;
@@ -97,6 +98,7 @@ public class CppNcssMojo extends AbstractLaunchMojo
     @Parameter( property = "cppncss.args", defaultValue = "-r -v -x -k" )
     private String commandArgs;
     
+    @Override
     protected String getCommandArgs()
     {
         String params = commandArgs + " ";
@@ -155,6 +157,7 @@ public class CppNcssMojo extends AbstractLaunchMojo
         return params;
     }
 
+    @Override
     protected String getExecutable()
     {
         return "cppncss";
@@ -168,11 +171,13 @@ public class CppNcssMojo extends AbstractLaunchMojo
     @Parameter()
     private Map environmentVariables = new HashMap();
     
+    @Override
     protected Map getMoreEnvironmentVariables()
     {
         return environmentVariables;
     }
 
+    @Override
     protected List getSuccesCode()
     {
         return null;
@@ -186,6 +191,7 @@ public class CppNcssMojo extends AbstractLaunchMojo
     @Parameter( property = "cppncss.workingdir" )
     private File workingDir;
     
+    @Override
     protected File getWorkingDir()
     {
         if ( null == workingDir )
@@ -214,6 +220,7 @@ public class CppNcssMojo extends AbstractLaunchMojo
     @Parameter( property = "maven.test.skip", defaultValue = "false" )
     protected boolean skip;
     
+    @Override
     protected boolean isSkip()
     {
         return skipTests || skip;

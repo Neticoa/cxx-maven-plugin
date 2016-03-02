@@ -35,6 +35,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 @Mojo( name = "valgrind", defaultPhase = LifecyclePhase.TEST )
 public class ValgrindMojo extends AbstractLaunchMojo
 {
+    @Override
     protected List getArgsList()
     {
         return null;
@@ -67,6 +68,7 @@ public class ValgrindMojo extends AbstractLaunchMojo
     @Parameter( property = "valgrind.args", defaultValue = "--leak-check=yes --demangle=yes --xml=yes" )
     private String commandArgs;
     
+    @Override
     protected String getCommandArgs()
     {
         String params = commandArgs + " ";
@@ -103,6 +105,7 @@ public class ValgrindMojo extends AbstractLaunchMojo
     @Parameter( property = "valgrind.instrumentedArgs", defaultValue = " " )
     private String instrumentedExecutableArgs;
     
+    @Override
     protected String getExecutable()
     {
         return "valgrind";
@@ -116,11 +119,13 @@ public class ValgrindMojo extends AbstractLaunchMojo
     @Parameter()
     private Map environmentVariables = new HashMap();
     
+    @Override
     protected Map getMoreEnvironmentVariables()
     {
         return environmentVariables;
     }
 
+    @Override
     protected List getSuccesCode()
     {
         return null;
@@ -134,6 +139,7 @@ public class ValgrindMojo extends AbstractLaunchMojo
     @Parameter( property = "valgrind.workingdir" )
     private File workingDir;
     
+    @Override
     protected File getWorkingDir()
     {
         if ( null == workingDir )
@@ -163,6 +169,7 @@ public class ValgrindMojo extends AbstractLaunchMojo
     @Parameter( property = "maven.test.skip", defaultValue = "false" )
     protected boolean skip;
     
+    @Override
     protected boolean isSkip()
     {
         return localIsSkip() || skipTests || skip;
