@@ -69,7 +69,8 @@ public class GenerateMojo
 {
 
     /**
-     * The archetype's artifactId {cmake-cpp-project | source-project | aggregator-pom | project-parent-pom | cpp-super-pom }
+     * The archetype's artifactId 
+     * {cmake-cpp-project | source-project | aggregator-pom | project-parent-pom | cpp-super-pom }
      * 
      * @since 0.0.6
      */
@@ -181,7 +182,7 @@ public class GenerateMojo
         String location = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
         final File jarFile = new File( location );
         
-        Map resources = new HashMap<String, String>();
+        HashMap<String, String> resources = new HashMap<String, String>();
         StrSubstitutor substitutor = new StrSubstitutor( valuesMap );
         
         path = ( StringUtils.isEmpty( path ) ) ? "" : path + "/";
@@ -262,7 +263,7 @@ public class GenerateMojo
         
         getLog().debug( "CMake 3 or above asked (" + cmakeMinVersion + ") ? " + ( bCMake3OrAbove ? "yes" : "no" ) );
         
-        Map valuesMap = new HashMap();
+        HashMap<String, String> valuesMap = new HashMap<String, String>();
         valuesMap.put( "parentGroupId", parentGroupId );
         valuesMap.put( "parentArtifactId", parentArtifactId );
         valuesMap.put( "parentVersion", parentVersion );
@@ -282,7 +283,7 @@ public class GenerateMojo
         getLog().info( "basdir = " + basedir );
         
         StrSubstitutor substitutor = new StrSubstitutor( valuesMap, "$(", ")" );
-        String sExecutionDate = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss.SSS").format(new Date());
+        String sExecutionDate = new SimpleDateFormat( "yyyy-MM-dd-HH:mm:ss.SSS" ).format( new Date() );
         for ( Map.Entry<String, String> entry : resources.entrySet() )
         {
             String curRes = entry.getKey();

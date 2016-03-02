@@ -1,3 +1,5 @@
+package org.apache.maven.plugin;
+
 /*
  * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France

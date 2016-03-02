@@ -28,7 +28,11 @@ limitations under the License.
   
   <!-- minimal requirement : Apache Maven 3.0.4 -->
   
-  <!-- set scm project location here -->
+  <!-- Set scm project location here 
+    The <tag> sub-element of <scm> element is used by maven-release-plugin:prepare goal (when creating tags).
+    It is not used with SVN connections since revision/tag information can be included in a SVN connection URL.
+    It is used with Git or Mercurial connections since tag information can't be included in that kind of connection URL.
+  -->
   <!--
   <scm>
     <connection></connection>

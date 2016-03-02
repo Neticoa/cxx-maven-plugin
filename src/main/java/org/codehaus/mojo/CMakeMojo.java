@@ -324,7 +324,7 @@ public class CMakeMojo extends AbstractLaunchMojo
      * @since 0.0.6
      */
     @Parameter()
-    private List additionalDependenciesRoots = new ArrayList();
+    private String additionalDependenciesRoots[] = null;
     
     /**
      * Directory where additional include dependencies are
@@ -332,10 +332,10 @@ public class CMakeMojo extends AbstractLaunchMojo
      * @since 0.0.6
      */
     @Parameter( )
-    protected List additionalIncludeRoots = new ArrayList();
+    protected String additionalIncludeRoots[] = null;
     
     
-    protected void findDependencies( Map<String, String> aiDependenciesRoots, List aoDependenciesLib )
+    protected void findDependencies( Map<String, String> aiDependenciesRoots, List<String> aoDependenciesLib )
     {
         for ( Map.Entry<String, String> entry : aiDependenciesRoots.entrySet() )
         {
@@ -574,15 +574,15 @@ public class CMakeMojo extends AbstractLaunchMojo
         
         // adding additionalIncludeRoots in cmake maven dependencies file
         StringBuilder addIncsBuilder = new StringBuilder( doubleIndentation );
-        if ( bMavenDependencies && additionalIncludeRoots.size() > 0 )
+        if ( bMavenDependencies && null != additionalIncludeRoots )
         {
             addIncsBuilder.append( "include_directories( " + doubleIndentation );
-            for ( String includeRoot : (List<String>) additionalIncludeRoots )
+            for ( String includeRoot : additionalIncludeRoots )
             {
-                addIncsBuilder.append("\"" + includeRoot + "\"" + doubleIndentation );
+                addIncsBuilder.append( "\"" + includeRoot + "\"" + doubleIndentation );
             }
             addIncsBuilder.append( ")" + doubleIndentation );
-            for ( String includeRoot : (List<String>) additionalIncludeRoots )
+            for ( String includeRoot : additionalIncludeRoots )
             {
                 addIncsBuilder.append( "message(\"Adding '" + includeRoot + "' additional include root.\")"
                     + doubleIndentation );
@@ -591,16 +591,18 @@ public class CMakeMojo extends AbstractLaunchMojo
             
         getLog().debug( dependencieFile + " depfile was : " + content );
         
-        String allDeps = Matcher.quoteReplacement(allDepsBuilder.toString());//.replace( "$", "\\$" ); // Matcher replaceAll() is a bit rigid !
+        String allDeps = Matcher.quoteReplacement( allDepsBuilder.toString() );
+            //.replace( "$", "\\$" ); // Matcher replaceAll() is a bit rigid !
         getLog().debug( dependencieFile + " injected dependency will be : " + allDeps );
         // regexp multi-line replace, see http://stackoverflow.com/questions/4154239/java-regex-replaceall-multiline
         Pattern p1 = Pattern.compile( beginDepsPattern + ".*" + endDepsPattern, Pattern.DOTALL );
         Matcher m1 = p1.matcher( content );
         content = m1.replaceAll( beginDepsPattern + allDeps + endDepsPattern );
         
-        if ( bMavenDependencies && additionalIncludeRoots.size() > 0 )
+        if ( bMavenDependencies && null != additionalIncludeRoots )
         {
-            String addIncs = Matcher.quoteReplacement(addIncsBuilder.toString());//.replace( "$", "\\$" ); // Matcher replaceAll() is a bit rigid !
+            String addIncs = Matcher.quoteReplacement( addIncsBuilder.toString() );
+                //.replace( "$", "\\$" ); // Matcher replaceAll() is a bit rigid !
             getLog().debug( dependencieFile + " injected includes Roots will be : " + addIncs );
             Pattern p2 = Pattern.compile( beginIncPattern + ".*" + endIncPattern, Pattern.DOTALL );
             Matcher m2 = p2.matcher( content );
@@ -654,27 +656,32 @@ public class CMakeMojo extends AbstractLaunchMojo
     protected void preExecute( Executor exec, CommandLine commandLine, Map enviro )
         throws MojoExecutionException
     {
-        Map dependenciesRoots = new HashMap<String, String>();
+        HashMap<String, String> dependenciesRoots = new HashMap<String, String>();
         
-        Iterator<String> itAdditionnalDeps = additionalDependenciesRoots.iterator();
-        while ( itAdditionnalDeps.hasNext() )
+        //Iterator<String> itAdditionnalDeps = additionalDependenciesRoots.iterator();
+        //while ( itAdditionnalDeps.hasNext() )
+        if ( null != additionalDependenciesRoots )
         {
-            // $FB always use unix path separator with cmake even under windows !
-            String cur = itAdditionnalDeps.next() + "/" + targetClassifier + "/"
-                + buildConfig;
-            dependenciesRoots.put( cur, cur );
-            getLog().info( "add additional Dependency Root: \"" + cur + "\"" );
+            for ( String dependencyRoot : additionalDependenciesRoots )
+            {
+                // $FB always use unix path separator with cmake even under windows !
+                String cur = dependencyRoot + "/" + targetClassifier + "/"
+                    + buildConfig;
+                dependenciesRoots.put( cur, cur );
+                getLog().info( "add additional Dependency Root: \"" + cur + "\"" );
+            }
         }
         
         // enhanced auto-detection of dependency root dir with artifacts classifier :
-        Set<Artifact> dependencyArtifacts = project.getDependencyArtifacts();
+        // maven 2.0.11 api doesn't provide generics containers
+        @SuppressWarnings( "unchecked" ) Set<Artifact> dependencyArtifacts = project.getDependencyArtifacts();
         Iterator<Artifact> itDeps = dependencyArtifacts.iterator();
         while ( itDeps.hasNext() )
         {
             Artifact cur = itDeps.next();
             String artifactId = cur.getArtifactId();
             String classifer = cur.getClassifier();
-            if ( !StringUtils.isEmpty(classifer) && 0 == classifer.indexOf( "bin" ) )
+            if ( !StringUtils.isEmpty( classifer ) && 0 == classifer.indexOf( "bin" ) )
             {
                 String artifactBuildConfig = extractBuildConfig( classifer );
                 String artifactBuildConfigGeneralized = artifactBuildConfig;
@@ -709,7 +716,7 @@ public class CMakeMojo extends AbstractLaunchMojo
             }
         }
         
-        ArrayList dependenciesLib = new ArrayList();
+        ArrayList<String> dependenciesLib = new ArrayList<String>();
         findDependencies( dependenciesRoots, dependenciesLib );
         
         updateOrCreateCMakeDependenciesFile( dependenciesLib, true ); // maven dependencies

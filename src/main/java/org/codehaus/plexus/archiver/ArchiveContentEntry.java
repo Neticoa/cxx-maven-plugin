@@ -107,7 +107,7 @@ public class ArchiveContentEntry
 
     /**
      * @return The original file that will be stored in the archive.
-     * @deprecated As of 1.0-alpha-10, file entries are no longer backed
+     * @deprecated_ As of 1.0-alpha-10, file entries are no longer backed
      *             by files, but by instances of {@link PlexusIoResource}.
      *             Consequently, you should use {@link #getInputStream()}-
      */

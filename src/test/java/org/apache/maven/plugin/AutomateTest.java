@@ -1,3 +1,5 @@
+package org.apache.maven.plugin;
+
 /*
  * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
  * Author(s) : Franck Bonin, Neticoa SAS France
@@ -33,9 +35,8 @@ public class AutomateTest extends AbstractMojoTestCase
     // @formatter:off
     /**
      * We implement this funny automate :
-     * 
-     *   good/good_vibration()
-     *  
+     * </code>
+     *     good/good_vibration()
      *     +---------------------+       +---------+
      * +---+----+                |   +---+----+    | good/good_vibration()
      * |        |                +-->|        |    | 
@@ -46,7 +47,7 @@ public class AutomateTest extends AbstractMojoTestCase
      *     +---------------------+
      * 
      * Init state 'choose' something...
-     * 
+     * </code>
      * @author fbonin
      * 
      */

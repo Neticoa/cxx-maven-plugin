@@ -24,7 +24,7 @@ limitations under the License.
   <parent>
     <artifactId>maven-plugins</artifactId>
     <groupId>org.apache.maven.plugins</groupId>
-    <version>22</version>
+    <version>27</version>
     <relativePath>../maven-plugins/pom.xml</relativePath>
   </parent>
 
@@ -156,7 +156,34 @@ limitations under the License.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
-        <version>2.9</version>
+        <version>${mavenPluginPluginVersion}</version>
+      </plugin>
+      <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-surefire-report-plugin</artifactId>
+      </plugin>
+      <plugin>
+         <groupId>org.apache.maven.plugins</groupId>
+         <artifactId>maven-jxr-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <configLocation>config/maven_checks.xml</configLocation>
+          <headerLocation>config/cxx-header.txt</headerLocation>
+          <failOnViolation>false</failOnViolation>
+          <sourceDirectory>src/main/java</sourceDirectory>
+          <testSourceDirectory>src/test/java</testSourceDirectory>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
       </plugin>
     </plugins>
   </reporting>
@@ -168,34 +195,63 @@ limitations under the License.
           <artifactId>maven-site-plugin</artifactId>
           <version>3.3</version>
         </plugin>
+        <plugin>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>2.13</version>
+          <configuration>
+            <headerLocation>config/cxx-header.txt</headerLocation>
+            <failOnViolation>false</failOnViolation>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <version>0.11</version>
+          <configuration>
+            <excludes combine.children="append">
+              <exclude>generation.txt</exclude>
+              <exclude>deploy.txt</exclude>
+              <exclude>README.md</exclude>
+              <exclude>doc.txt</exclude>
+              <exclude>geany_projet</exclude>
+              <exclude>SAMPLE/**</exclude>
+              <exclude>**/gcovr.py</exclude>
+              <exclude>config/*-header.txt</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-pmd-plugin</artifactId>
+          <version>3.6</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-plugin-plugin</artifactId>
+          <version>${mavenPluginPluginVersion}</version>
+          <configuration>
+            <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+          </configuration>
+          <executions> 
+            <execution>
+              <id>default-descriptor</id>
+              <goals>
+                <goal>descriptor</goal>
+              </goals>
+              <phase>process-classes</phase>
+            </execution>	
+            <execution>	
+              <id>generate-helpmojo</id>
+              <goals>
+                <goal>helpmojo</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
-    
+
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-plugin-plugin</artifactId>
-        <version>3.2</version>
-        <configuration>
-          <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
-        </configuration>
-        <executions> 
-          <execution>
-            <id>default-descriptor</id>
-            <goals>
-              <goal>descriptor</goal>
-            </goals>
-            <phase>process-classes</phase>
-          </execution>	
-          <execution>	
-            <id>generate-helpmojo</id>
-            <goals>
-              <goal>helpmojo</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      
       <!-- 
       [INFO] Restricted to JDK 1.5 yet org.xerial.snappy:snappy-java:jar:1.1.1.6:compile contains org/xerial/snappy/OSInfo.class targeted to JDK 1.6
       [WARNING] Rule 0: org.apache.maven.plugins.enforcer.EnforceBytecodeVersion failed with message:
@@ -213,34 +269,6 @@ limitations under the License.
           </compilerArgs>
         </configuration>
       </plugin>
-      
-      
-      <plugin>
-        <groupId>org.apache.rat</groupId>
-        <artifactId>apache-rat-plugin</artifactId>
-        <configuration>
-          <excludes combine.children="append">
-            <!--
-            -->
-            <exclude>generation.txt</exclude>
-            <exclude>deploy.txt</exclude>
-            <exclude>README.md</exclude>
-            <exclude>doc.txt</exclude>
-            <exclude>geany_projet</exclude>
-            <exclude>SAMPLE/**</exclude>
-            <exclude>**/gcovr.py</exclude>
-            <exclude>config/*-header.txt</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-      
-      <plugin>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <configuration>
-          <headerLocation>config/cxx-header.txt</headerLocation>
-          <failOnViolation>false</failOnViolation>
-        </configuration>
-      </plugin>
 
     </plugins>
   </build>
@@ -249,6 +277,7 @@ limitations under the License.
     <mavenVersion>2.2.1</mavenVersion>
     <doxiaVersion>1.4</doxiaVersion>
     <pluginTestingVersion>2.1</pluginTestingVersion>
+    <mavenPluginPluginVersion>3.2</mavenPluginPluginVersion>
     <checkstyle.violation.ignore>VisibilityModifier,RedundantThrows,NewlineAtEndOfFile,ParameterNumber,MethodLength,FileLength</checkstyle.violation.ignore>
   </properties>
   
@@ -277,7 +306,7 @@ limitations under the License.
     	<version>1.1</version>
     </dependency>
 	  <dependency>
-	    <groupId>org.apache.commons</groupId>
+	    <groupId>commons-io</groupId>
 	    <artifactId>commons-io</artifactId>
 	    <version>1.3.2</version>
     </dependency>

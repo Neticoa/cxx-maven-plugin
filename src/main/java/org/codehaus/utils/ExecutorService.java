@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -42,15 +40,12 @@ import org.apache.commons.lang.StringUtils;
  */
 public class ExecutorService
 {
-    public static Map getEnvs() throws IOException
+    public static Properties getEnvs() throws IOException
     {
-        Map enviro = new HashMap();
-        Properties systemEnvVars = CommandLineUtils.getSystemEnvVars();
-        enviro.putAll( systemEnvVars );
-        return enviro;
+        return CommandLineUtils.getSystemEnvVars();
     }
   
-    public static CommandLine getExecutablePath( String executableName, Map enviro, File dir )
+    public static CommandLine getExecutablePath( String executableName, Properties enviro, File dir )
     {
         File execFile = new File( executableName );
         String exec = null;
@@ -111,7 +106,7 @@ public class ExecutorService
         return toRet;
     }
         
-    public static int executeCommandLine( Executor exec, CommandLine commandLine, Map enviro, OutputStream out,
+    public static int executeCommandLine( Executor exec, CommandLine commandLine, Properties enviro, OutputStream out,
             OutputStream err,  InputStream in ) throws ExecuteException, IOException
     {
         exec.setStreamHandler( new PumpStreamHandler( out, err, in ) );

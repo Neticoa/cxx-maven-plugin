@@ -44,7 +44,6 @@ import java.io.ByteArrayInputStream;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.Set;
-import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Pattern;
@@ -125,7 +124,7 @@ public class ScmDependenciesMojo
     protected org.apache.maven.project.MavenProject project;
     
     /**
-     * svn:externals directory carrier
+     * Optional source dependencies sub-directory holder
      * 
      * @since 0.0.6
      */
@@ -133,28 +132,47 @@ public class ScmDependenciesMojo
     protected String sourceSubdir;
     
     /**
-     * svn:externals url shall use svn revisions
+     * svn:externals shall use precise svn revisions retrieved from scm info at execution time
      * 
      * @since 0.0.6
      */
     @Parameter( property = "sourceFreezeRevision", defaultValue = "false" )    
     protected boolean sourceFreezeRevision;
     
+    // @formatter:off
     /**
-     * List of String prefix to remove when creating externals target dirs
-     * Part of option 1 (lowest priority). For each source dependency, target path are derived
-     * from their "groupId:artifactId" string
+     * List of String prefix to remove when creating dependencies target dirs
      * 
+     * Example :
+     *<pre>{@code
+     *<sourceTargetDirRemovePrefixes>
+     *  <sourceRemoveTargetPrefixe>fr/neticoa</sourceRemoveTargetPrefixe>
+     *  <sourceRemoveTargetPrefixe>module</sourceRemoveTargetPrefixe>
+     *</sourceTargetDirRemovePrefixes>}</pre>
      * @since 0.0.6
      */
+    // @formatter:on
     @Parameter( )       
     protected String[] sourceTargetDirRemovePrefixes = null;
     
+    // @formatter:off
     /**
-     * Option 3 (highest priority). Provide explicit target path for each source dependency
+     * Provide explicit target path for each source dependency
      * 
+     * Exemple :
+     *<pre>{@code
+     *<sourceTargets>
+     *  <sourceTarget>
+     *    <dependency>
+     *      <groupId>fr.neticoa</groupId>
+     *      <artifactId>module</artifactId>
+     *    </dependency>
+     *    <targetDir>src/module</targetDir>
+     *  </sourceTarget>
+     *</sourceTargets>}</pre>
      * @since 0.0.6
      */
+    // @formatter:on
     @Parameter( )
     private SourceTarget[] sourceTargets = null;
     
@@ -525,7 +543,7 @@ public class ScmDependenciesMojo
     protected void execSvnCommand( String uri, String[] specificParams, OutputStream out )
         throws MojoExecutionException
     {
-        Map enviro = null;
+        Properties enviro = null;
         try
         {
             enviro = ExecutorService.getEnvs();
@@ -868,11 +886,9 @@ public class ScmDependenciesMojo
             for ( String sourceTargetDirRemovePrefix : sourceTargetDirRemovePrefixes )
             {
                 targetDir = targetDir.replaceFirst( "^" + Pattern.quote( sourceTargetDirRemovePrefix ), "" );
-                targetDir = targetDir.replaceAll( Pattern.quote( "." ), "/" );
-                targetDir = targetDir.replaceFirst( "^" + Pattern.quote( sourceTargetDirRemovePrefix ), "" );
-                targetDir = targetDir.replaceFirst( "^/", "" );
             }
         }
+        targetDir = targetDir.replaceFirst( "^/", "" );
       
         ExternalEntry external = null;
         File f = new File( targetDir );
@@ -965,6 +981,15 @@ public class ScmDependenciesMojo
         ExternalEntry external = null;
         // Option 1 : use artifact.getGroupId().artifact.getArtifactId()
         String targetDir = dependencyProject.getGroupId() + "." + dependencyProject.getArtifactId();
+        // replace prefix while target dir is in "dot form"
+        if ( null != sourceTargetDirRemovePrefixes )
+        {
+            for ( String sourceTargetDirRemovePrefix : sourceTargetDirRemovePrefixes )
+            {
+                targetDir = targetDir.replaceFirst( "^" + Pattern.quote( sourceTargetDirRemovePrefix ), "" );
+            }
+        }
+        targetDir = targetDir.replaceAll( Pattern.quote( "." ), "/" );
         
         external = buildExternalEntryFromProvidedInfos( targetDir, artifact,
             dependencyProject, dependencySvnInfo, rootSvnInfo );
