@@ -115,14 +115,6 @@ public class ScmDependenciesMojo
     @Parameter( property = "basedir", readonly = true, required = true )
     protected File basedir;
     
-   /**
-    * Current Project
-    * 
-    * @since 0.0.6
-    */
-    @Parameter( property = "project" )
-    protected org.apache.maven.project.MavenProject project;
-    
     /**
      * Optional source dependencies sub-directory holder
      * 

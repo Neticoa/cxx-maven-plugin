@@ -44,6 +44,7 @@ public class SvnExternalsTokenizerTest
     /**
      * @throws Exception if any
      */
+    
     public void test1() throws Exception
     {
         String s = "-r455 source target ";

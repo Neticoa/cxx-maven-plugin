@@ -106,10 +106,10 @@ public class LaunchMojo extends AbstractLaunchMojo
      * @since 0.0.4
      */
     @Parameter()
-    private List successCodes;
+    private List<String> successCodes;
     
     @Override
-    protected List getSuccesCode()
+    protected List<String> getSuccesCode()
     {
         return successCodes;
     }

@@ -19,6 +19,8 @@ package org.apache.maven.plugin;
  */
 
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+import java.io.File;
+
 import org.codehaus.mojo.GenerateMojo;
 
 public class GenerateMojoTest

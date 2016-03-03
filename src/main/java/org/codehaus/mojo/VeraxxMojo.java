@@ -388,7 +388,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
     }
 
     @Override
-    protected List getSuccesCode()
+    protected List<String> getSuccesCode()
     {
         return null;
     }

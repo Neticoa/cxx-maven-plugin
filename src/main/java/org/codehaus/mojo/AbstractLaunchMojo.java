@@ -174,7 +174,7 @@ public abstract class AbstractLaunchMojo extends AbstractMojo
     //@Parameter( defaultValue = "${session}", readonly = true )
     //protected MavenSession session;
     
-    protected abstract List getSuccesCode();
+    protected abstract List<String> getSuccesCode();
     
     protected boolean isResultCodeAFailure( int result )
     {

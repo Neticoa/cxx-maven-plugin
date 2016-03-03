@@ -19,6 +19,7 @@ package org.apache.maven.plugin;
  */
 
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
+
 import org.codehaus.utils.Automate;
 import org.codehaus.utils.AutomateException;
 import org.codehaus.utils.Action;

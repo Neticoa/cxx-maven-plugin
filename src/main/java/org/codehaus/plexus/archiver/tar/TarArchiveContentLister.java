@@ -201,18 +201,18 @@ public class TarArchiveContentLister
      * @return input stream with on-the-fly decompression
      * @throws IOException thrown by GZIPInputStream constructor
      */
-    private InputStream decompress( UntarCompressionMethod compression, final File file, final InputStream istream )
+    private InputStream decompress( UntarCompressionMethod aiCompression, final File file, final InputStream istream )
         throws IOException, ArchiverException
     {
-        if ( compression == UntarCompressionMethod.GZIP )
+        if ( aiCompression == UntarCompressionMethod.GZIP )
         {
             return new GZIPInputStream( istream );
         }
-        else if ( compression == UntarCompressionMethod.BZIP2 )
+        else if ( aiCompression == UntarCompressionMethod.BZIP2 )
         {
             return new BZip2CompressorInputStream( istream );
         }
-        else if ( compression == UntarCompressionMethod.SNAPPY )
+        else if ( aiCompression == UntarCompressionMethod.SNAPPY )
         {
             // SNAPPY
             //return new SnappyInputStream( istream );

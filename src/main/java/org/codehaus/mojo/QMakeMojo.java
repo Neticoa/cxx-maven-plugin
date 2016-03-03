@@ -51,7 +51,7 @@ public class QMakeMojo extends AbstractLaunchMojo
      * @since 0.0.4
      */
     @Parameter()
-    private List sourceDirs = new ArrayList();
+    private List<String> sourceDirs = new ArrayList<String>();
 
     /**
      * qmake project file list
@@ -61,9 +61,9 @@ public class QMakeMojo extends AbstractLaunchMojo
      * @since 0.0.5
      */
     @Parameter()
-    private List pros = new ArrayList();
+    private List<String> pros = new ArrayList<String>();
     
-    protected List getProjectList()
+    protected List<String> getProjectList()
     {
         if ( pros.size() == 0 )
         {
@@ -96,7 +96,7 @@ public class QMakeMojo extends AbstractLaunchMojo
         {
             result += commandArgs + " ";
         }
-        List proList = getProjectList();
+        List<String> proList = getProjectList();
         Iterator it = proList.iterator();
         while ( it.hasNext() )
         {
@@ -152,7 +152,7 @@ public class QMakeMojo extends AbstractLaunchMojo
     }
 
     @Override
-    protected List getSuccesCode()
+    protected List<String> getSuccesCode()
     {
         return null;
     }

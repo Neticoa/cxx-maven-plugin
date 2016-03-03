@@ -102,7 +102,7 @@ public class MakeMojo extends AbstractLaunchMojo
     }
 
     @Override
-    protected List getSuccesCode()
+    protected List<String> getSuccesCode()
     {
         return null;
     }
