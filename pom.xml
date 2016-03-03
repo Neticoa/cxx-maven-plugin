@@ -150,6 +150,20 @@ limitations under the License.
       </distributionManagement>
     </profile>
   </profiles>
+  
+  <properties>
+    <mavenVersion>2.2.1</mavenVersion>
+    <doxiaVersion>1.4</doxiaVersion>
+    <pluginTestingVersion>2.1</pluginTestingVersion>
+    <mavenPluginPluginVersion>3.2</mavenPluginPluginVersion>
+    <mavenSurefireReportPluginVersion>2.17</mavenSurefireReportPluginVersion>
+    <mavenJxrPluginVersion>2.5</mavenJxrPluginVersion>
+    <checkstyle.violation.ignore>VisibilityModifier,RedundantThrows,NewlineAtEndOfFile,ParameterNumber,MethodLength,FileLength</checkstyle.violation.ignore>
+  </properties>
+  
+  <prerequisites>
+    <maven>${mavenVersion}</maven>
+  </prerequisites>
 
   <reporting>
     <plugins>
@@ -161,10 +175,12 @@ limitations under the License.
       <plugin>
          <groupId>org.apache.maven.plugins</groupId>
          <artifactId>maven-surefire-report-plugin</artifactId>
+         <version>${mavenSurefireReportPluginVersion}</version>
       </plugin>
       <plugin>
          <groupId>org.apache.maven.plugins</groupId>
          <artifactId>maven-jxr-plugin</artifactId>
+         <version>${mavenJxrPluginVersion}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -273,18 +289,6 @@ limitations under the License.
     </plugins>
   </build>
   
-  <properties>
-    <mavenVersion>2.2.1</mavenVersion>
-    <doxiaVersion>1.4</doxiaVersion>
-    <pluginTestingVersion>2.1</pluginTestingVersion>
-    <mavenPluginPluginVersion>3.2</mavenPluginPluginVersion>
-    <checkstyle.violation.ignore>VisibilityModifier,RedundantThrows,NewlineAtEndOfFile,ParameterNumber,MethodLength,FileLength</checkstyle.violation.ignore>
-  </properties>
-  
-  <prerequisites>
-    <maven>${mavenVersion}</maven>
-  </prerequisites>
-
   <dependencies>
     
     <dependency>
