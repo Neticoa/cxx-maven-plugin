@@ -21,8 +21,6 @@ package org.apache.maven.plugin.cxx;
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import java.io.File;
 
-import org.apache.maven.plugin.cxx.GenerateMojo;
-
 public class GenerateMojoTest
     extends AbstractMojoTestCase
 {
@@ -52,9 +50,9 @@ public class GenerateMojoTest
         //assertNotNull( pom );
         //assertTrue( pom.exists() );
 
-        //GenerateMojo genMojo = (GenerateMojo) lookupMojo( "generate", pom );
-        //assertNotNull( genMojo );
-        //genMojo.execute();
+        //GenerateMojo mojo = (GenerateMojo) lookupMojo( "generate", pom );
+        //assertNotNull( mojo );
+        //mojo.execute();
 
     }
 }

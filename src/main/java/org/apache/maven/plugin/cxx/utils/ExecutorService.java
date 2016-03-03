@@ -109,6 +109,7 @@ public class ExecutorService
     public static int executeCommandLine( Executor exec, CommandLine commandLine, Properties enviro, OutputStream out,
             OutputStream err,  InputStream in ) throws ExecuteException, IOException
     {
+        exec.setExitValues( null ); // let us decide of exit value
         exec.setStreamHandler( new PumpStreamHandler( out, err, in ) );
         return exec.execute( commandLine, enviro );
     }

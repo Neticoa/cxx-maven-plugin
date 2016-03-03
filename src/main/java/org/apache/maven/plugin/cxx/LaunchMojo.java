@@ -154,6 +154,8 @@ public class LaunchMojo extends AbstractLaunchMojo
     protected boolean isSkip()
     {
         String sOsName = System.getProperty( "os.name" );
+        sOsName = sOsName.replace( " ", "" );
+        getLog().info( "os.name is \"" + sOsName + "\"" );
         if ( null == excludeOS && null == includeOS )
         {
             return false;

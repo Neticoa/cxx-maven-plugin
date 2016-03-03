@@ -280,7 +280,7 @@ public class GenerateMojo
         Map<String, String> resources = listResourceFolderContent( archetypeArtifactId, valuesMap );
         
 //2/ unpack resource to destdir 
-        getLog().info( "basdir = " + basedir );
+        getLog().info( "basedir = " + basedir );
         
         StrSubstitutor substitutor = new StrSubstitutor( valuesMap, "$(", ")" );
         String sExecutionDate = new SimpleDateFormat( "yyyy-MM-dd-HH:mm:ss.SSS" ).format( new Date() );
