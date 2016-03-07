@@ -26,12 +26,8 @@ import org.codehaus.plexus.util.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
 public class LaunchMojoTest
-    extends AbstractMojoTestCase
+    extends AbstractCxxMojoTestCase
 {
-    File testBasedir = null;
-    
-    String platformEol = "\n";
-    
     /** {@inheritDoc} */
     protected void setUp()
         throws Exception
@@ -39,10 +35,6 @@ public class LaunchMojoTest
         // required
         super.setUp();
         
-        platformEol = System.getProperty("line.separator");
-        
-        testBasedir = new File( getBasedir(), "target/test/unit/launch-test" );
-        testBasedir.mkdirs();
     }
 
     /** {@inheritDoc} */
@@ -53,10 +45,10 @@ public class LaunchMojoTest
         super.tearDown();
     }
     
-    public void assertFileExists( String filename, boolean exist )
+    @Override    
+    protected String testName()
     {
-        File file = new File( filename );
-        assertEquals( exist, file.exists() );
+        return "launch-test";
     }
 
     /**

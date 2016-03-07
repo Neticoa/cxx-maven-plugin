@@ -23,22 +23,29 @@ limitations under the License.
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.apache.maven.plugin.cxx</groupId>
-  <artifactId>launch-test</artifactId>
+  <artifactId>generate-test</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <name>launch-test</name>
+  <name>generate-test</name>
 
   <build>
     <plugins>
       <plugin>
         <artifactId>cxx-maven-plugin</artifactId>
         <configuration>
+          <basedir>${basedir}/target/test/unit/generate-test</basedir>
+          <cmakeMinVersion>3.0.0</cmakeMinVersion>
           <project implementation="org.apache.maven.plugin.testing.stubs.MavenProjectStub"/>
-          <!-- Specify the launch parameter -->
-          <basedir>${basedir}/target/test/unit/launch-test</basedir>
-          <executable>echo</executable>
-          <commandArgs>"hello world!"</commandArgs>
-          <outputStreamOut>launch-test.txt</outputStreamOut>
+          <archetypeArtifactId>cmake-cpp-project</archetypeArtifactId>
+          <archetypeGroupId>org.apache.maven.plugin.cxx</archetypeGroupId>
+          <archetypeVersion>0.0.0.1</archetypeVersion>
+          <parentGroupId>fr.neticoa.test</parentGroupId>
+          <parentArtifactId>papa-pom</parentArtifactId>
+          <parentVersion>1.0</parentVersion>
+          <groupId>fr.neticoa.test</groupId>
+          <artifactName>testCMakeProj</artifactName>
+          <artifactId>test-cmake-proj</artifactId>
+          <version>0.9</version>
         </configuration>
       </plugin>
     </plugins>

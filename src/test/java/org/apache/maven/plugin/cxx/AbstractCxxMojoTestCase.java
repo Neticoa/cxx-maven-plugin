@@ -20,18 +20,32 @@ package org.apache.maven.plugin.cxx;
 
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
 import java.io.File;
-import org.apache.maven.execution.MavenSession;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import org.codehaus.plexus.util.FileUtils;
+import org.apache.commons.lang.StringUtils;
 
-public class GenerateMojoTest
-    extends AbstractCxxMojoTestCase
+public abstract class AbstractCxxMojoTestCase
+    extends AbstractMojoTestCase
 {
+    protected File testBasedir = null;
+    
+    protected String platformEol = "\n";
+    
     /** {@inheritDoc} */
     protected void setUp()
         throws Exception
     {
         // required
         super.setUp();
+        
+        platformEol = System.getProperty("line.separator");
+        
+        testBasedir = new File( getBasedir(), "target/test/unit/" + testName() );
+        testBasedir.mkdirs();
     }
+    
+    protected abstract String testName();
 
     /** {@inheritDoc} */
     protected void tearDown()
@@ -41,32 +55,9 @@ public class GenerateMojoTest
         super.tearDown();
     }
     
-    @Override    
-    protected String testName()
+    public void assertFileExists( String filename, boolean exist )
     {
-        return "generate-test";
-    }
-
-    /**
-     * @throws Exception if any
-     */
-    public void testSomething()
-        throws Exception
-    {
-        File pom = getTestFile( "src/test/resources/unit/generate/cmake-cpp-project.xml" );
-        assertNotNull( pom );
-        assertTrue( pom.exists() );
-
-        GenerateMojo mojo = (GenerateMojo) lookupMojo( "generate", pom );
-        assertNotNull( mojo );
-        
-        MavenSession mavenSession =
-            new MavenSession( null, null, null, null, null, null, null, System.getProperties(), null );
-        setVariableValueToObject( mojo, "session", mavenSession );
-        
-        mojo.execute();
-        
-        assertFileExists( testBasedir + "/pom.xml", true);
-
+        File file = new File( filename );
+        assertEquals( exist, file.exists() );
     }
 }

@@ -46,11 +46,15 @@ import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.jar.JarFile;
 import java.util.jar.JarEntry;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 
 /**
@@ -82,7 +86,7 @@ public class GenerateMojo
      * 
      * @since 0.0.6
      */
-    @Parameter( property = "archetypeGroupId", defaultValue = "org.codehaus.mojo.cxx-maven-plugin" )
+    @Parameter( property = "archetypeGroupId", defaultValue = "org.apache.maven.plugin.cxx" )
     private String archetypeGroupId;
 
     /**
@@ -226,13 +230,16 @@ public class GenerateMojo
                 try
                 {
                     final File names = new File( url.toURI() );
-                    for ( File name : names.listFiles() )
+                    Collection<File> entries = 
+                        FileUtils.listFiles( names, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE );
+                    for ( File name : entries )
                     {
                         String resourceFile = name.getPath();
                         if ( !( resourceFile.endsWith( "/" ) || resourceFile.endsWith( "\\" ) ) )
                         {
                             getLog().debug( "resource entry = " + resourceFile );
                             String destFile = substitutor.replace( resourceFile );
+                            destFile = destFile.replaceFirst( Pattern.quote( location ), "/" );
                             getLog().debug( "become entry = " + destFile );
                             resources.put( resourceFile, destFile );
                         }
@@ -277,7 +284,20 @@ public class GenerateMojo
 
 //1/ search for properties
 // -DgroupId=fr.neticoa -DartifactName=QtUtils -DartifactId=qtutils -Dversion=1.0-SNAPSHOT
+
+        if ( StringUtils.isEmpty( archetypeArtifactId ) )
+        {
+            throw new MojoExecutionException( "archetypeArtifactId is empty " );
+        }
+
         Map<String, String> resources = listResourceFolderContent( archetypeArtifactId, valuesMap );
+        
+        if ( null == resources || resources.size() == 0 )
+        {
+            throw new MojoExecutionException( "Unable to find archetype : " + archetypeArtifactId );
+        }
+        
+        getLog().info( "archetype " + archetypeArtifactId + " has " + resources.entrySet().size() + " item(s)" );
         
 //2/ unpack resource to destdir 
         getLog().info( "basedir = " + basedir );
@@ -290,8 +310,21 @@ public class GenerateMojo
             String curDest = entry.getValue();
             InputStream resourceStream = null;
             resourceStream = getClass().getResourceAsStream( curRes );
+            if ( null == resourceStream )
+            {
+                try
+                { 
+                    resourceStream = new FileInputStream( new File( curRes ) );
+                }
+                catch ( Exception e )
+                {
+                    // handled later
+                    resourceStream = null;
+                }
+            }
+            
             getLog().debug( "resource stream to open : " + curRes );
-            getLog().debug( "destfile to open : " + curDest );
+            getLog().debug( "destfile pattern : " + curDest );
             if ( null != resourceStream )
             {
                 String sRelativePath = curDest.replaceFirst( Pattern.quote( archetypeArtifactId
@@ -314,7 +347,6 @@ public class GenerateMojo
                     { 
                         if ( !newFile.createNewFile() )
                         {
-                           
                             // duplicate existing file
                             FileInputStream inStream = new FileInputStream( newFile );
                             File backFile = File.createTempFile( newFile.getName() + ".",
@@ -357,6 +389,10 @@ public class GenerateMojo
                         getLog().error( "File " + newFile.getAbsoluteFile() + " can't be created : " + e );
                     }
                 }
+            }
+            else
+            {
+                getLog().error( "Unable to open resource " + curRes );
             }            
         }
     }
