@@ -89,16 +89,16 @@ limitations under the License.
                     <sourceRemoveTargetPrefixe>fr/neticoa</sourceRemoveTargetPrefixe>
                     <sourceRemoveTargetPrefixe>module</sourceRemoveTargetPrefixe>
                   </sourceTargetDirRemovePrefixes>
-                  -->
                   <sourceTargets>
                     <sourceTarget>
                       <dependency>
                         <groupId>fr.neticoa</groupId>
-                        <artifactId>modulea</artifactId>
+                        <artifactId>a_module</artifactId>
                       </dependency>
-                      <targetDir>config_path_4_moduleA</targetDir>
+                      <targetDir>a_custom_path</targetDir>
                     </sourceTarget>
                   </sourceTargets>
+                  -->
                 </configuration>
               </execution>
             </executions>

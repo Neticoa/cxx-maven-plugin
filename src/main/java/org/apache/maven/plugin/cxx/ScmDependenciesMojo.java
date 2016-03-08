@@ -37,34 +37,12 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.util.Set;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.regex.Pattern;
-import java.util.Collection;
 import java.util.Properties;
 import java.net.URL;
 import java.net.MalformedURLException;
-import java.text.StringCharacterIterator;
-
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.parsers.SAXParser;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-
-import org.apache.commons.exec.CommandLine;
-import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteException;
-import org.apache.commons.exec.Executor;
 
 import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException;
 import org.apache.maven.plugin.cxx.utils.ClassifierRegexFilter;
@@ -81,8 +59,12 @@ import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.model.Scm;
 
-import org.apache.maven.plugin.cxx.utils.ExecutorService;
 import org.apache.maven.plugin.cxx.utils.SourceTarget;
+import org.apache.maven.plugin.cxx.utils.Credential;
+import org.apache.maven.plugin.cxx.utils.svn.SvnService;
+import org.apache.maven.plugin.cxx.utils.svn.SvnInfo;
+import org.apache.maven.plugin.cxx.utils.svn.SvnExternalEntry;
+import org.apache.maven.plugin.cxx.utils.svn.SvnExternalsEntries;
 
 import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
@@ -93,8 +75,6 @@ import org.apache.maven.settings.crypto.SettingsDecryptionRequest;
 import org.apache.maven.settings.crypto.SettingsDecryptionResult;*/
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
-
-import org.codehaus.plexus.util.IOUtil;
 
 /**
  * Goal that retrieve source dependencies from the SCM.
@@ -416,39 +396,7 @@ public class ScmDependenciesMojo
         final SettingsDecryptionResult decrypt = settingsDecrypter.decrypt( settingsDecryptionRequest );
         return decrypt.getServers();
     }*/
-    
-    final class Credential
-    {
-        private String username;
-        private String password;
-
-        public Credential( String username, String password )
-        {
-            this.username = username;
-            this.password = password;
-        }
-
-        public String getUsername()
-        {
-            return username;
-        }
-
-        public String getPassword()
-        {
-            return password;
-        }
         
-        public void setUsername( String username )
-        {
-            this.username = username;
-        }
-
-        public void setPassword( String password )
-        {
-            this.password = password;
-        }
-    }
-    
     /**
      * Load username password from settings if user has not set them in JVM properties
      * 
@@ -530,347 +478,8 @@ public class ScmDependenciesMojo
             return str;
         }
     }
-        
     
-    protected void execSvnCommand( String uri, String[] specificParams, OutputStream out )
-        throws MojoExecutionException
-    {
-        Properties enviro = null;
-        try
-        {
-            enviro = ExecutorService.getSystemEnvVars();
-            enviro.put( "LC_MESSAGES", "C" );
-        }
-        catch ( IOException e )
-        {
-            getLog().error( "Could not assign default system environment variables.", e );
-        }
-        
-        CommandLine commandLine = ExecutorService.getExecutablePath( "svn", enviro, basedir );
-        
-        Credential cred = loadInfosFromSettings( uri );
-        
-        if ( cred != null && ! StringUtils.isEmpty( cred.getUsername() ) )
-        {
-            commandLine.addArguments( new String[] { "--username", cred.getUsername() } );
-        }
-        if ( cred != null && ! StringUtils.isEmpty( cred.getPassword() ) )
-        {
-            commandLine.addArguments( new String[] { "--password", cred.getPassword() } );
-        }
-        /* TODO later :
-        commandLine.addArguments( new String[] {"--config-dir", "todo" } );
-        commandLine.addArgument( "--no-auth-cache" ); 
-        commandLine.addArgument( "--non-interactive" );
-        commandLine.addArgument( "--trust-server-cert" );
-        */
-
-        commandLine.addArguments( specificParams );
-        
-        Executor exec = new DefaultExecutor();
-        
-        try
-        {
-            getLog().debug( "Execute command '" + commandLine + "'" );
-            int resultCode = ExecutorService.executeCommandLine( exec, commandLine, enviro, out,
-                System.err, System.in );
-        }
-        catch ( ExecuteException e )
-        {
-            throw new MojoExecutionException( "Command '" + commandLine + "' execution failed.", e );
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "Command '" + commandLine + "' execution failed.", e );
-        }
-    }
-    
-    /**
-     * svn info <uri> request result
-     * 
-     */
-    protected class SvnInfo extends DefaultHandler
-    {
-        private String url = null;
-        private String root = null;
-        private String relativeUrl = null;
-        private long revision = -1;
-        
-        public void reset()
-        {
-            url = null;
-            root = null;
-            relativeUrl = null;
-            revision = -1;
-        }
-        
-        public boolean isValide()
-        {
-            return url != null && root != null && relativeUrl != null && revision != -1;
-        }
-        
-        public String getSvnUrl()
-        {
-            return url;
-        }
-        
-        public String getSvnRoot()
-        {
-            return root;
-        }
-        
-        public String getSvnRelativeUrl()
-        {
-            return relativeUrl;
-        }
-         
-        public long getRevision()
-        {
-            return revision;
-        }
-        
-        public String toString()
-        {
-           return "r" + revision + " " + root + " " + relativeUrl;
-        }
-        
-        private boolean bUrl = false;
-        private boolean bRoot = false;
-        private boolean bRelativeUrl = false;
-        
-        @Override
-        public void startElement( String uri, String localName, String qName, Attributes attributes )
-            throws SAXException
-        {
-            if ( qName.equalsIgnoreCase( "entry" ) )
-            {
-                String sRev = attributes.getValue( "revision" );
-                try
-                {
-                    revision = Long.parseLong( sRev );
-                }
-                catch ( Exception e )
-                {
-                    throw new SAXException( "URI or folder svn revision not found", e );
-                } 
-            }
-            else if ( qName.equalsIgnoreCase( "url" ) )
-            {
-                bUrl = true;
-            }
-            else if ( qName.equalsIgnoreCase( "root" ) )
-            {
-                bRoot = true;
-            }
-            else if ( qName.equalsIgnoreCase( "relative-url" ) )
-            {
-                bRelativeUrl = true;
-            }
-        }
-        
-        @Override
-        public void characters( char ch[], int start, int length ) throws SAXException
-        {
-            if ( bUrl )
-            {
-                url = new String( ch, start, length );
-                bUrl = false;
-            }
-            else if ( bRoot )
-            {
-                root = new String( ch, start, length );
-                bRoot = false;
-            }
-            else if ( bRelativeUrl )
-            {
-                relativeUrl = new String( ch, start, length );
-                bRelativeUrl = false;
-            }
-        }
-    }
-    
-    protected SvnInfo getSvnInfo( String uri ) throws MojoExecutionException
-    {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        
-        execSvnCommand( uri, new String[] {"info", uri, "--xml"}, out );
-        
-        SvnInfo svnInfo = new SvnInfo();
-        try
-        {
-            SAXParserFactory sfactory = SAXParserFactory.newInstance();
-            SAXParser parser = sfactory.newSAXParser();
-            XMLReader xmlparser = parser.getXMLReader();
-            xmlparser.setContentHandler( svnInfo );
-            xmlparser.parse( new InputSource( new ByteArrayInputStream( out.toByteArray( ) ) ) );
-        }
-        catch ( Exception e )
-        {
-            throw new MojoExecutionException( "svn info xml parsing failed.", e );
-        }        
-        return svnInfo;
-    }
-    
-    private class ExternalEntry
-    {
-        public String revision = null;
-        public String origin = null;
-        public String targetDir = null;
-        
-        boolean isValide()
-        {
-            return ! StringUtils.isEmpty( origin ) && ! StringUtils.isEmpty( targetDir );
-        }
-        
-        public String toString()
-        {
-            return "" + ( ( null != revision ) ? revision + " " : "" ) + ( ( null != origin ) ? origin : "" )
-                + " " + ( ( null != targetDir ) ? targetDir : "" );
-        }
-    }
-    
-    private class ExternalsEntries
-    {
-        private HashMap<String, ExternalEntry> fromOrigin = new HashMap<String, ExternalEntry>();
-        private HashMap<String, ExternalEntry> fromTargetDir = new HashMap<String, ExternalEntry>();
-        
-        void put( ExternalEntry ee )
-        {
-            if ( fromOrigin.containsKey( ee.origin ) )
-            {
-                ExternalEntry eeo = fromOrigin.get( ee.origin );
-                fromTargetDir.remove( eeo.targetDir );
-            }
-            if ( fromTargetDir.containsKey( ee.targetDir ) )
-            {
-                ExternalEntry eetd = fromTargetDir.get( ee.targetDir );
-                fromOrigin.remove( eetd.origin );
-            }
-            
-            fromOrigin.put( ee.origin, ee );
-            fromTargetDir.put( ee.targetDir, ee );
-        }
-        
-        Collection<ExternalEntry> values()
-        {
-            return fromOrigin.values();
-        }
-    }
-    
-
-    protected ExternalsEntries loadSvnExternals( String uri ) throws MojoExecutionException
-    {
-        ExternalsEntries properties = new ExternalsEntries();
-      
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        
-        execSvnCommand( uri, new String[] {"propget", "svn:externals", uri}, out );
-        
-        BufferedReader in = new BufferedReader( new StringReader( out.toString( ) ) );
-        
-        String line = null;
-        
-        try
-        {
-            /* old svn 1.4 :
-              third-party/sounds             http://svn.example.com/repos/sounds
-              third-party/skins -r148        http://svn.example.com/skinproj
-              third-party/skins/toolkit -r21 http://svn.example.com/skin-maker
-            */
-            /* svn 1.5 and above (operative rev):
-              http://svn.example.com/repos/sounds third-party/sounds
-              -r148 http://svn.example.com/skinproj third-party/skins
-              -r21  http://svn.example.com/skin-maker third-party/skins/toolkit
-              svn 1.5 and above (PEG rev):
-              http://svn.example.com/repos/sounds third-party/sounds
-              http://svn.example.com/skinproj@148 third-party/skins
-              http://svn.example.com/skin-maker@21 third-party/skins/toolkit
-            */
-            
-            // this parser only support svn:externals syntaxe 1.5 and above
-            // [revision] origin target_dir
-            while ( null != ( line = in.readLine() ) )
-            {
-                StringCharacterIterator iter = new StringCharacterIterator( line );
-                SvnExternalsTokenizer m = new SvnExternalsTokenizer( iter );
-                ExternalEntry external = new ExternalEntry();
-
-                SvnExternalsTokenizer.Token tok = m.nextToken();
-                if ( SvnExternalsTokenizer.TokenType.revision == tok.tokenType )
-                {
-                    external.revision = tok.value.toString();
-                    
-                    tok = m.nextToken();
-                    external.origin = SvnExternalsTokenizer.TokenType.libelle == tok.tokenType
-                        ? tok.value.toString() : null; 
-                    
-                    tok = m.nextToken();
-                    external.targetDir = SvnExternalsTokenizer.TokenType.libelle == tok.tokenType
-                        ? tok.value.toString() : null; 
-                }
-                else if ( SvnExternalsTokenizer.TokenType.libelle == tok.tokenType )
-                {
-                    external.origin = tok.value.toString();
-                    
-                    tok = m.nextToken();
-                    external.targetDir = SvnExternalsTokenizer.TokenType.libelle == tok.tokenType
-                        ? tok.value.toString() : null; 
-                }
-                
-                if ( null != external.origin && null != external.targetDir )
-                {
-                    properties.put( external );
-                }
-                else
-                {
-                    getLog().warn( "unrecognized svn:externals entry of " + uri + " : " + line );
-                }
-            }
-        }
-        catch ( Exception e )
-        {
-            getLog().warn( "Failed to parse svn:externals of " + uri + " : " + e );
-        }
-        
-        return properties;
-    }
-    
-    
-    protected void writeSvnExternals( String uri, ExternalsEntries properties ) throws MojoExecutionException
-    {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        
-        String targetDirectoryPath = project.getBuild().getDirectory();
-        new File( targetDirectoryPath ).mkdirs();
-        File file = new File( targetDirectoryPath, "svn.externals" );
-
-        OutputStream outputStream = null;
-        try
-        {
-            outputStream = new FileOutputStream( file );
-
-            for ( ExternalEntry entry : properties.values() )
-            {
-                if ( entry.isValide() )
-                {
-                    outputStream.write( ( entry.toString() + "\n" ).getBytes() );
-                }
-            }
-        }
-        catch ( Exception e )
-        {
-            throw new MojoExecutionException( "Error writing intermediate properties file "
-                + file.toString() + " : " + e );
-        }
-        finally
-        {
-            IOUtil.close( outputStream );
-        }
-        
-        execSvnCommand( uri, new String[] {"propset", "svn:externals", "--file", file.getPath(), uri}, out );
-    }
-    
-    ExternalEntry buildExternalEntryFromProvidedInfos( String targetDir, Artifact artifact,
+    SvnExternalEntry buildExternalEntryFromProvidedInfos( String targetDir, Artifact artifact,
         MavenProject dependencyProject, SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
     {
         if ( null != sourceTargetDirRemovePrefixes )
@@ -882,7 +491,7 @@ public class ScmDependenciesMojo
         }
         targetDir = targetDir.replaceFirst( "^/", "" );
       
-        ExternalEntry external = null;
+        SvnExternalEntry external = null;
         File f = new File( targetDir );
         try
         {
@@ -894,7 +503,7 @@ public class ScmDependenciesMojo
                 + targetDir );
             return external;
         }
-        external = new ExternalEntry();
+        external = new SvnExternalEntry();
                 
         external.targetDir = targetDir;
         
@@ -908,10 +517,10 @@ public class ScmDependenciesMojo
     }
     
 
-    ExternalEntry buildCurrentDependencyExternalFromPluginsConfig( Artifact artifact, MavenProject dependencyProject,
+    SvnExternalEntry buildCurrentDependencyExternalFromPluginsConfig( Artifact artifact, MavenProject dependencyProject,
        SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
     {
-        ExternalEntry external = null;
+        SvnExternalEntry external = null;
         // Option 3 : if this.externals contains dependencyProject
         if ( null != sourceTargets )
         {
@@ -934,10 +543,10 @@ public class ScmDependenciesMojo
         return external;
     }
     
-    ExternalEntry buildCurrentDependencyFromDependencieConfig( Artifact artifact, MavenProject dependencyProject,
+    SvnExternalEntry buildCurrentDependencyFromDependencieConfig( Artifact artifact, MavenProject dependencyProject,
        SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
     {
-        ExternalEntry external = null;
+        SvnExternalEntry external = null;
         // Option 2 : if dependencyProject.getProperties() contains 'scm.dependencies.source.targetDir'
         Properties ps = dependencyProject.getProperties();
         if ( null != ps )
@@ -967,10 +576,10 @@ public class ScmDependenciesMojo
         return external;
     }
     
-    ExternalEntry buildCurrentDependencyExternalDefault( Artifact artifact, MavenProject dependencyProject,
+    SvnExternalEntry buildCurrentDependencyExternalDefault( Artifact artifact, MavenProject dependencyProject,
        SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
     {
-        ExternalEntry external = null;
+        SvnExternalEntry external = null;
         // Option 1 : use artifact.getGroupId().artifact.getArtifactId()
         String targetDir = dependencyProject.getGroupId() + "." + dependencyProject.getArtifactId();
         // replace prefix while target dir is in "dot form"
@@ -1013,7 +622,7 @@ public class ScmDependenciesMojo
         
         // if we use svn, we need an externals dir
         SvnInfo externalsSvnInfo = null;
-        ExternalsEntries externalsEntries = null;
+        SvnExternalsEntries externalsEntries = null;
         File targetSourceDir = null;
 
         for ( Artifact artifact : dss.getResolvedDependencies() )
@@ -1060,7 +669,8 @@ public class ScmDependenciesMojo
                             + targetSourceDir );
                     }
                     
-                    externalsSvnInfo = getSvnInfo( targetSourceDir.getAbsolutePath() );
+                    externalsSvnInfo = SvnService.getSvnInfo( basedir,
+                        null, targetSourceDir.getAbsolutePath(), getLog() );
                     
                     if ( ! externalsSvnInfo.isValide() )
                     {
@@ -1070,13 +680,15 @@ public class ScmDependenciesMojo
                                      
                     getLog().info( "Svn externals dir is '" + externalsSvnInfo.toString() + "'" );
                     
-                    externalsEntries = loadSvnExternals( targetSourceDir.getAbsolutePath() );
+                    externalsEntries = SvnService.loadSvnExternals( basedir,
+                        null, targetSourceDir.getAbsolutePath(), getLog() );
                     // externalsEntries not null here
                     
                     getLog().info( "Svn initial externals are '" + externalsEntries.values().toString() + "'" );
                 }
                 
-                SvnInfo dependencySvnInfo = getSvnInfo( dependencySvnUri );
+                SvnInfo dependencySvnInfo = SvnService.getSvnInfo( basedir,
+                    loadInfosFromSettings( dependencySvnUri ), dependencySvnUri, getLog() );
                 
                 if ( ! dependencySvnInfo.isValide() )
                 {
@@ -1085,7 +697,7 @@ public class ScmDependenciesMojo
                 }
                 getLog().info( "Svn info for dependency : " + dependencyStr + " are " + dependencySvnInfo.toString() );
                               
-                ExternalEntry ee = buildCurrentDependencyExternalFromPluginsConfig( artifact, dependencyProject,
+                SvnExternalEntry ee = buildCurrentDependencyExternalFromPluginsConfig( artifact, dependencyProject,
                          dependencySvnInfo, externalsSvnInfo );
                 if ( null == ee )
                 {
@@ -1114,7 +726,8 @@ public class ScmDependenciesMojo
         }
         if ( null != externalsEntries && null != targetSourceDir )
         {
-            writeSvnExternals( targetSourceDir.getAbsolutePath(), externalsEntries );
+            SvnService.writeSvnExternals( basedir, null, targetSourceDir.getAbsolutePath(),
+                externalsEntries, project.getBuild().getDirectory(), getLog() );
         }
     }
 }

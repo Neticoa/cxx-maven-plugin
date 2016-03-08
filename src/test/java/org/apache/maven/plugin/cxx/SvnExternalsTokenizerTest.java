@@ -19,7 +19,7 @@ package org.apache.maven.plugin.cxx;
  */
 
 import org.apache.maven.plugin.testing.AbstractMojoTestCase;
-import org.apache.maven.plugin.cxx.SvnExternalsTokenizer;
+import org.apache.maven.plugin.cxx.utils.svn.SvnExternalsTokenizer;
 import java.text.StringCharacterIterator;
 
 public class SvnExternalsTokenizerTest
@@ -212,6 +212,22 @@ public class SvnExternalsTokenizerTest
         SvnExternalsTokenizer.Token t1 = m.nextToken();
         assertEquals( SvnExternalsTokenizer.TokenType.libelle, t1.tokenType );
         assertEquals( "-r", t1.value.toString() );
+
+    }
+    
+    /**
+     * @throws Exception if any
+     */
+    public void test8() throws Exception
+    {
+        String s = " ## this is a comment ###";
+        
+        StringCharacterIterator iter = new StringCharacterIterator(s);
+        SvnExternalsTokenizer m = new SvnExternalsTokenizer(iter);
+
+        SvnExternalsTokenizer.Token t1 = m.nextToken();
+        assertEquals( SvnExternalsTokenizer.TokenType.comment, t1.tokenType );
+        assertEquals( "## this is a comment ###", t1.value.toString() );
 
     }
     

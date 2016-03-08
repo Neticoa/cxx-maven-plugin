@@ -1,4 +1,4 @@
-package org.apache.maven.plugin.cxx;
+package org.apache.maven.plugin.cxx.utils.svn;
 
 /*
  * Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
@@ -47,6 +47,7 @@ public class SvnExternalsTokenizer extends Automate
         minusChar,
         rChar,
         digit,
+        diese,
         other,
         empty;
 
@@ -73,7 +74,8 @@ public class SvnExternalsTokenizer extends Automate
     {
         empty,
         libelle,
-        revision;
+        revision,
+        comment;
     };
     
     /**
@@ -98,9 +100,11 @@ public class SvnExternalsTokenizer extends Automate
         MREV,
         REV,
         PREV,
+        COMMENT,
         FINAL_LIBELLE,
         FINAL_REV,
-        FINAL_EMPTY;
+        FINAL_EMPTY,
+        FINAL_COMMENT;
 
         /**
          * 
@@ -189,6 +193,20 @@ public class SvnExternalsTokenizer extends Automate
                 return "tokenTypeRevision";
             }
         };
+        
+         Action tokenTypeComment = new Action()
+        {
+            public void action( final ActionExecutor executor, final Object aiParam )
+                throws AutomateException
+            {
+                ( ( SvnExternalsTokenizer ) executor ).currentToken.tokenType = TokenType.comment;
+            }
+
+            public String getName()
+            {
+                return "tokenTypeComment";
+            }
+        };
 
         try
         {
@@ -202,6 +220,8 @@ public class SvnExternalsTokenizer extends Automate
                 MainState.QUOBEG.ordinal(), accumulate );
             Automate.setTransition( MainState.INIT.ordinal(), MainLabel.minusChar.ordinal(),
                 MainState.MREV.ordinal(), accumulate );
+            Automate.setTransition( MainState.INIT.ordinal(), MainLabel.diese.ordinal(),
+                MainState.COMMENT.ordinal(), accumulate );
             Automate.setTransition( MainState.INIT.ordinal(), MainLabel.empty.ordinal(),
                 MainState.FINAL_EMPTY.ordinal(), nothing );
                 
@@ -263,11 +283,17 @@ public class SvnExternalsTokenizer extends Automate
                 MainState.FINAL_REV.ordinal(), drop );
             Automate.setTransition( MainState.PREV.ordinal(), MainLabel.empty.ordinal(),
                 MainState.FINAL_REV.ordinal(), nothing );
+                
+            // override defaut transitions to handle all "other" char with state "default" case
+            Automate.setState( MainState.COMMENT.ordinal(), null, MainState.COMMENT.ordinal(), accumulate );     
+            Automate.setTransition( MainState.COMMENT.ordinal(), MainLabel.empty.ordinal(),
+                MainState.FINAL_COMMENT.ordinal(), nothing );
                               
             // not needed : empty is defaut token type
             //Automate.setState( MainState.FINAL_EMPTY.ordinal(), tokenTypeEmpty);
             Automate.setState( MainState.FINAL_LIBELLE.ordinal(), tokenTypeLibelle );
             Automate.setState( MainState.FINAL_REV.ordinal(), tokenTypeRevision );
+            Automate.setState( MainState.FINAL_COMMENT.ordinal(), tokenTypeComment );
         }
         catch ( Exception e )
         {
@@ -301,6 +327,7 @@ public class SvnExternalsTokenizer extends Automate
                 : current == 'r' ? MainLabel.rChar.ordinal()
                 : current == '\\' ? MainLabel.backSlack.ordinal()
                 : current == '"' ? MainLabel.quote.ordinal()
+                : current == '#' ? MainLabel.diese.ordinal()
                 : Character.isWhitespace( current ) ? MainLabel.blank.ordinal()
                 : Character.isDigit( current ) ? MainLabel.digit.ordinal()
                 : MainLabel.other.ordinal();
@@ -356,7 +383,8 @@ public class SvnExternalsTokenizer extends Automate
     {
         return getCurrentState() == MainState.FINAL_LIBELLE.ordinal()
                || getCurrentState() == MainState.FINAL_REV.ordinal()
-               || getCurrentState() == MainState.FINAL_EMPTY.ordinal();
+               || getCurrentState() == MainState.FINAL_EMPTY.ordinal()
+               || getCurrentState() == MainState.FINAL_COMMENT.ordinal();
     }
 
     @Override
