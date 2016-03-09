@@ -41,12 +41,10 @@ limitations under the License.
     It is not used with SVN connections since revision/tag information can be included in a SVN connection URL.
     It is used with Git or Mercurial connections since tag information can't be included in that kind of connection URL.
   -->
-  <!--
   <scm>
-    <connection></connection>
-    <developerConnection></developerConnection>
+    <connection>$(scmConnection)</connection>
+    <developerConnection>$(scmConnection)</developerConnection>
   </scm>
-  -->
 
   <properties>
     <!-- use scm.dependencies.source.targetDir to force a sub dir when importing this artifact source from SCM infos -->

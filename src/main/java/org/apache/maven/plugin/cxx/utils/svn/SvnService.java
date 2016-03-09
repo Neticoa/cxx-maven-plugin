@@ -110,7 +110,8 @@ public class SvnService
         }
     }
     
-    public static SvnInfo getSvnInfo( File basedir, Credential cred, String uri, Log log ) throws MojoExecutionException
+    public static SvnInfo getSvnInfo( File basedir, Credential cred, String uri,
+        Log log, boolean noParsingFailure ) throws MojoExecutionException
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         
@@ -127,7 +128,14 @@ public class SvnService
         }
         catch ( Exception e )
         {
-            throw new MojoExecutionException( "svn info xml parsing failed.", e );
+            if ( noParsingFailure )
+            {
+                log.error( "svn info xml parsing failed : " + e );
+            }
+            else
+            {
+                throw new MojoExecutionException( "svn info xml parsing failed.", e );
+            }
         }        
         return svnInfo;
     }
@@ -195,6 +203,11 @@ public class SvnService
                 else if ( SvnExternalsTokenizer.TokenType.comment == tok.tokenType )
                 {
                     external.comment = tok.value.toString();
+                }
+                else if ( SvnExternalsTokenizer.TokenType.empty == tok.tokenType )
+                {
+                    // ignore empty lines
+                    continue;
                 }
                 
                 if ( external.isValide() )

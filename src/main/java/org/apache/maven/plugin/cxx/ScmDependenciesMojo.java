@@ -670,7 +670,7 @@ public class ScmDependenciesMojo
                     }
                     
                     externalsSvnInfo = SvnService.getSvnInfo( basedir,
-                        null, targetSourceDir.getAbsolutePath(), getLog() );
+                        null, targetSourceDir.getAbsolutePath(), getLog(), false );
                     
                     if ( ! externalsSvnInfo.isValide() )
                     {
@@ -688,7 +688,7 @@ public class ScmDependenciesMojo
                 }
                 
                 SvnInfo dependencySvnInfo = SvnService.getSvnInfo( basedir,
-                    loadInfosFromSettings( dependencySvnUri ), dependencySvnUri, getLog() );
+                    loadInfosFromSettings( dependencySvnUri ), dependencySvnUri, getLog(), false );
                 
                 if ( ! dependencySvnInfo.isValide() )
                 {

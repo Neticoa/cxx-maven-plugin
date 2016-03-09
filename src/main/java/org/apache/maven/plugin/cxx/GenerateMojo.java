@@ -56,6 +56,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
+import org.apache.maven.plugin.cxx.utils.svn.SvnService;
+import org.apache.maven.plugin.cxx.utils.svn.SvnInfo;
 
 /**
  * Generates a new project from an archetype, or updates the actual project if using a partial archetype.
@@ -281,6 +283,7 @@ public class GenerateMojo
         valuesMap.put( "cmakeMinVersion", cmakeMinVersion );
         valuesMap.put( "parentScope", bCMake3OrAbove ? "PARENT_SCOPE" : "" );
         valuesMap.put( "projectVersion", bCMake3OrAbove ? "VERSION ${TARGET_VERSION}" : "" );
+        valuesMap.put( "scmConnection", "" );
 
 //1/ search for properties
 // -DgroupId=fr.neticoa -DartifactName=QtUtils -DartifactId=qtutils -Dversion=1.0-SNAPSHOT
@@ -296,12 +299,19 @@ public class GenerateMojo
         {
             throw new MojoExecutionException( "Unable to find archetype : " + archetypeArtifactId );
         }
-        
-        getLog().info( "archetype " + archetypeArtifactId + " has " + resources.entrySet().size() + " item(s)" );
+//1.1/ search potential scm location of current dir
+        // svn case
+        SvnInfo basedirSvnInfo = SvnService.getSvnInfo( basedir, null, basedir.getAbsolutePath(), getLog(), true );
+        if ( basedirSvnInfo.isValide() )
+        {
+            valuesMap.put( "scmConnection", "scm:svn:" + basedirSvnInfo.getSvnUrl() );
+        }
+        // todo : handle other scm : git (git remote -v; git log --max-count=1), etc.
         
 //2/ unpack resource to destdir 
+        getLog().info( "archetype " + archetypeArtifactId + " has " + resources.entrySet().size() + " item(s)" );
         getLog().info( "basedir = " + basedir );
-        
+                
         StrSubstitutor substitutor = new StrSubstitutor( valuesMap, "$(", ")" );
         String sExecutionDate = new SimpleDateFormat( "yyyy-MM-dd-HH:mm:ss.SSS" ).format( new Date() );
         for ( Map.Entry<String, String> entry : resources.entrySet() )
