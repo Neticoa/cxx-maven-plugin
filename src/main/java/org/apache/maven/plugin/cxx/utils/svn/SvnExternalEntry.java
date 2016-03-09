@@ -39,7 +39,7 @@ public class SvnExternalEntry
     
     public String toString()
     {
-        return "" + ( ( null != comment ) ? comment + " "
+        return "" + ( ( null != comment ) ? comment
             : ( ( ( null != revision ) ? revision + " " : "" ) + ( ( null != origin ) ? origin : "" )
             + " " + ( ( null != targetDir ) ? targetDir : "" ) ) );
     }
@@ -65,16 +65,17 @@ public class SvnExternalEntry
         {
             return false;
         }
-        else
-        {
-            return StringUtils.equals( targetDir, otherExternalEntry.targetDir );
-        }
+        // otherwise, entries are equals if their origin or tagetDir are equals
+        return StringUtils.equals( origin, otherExternalEntry.origin )
+            || StringUtils.equals( targetDir, otherExternalEntry.targetDir );
     }
     
     @Override        
     public int hashCode()
     {
-        // comments are unique, hashCode shall be different for them
-        return null != comment ? super.hashCode() : null != targetDir ? targetDir.hashCode() : 0;
+        return null != comment ? super.hashCode() // comments are unique, hashCode shall be different for them
+            : null != targetDir ? null != origin 
+                ? ( origin + targetDir ).hashCode() : targetDir.hashCode()
+            : null != origin ? origin.hashCode() : 0;
     }
 }
