@@ -494,7 +494,6 @@ public class CMakeMojo extends AbstractLaunchMojo
             }
         }
         
-        
         // check file content
         InputStream dependenciesStream = null;
         String content = new String();
@@ -555,12 +554,10 @@ public class CMakeMojo extends AbstractLaunchMojo
         while ( itDeps.hasNext() )
         {
             String dep = ( String ) itDeps.next();
-            
             if ( bMavenDependencies )
             {
                 String externalDep = generalizeDependencyFileName( dep, true );
-                allDepsBuilder.append( 
-                    "target_link_libraries(${target} "
+                allDepsBuilder.append( "target_link_libraries(${target} "
                     + ( isDebugBuild() ? "debug " : "optimized " )
                     + externalDep + ")" + doubleIndentation );
             }
@@ -597,7 +594,6 @@ public class CMakeMojo extends AbstractLaunchMojo
         }
             
         getLog().debug( dependencieFile + " depfile was : " + content );
-        
         String allDeps = Matcher.quoteReplacement( allDepsBuilder.toString() );
             //.replace( "$", "\\$" ); // Matcher replaceAll() is a bit rigid !
         getLog().debug( dependencieFile + " injected dependency will be : " + allDeps );

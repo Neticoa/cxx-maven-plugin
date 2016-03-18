@@ -543,7 +543,7 @@ public class ScmDependenciesMojo
         return external;
     }
     
-    SvnExternalEntry buildCurrentDependencyFromDependencieConfig( Artifact artifact, MavenProject dependencyProject,
+    SvnExternalEntry buildCurrentDependencyFromDependencyConfig( Artifact artifact, MavenProject dependencyProject,
        SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
     {
         SvnExternalEntry external = null;
@@ -565,13 +565,13 @@ public class ScmDependenciesMojo
             }
             else
             {
-                getLog().warn( "Maven project of dependency " + artifactToString( artifact )
+                getLog().info( "Maven project of dependency " + artifactToString( artifact )
                     + " do not define property 'scm.dependencies.source.targetDir'" );
             }
         }
         else
         {
-            getLog().warn( "Maven project of dependency " + artifactToString( artifact ) + " has no properties" );
+            getLog().info( "Maven project of dependency " + artifactToString( artifact ) + " has no properties" );
         }
         return external;
     }
@@ -701,7 +701,7 @@ public class ScmDependenciesMojo
                          dependencySvnInfo, externalsSvnInfo );
                 if ( null == ee )
                 {
-                    ee = buildCurrentDependencyFromDependencieConfig( artifact, dependencyProject,
+                    ee = buildCurrentDependencyFromDependencyConfig( artifact, dependencyProject,
                          dependencySvnInfo, externalsSvnInfo );
                 }
                 if ( null == ee )
