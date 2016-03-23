@@ -17,7 +17,7 @@
 
 ## [Usage](http://neticoa.github.io/cxx-maven-plugin/plugin-info.html)
 * Instructions on how to use the Cxx Maven Plugin can be found on the [usage page](http://neticoa.github.io/cxx-maven-plugin/plugin-info.html)
-* cxx-maven-plugin is intended to integrate seamlessly with [sonar-cxx-plugin](https://github.io/wenns/sonar-cxx)
+* cxx-maven-plugin is intended to integrate seamlessly with [sonar-cxx-plugin](https://github.com/SonarOpenCommunity/sonar-cxx)
 
 ## Examples
 * [pom sample](http://neticoa.github.io/cxx-maven-plugin/SAMPLE/pom.xml)
