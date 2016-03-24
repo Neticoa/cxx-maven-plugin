@@ -23,6 +23,7 @@
 * cxx-maven-plugin is intended to integrate seamlessly with [sonar-cxx-plugin](https://github.com/SonarOpenCommunity/sonar-cxx)
 
 ## Examples
+* [Master POM](https://github.com/Neticoa/cxx-maven-plugin/tree/gh-pages/neticoa.fr/pom.xml)
 
 * [VS sample](https://github.com/Neticoa/cxx-maven-plugin/tree/gh-pages/nexus-maven-vs2008-sample)
 
