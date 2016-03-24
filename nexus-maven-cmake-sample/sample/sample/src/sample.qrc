@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>logo-neticoafr.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,341 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--
+Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
+Author(s) : Franck Bonin, Neticoa SAS France
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>fr.neticoa</groupId>
+    <artifactId>sample-papa-pom</artifactId>
+    <version>1.0.0.0</version>
+    <!-- an empty <relativePath> so that maven resolves the parent pom from the .m2 cache or repositories.-->
+    <relativePath>../sample-papa-pom</relativePath>
+  </parent>
+  
+  <groupId>fr.neticoa</groupId>
+  <!-- 'Sample' is coming from pom generation -->
+  <artifactId>moduleb</artifactId>
+  <packaging>pom</packaging>
+  <!-- set the Main project name here -->
+  <name>ModuleB</name>
+  <version>1.0.0.0</version>
+
+  <!-- set scm project location here -->
+  <scm>
+    <connection>scm:svn:https://svn/svn/cxxplugin/trunk/nexus-maven-cmake-sample/moduleb</connection>
+    <developerConnection>scm:svn:https://svn/svn/cxxplugin/trunk/nexus-maven-cmake-sample/moduleb</developerConnection>
+  </scm>
+
+  <properties>
+    <!-- use scm.dependencies.source.targetDir to force a sub dir when importing this artifact source from SCM infos -->
+    <scm.dependencies.source.targetDir>moduleb_forced</scm.dependencies.source.targetDir>
+    <general.excludes>
+    **/GeneratedFiles/**,
+    **/target/**,
+    </general.excludes>
+    <!-- scm for sonar todo define content -->
+    <sonar.scm.url><!--scm:svn:https://svn/svn/project/trunk--></sonar.scm.url>
+    <sonar.cxx.moredefines> 
+    </sonar.cxx.moredefines>
+  </properties>
+  
+  <profiles>
+    <profile>
+      <activation>
+        <property>
+          <name>!buildConfig</name>
+        </property>
+      </activation>
+      <id>pom-only</id>
+      
+      <dependencies>
+        <!-- add pom (source) dependencies here -->
+      </dependencies>
+  
+    </profile>
+
+    <profile>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <id>buildConfig</id>
+
+      <dependencies>
+        <!-- add bin and interface dependencies here -->
+        <!--
+        <dependency>
+          <groupId>fr.neticoa</groupId>
+          <artifactId>acomponent</artifactId>
+          <version>1.0.0.0</version>
+          <classifier>interface</classifier>
+          <type>zip</type>
+          <optional>false</optional>
+        </dependency>
+
+        <dependency>
+          <groupId>fr.neticoa</groupId>
+          <artifactId>acomponent</artifactId>
+          <version>1.0.0.0</version>
+          <classifier>bin-${targetClassifier}-${buildConfig}</classifier>
+          <type>zip</type>
+          <optional>false</optional>
+        </dependency>
+        -->
+      </dependencies>
+
+      <build>
+        <!-- Todo add plugins if used only in this pom -->
+        <pluginManagement>
+
+        </pluginManagement>
+        
+        <plugins>
+        
+          <!-- see http://site.supose.org/doxygen-maven-plugin/report-mojo.html -->
+          <!--
+          <plugin>
+            <groupId>com.soebes.maven.plugins.dmg</groupId>
+            <artifactId>doxygen-maven-plugin</artifactId>
+            <version>1.0.1</version>
+            <configuration>
+              <outputDirectory>${basedir}/doxygen-reports</outputDirectory>
+              <projectName>${project.name}</projectName>
+              <input>${project.name}</input>
+              <exclude>${general.excludes}</exclude>
+              <recursive>true</recursive>
+              <callerGraph>true</callerGraph>
+              <fullPathNames>false</fullPathNames>
+              <stripFromPath>${basedir}</stripFromPath>
+              <filePatterns>*.cxx *.h *.cpp *.c *.doxygen *.doxy</filePatterns>
+            </configuration>
+          </plugin>
+          -->
+          
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>cxx-maven-plugin</artifactId>
+            <executions>
+            
+              <!-- goal For sonar -->
+              <execution>
+                <id>addsource</id>
+                <goals>
+                  <goal>addsource</goal>
+                </goals>
+              </execution>
+              
+              <!-- this unpack interface dependencies under dependencies folder -->
+              <execution>
+                <id>unpack-interface-dependencies</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>unpack-dependencies</goal>
+                </goals>
+                <configuration>
+                  <!--compile scope is dependencies default scope.-->
+                  <includeScope>compile</includeScope>
+                  <!--<outputDirectory>${project.build.directory}/dependency</outputDirectory>-->
+                  <overWriteReleases>true</overWriteReleases>
+                  <overWriteSnapshots>true</overWriteSnapshots>
+                  <overWriteIfNewer>true</overWriteIfNewer>
+                  <includeClassifiers>interface</includeClassifiers>
+                </configuration>
+              </execution>
+              
+              <!-- this unpack binary dependencies under dependencies and execution folders -->
+              <execution>
+                <id>unpack-bin-dependencies</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>unpack-dependencies</goal>
+                </goals>
+                <configuration>
+                  <!--compile scope is dependencies default scope.-->
+                  <includeScope>compile</includeScope>
+                  <!--<outputDirectory>${project.build.directory}/dependency</outputDirectory>-->
+                  <overWriteReleases>true</overWriteReleases>
+                  <overWriteSnapshots>true</overWriteSnapshots>
+                  <overWriteIfNewer>true</overWriteIfNewer>
+                  <!-- cxx addition : includeRegexClassifiers -->
+                  <includeRegexClassifiers>bin-.*</includeRegexClassifiers>
+                  <!-- cxx addition : flattenDestDirs -->
+                  <flattenDestDirs>
+                    <flattenDestDir>
+                        ${project.build.directory}/${targetClassifier}/${buildConfig}
+                    </flattenDestDir>
+                  </flattenDestDirs>
+                </configuration>
+              </execution>
+
+              <execution>
+                <id>cmake</id>
+                <!-- initialize is cmake goal default phase -->
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>cmake</goal>
+                </goals>
+                <configuration>
+                  <!-- ${basedir} is cmake projectDir default value -->
+                  <!--<projectDir>${basedir}</projectDir>-->
+                  <!-- ${basedir} is cmake outsourceDir default value -->
+                  <outsourceDir>${project.build.directory}/${targetClassifier}/${buildConfig}</outsourceDir>
+                  <generator>${cmake.makefile.generator}</generator>
+                  <!--<generator>"MinGW Makefiles"</generator>-->
+                  <commandArgs>
+                  </commandArgs>
+                </configuration>
+              </execution>
+                
+              <execution>
+                <id>make</id>
+                <!-- compile is make goal default phase -->
+                <!--<phase>compile</phase>-->
+                <goals>
+                  <goal>make</goal>
+                </goals>
+                <configuration>
+                  <makecommandPerOS>
+                    <Windows7>mingw32-make</Windows7>
+                  </makecommandPerOS>
+                  <projectDir>${project.build.directory}/${targetClassifier}/${buildConfig}</projectDir>
+                </configuration>
+              </execution>
+
+              <!-- When unit tests are ready activate one of the following blocks -->
+
+              <!-- This call Unit test bash (.sh) script if any. -->
+              <!-- Skip it with 'mvn -D xunit.skiptest=true' or 'mvn -D maven.test.skip=true' -->
+              <!--
+              <execution>
+                <id>unit-test-sh</id>
+                <goals>
+                  <goal>xunit</goal>
+                </goals>
+                <configuration>
+                  <executable>sh</executable>
+                  <workingDir>${basedir}/xunit-reports</workingDir>
+                  <commandArgs>"${basedir}/scripts/exec-unit-tests.sh" "${project.build.directory}/${targetPlatform}/${buildConfig}/TESTU.exe" "${basedir}/xunit-reports/xunit-result-${project.name}.xml"</commandArgs>
+                </configuration>
+              </execution>
+              -->
+
+              <!-- This call Unit test batch (.bat) script if any.-->
+              <!-- Skip it with 'mvn -D xunit.skiptest=true' or 'mvn -D maven.test.skip=true'-->
+              <!--
+              <execution>
+                <id>unit-test-bat</id>
+                <goals>
+                  <goal>xunit</goal>
+                </goals>
+                <configuration>
+                  <executable>"${basedir}/scripts/exec-unit-tests.bat"</executable>
+                  <workingDir>${basedir}/xunit-reports</workingDir>
+                  <commandArgs>"${project.build.directory}/${targetPlatform}/${buildConfig}/TESTU.exe" "${basedir}/xunit-reports/xunit-result-${project.name}.xml"</commandArgs>
+                </configuration>
+              </execution>
+              -->
+              <!-- this call cppcheck test process -->
+              <!-- when cppcheck is available activate following block -->
+
+              <execution>
+                <id>cppcheck</id>
+                <goals>
+                  <goal>cppcheck</goal>
+                </goals>
+                <configuration>
+                  <excludes>${general.excludes}</excludes>
+                  <reportIdentifier>${project.name}</reportIdentifier>
+                </configuration>
+              </execution>
+           
+              
+              <!-- this call vera++ test process -->
+              <!-- when vera++ is available activate following block -->
+              
+              <execution>
+                <id>veraxx</id>
+                <goals>
+                  <goal>veraxx</goal>
+                </goals>
+                <configuration>
+                  <excludes>${general.excludes}</excludes>
+                  <reportIdentifier>${project.name}</reportIdentifier>
+                </configuration>
+              </execution>
+              
+              
+              <!-- custom package process -->
+              <!--              
+              <execution>
+                <id>package</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>launch</goal>
+                </goals>
+                <configuration>
+                  <executable>${basedir}/scripts/package.bat</executable>
+                  <workingDir>${basedir}</workingDir>
+                  <commandArgs>"${basedir}" ${project.version}</commandArgs>
+                </configuration>
+              </execution>
+              -->   
+            </executions>
+            <!-- main configuration node is mainly used by sonar cxx sensor -->
+            <configuration>
+              <!-- <sourceDirs> is used by cppcheck, cppncss and veraxx goal to identify source files -->
+              <!-- <sourceDirs> is also used by sonar cxx sensor to identify source files -->
+              <sourceDirs>
+                <!-- always start with ${basedir} in order to identify correctly resources during sonar analysies -->
+                <sourceDir>${basedir}/${project.artifactId}</sourceDir>
+                <!-- add other Subproject (vcproj) directories here -->
+                <!-- <sourceDir>${basedir}/subdir1</sourceDir>
+                <sourceDir>${basedir}/subdir2</sourceDir>
+                <sourceDir>${basedir}/subdir3</sourceDir>
+                <sourceDir>${basedir}/subdir4</sourceDir>
+                <sourceDir>${basedir}/subdir5</sourceDir>
+                <sourceDir>${basedir}/subdir6</sourceDir> -->
+              </sourceDirs>
+            </configuration>
+          </plugin>
+          
+          <!-- this build binaries and interface assemblies (.zip) -->
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+              <descriptors>
+              <descriptor>bin-assembly.xml</descriptor>
+              <descriptor>interface-assembly.xml</descriptor> <!-- this assembly contains the public interface (.h files) -->
+              <descriptor>source-assembly.xml</descriptor>
+              </descriptors>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

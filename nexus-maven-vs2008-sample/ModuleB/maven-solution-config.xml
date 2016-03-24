@@ -1,0 +1,6 @@
+<MavenSolution>
+  <Mavenize>
+    <!-- Add any project that Maven add-in shall not Mavenize within current solution context -->
+	  <!-- Example : <ExcludeProject>AProjectName</ExcludeProject> -->
+  </Mavenize>
+</MavenSolution>

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModuleB", "ModuleB\ModuleB.vcproj", "{E684B018-AF1A-4A51-A8AA-4B27FD9C34C5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{742E1AB3-624F-4F4D-9D9E-AC96F0A2C63D}"
+	ProjectSection(SolutionItems) = preProject
+		bin-assembly.xml = bin-assembly.xml
+		scripts\exec-unit-tests.bat = scripts\exec-unit-tests.bat
+		scripts\exec-unit-tests.sh = scripts\exec-unit-tests.sh
+		interface-assembly.xml = interface-assembly.xml
+		maven-solution-config.xml = maven-solution-config.xml
+		pom.xml = pom.xml
+		source-assembly.xml = source-assembly.xml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E684B018-AF1A-4A51-A8AA-4B27FD9C34C5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E684B018-AF1A-4A51-A8AA-4B27FD9C34C5}.Debug|Win32.Build.0 = Debug|Win32
+		{E684B018-AF1A-4A51-A8AA-4B27FD9C34C5}.Release|Win32.ActiveCfg = Release|Win32
+		{E684B018-AF1A-4A51-A8AA-4B27FD9C34C5}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

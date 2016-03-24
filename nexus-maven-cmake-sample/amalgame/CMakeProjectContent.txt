@@ -1,0 +1,21 @@
+########################################################################################
+# Usefull MAVEN properties
+# CMAKE_BUILD_TYPE {debug|release}
+# TARGET_ID {artifact name, lowercase use for path and identifier}
+# TARGET_NAME {artifact name, use for final binary name}
+# DEPENDENCY_DIR {where to find maven dependencies}
+# TARGET_VERSION {artifact version}
+# TARGET_CLASSIFIER {nexus classifier}
+# TARGET_PLATFORM 
+# TARGET_ARCHITECTURE 
+
+########################################################################################
+
+# CMAKE DEPENDENCIES MANAGMENT
+# Both maven and cmake dependencies management system can be used at the same time
+# this is how it works :
+# FIRST and MOST IMPORTANT, list projects in "dependencies complient" order
+# SECOND, see "CMAKE DEPENDENCIES MANAGMENT" comment in following subdir CMakeList.txt
+add_subdirectory(../moduleb "${CMAKE_CURRENT_BINARY_DIR}/moduleb")
+add_subdirectory(../modulea "${CMAKE_CURRENT_BINARY_DIR}/modulea")
+add_subdirectory(../sample "${CMAKE_CURRENT_BINARY_DIR}/sample")

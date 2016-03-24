@@ -1,0 +1,39 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+  <!-- the id is used as artifact's classifier when deploying. -->
+  <id>bin-${targetClassifier}-${buildConfig}</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <baseDirectory>/</baseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>target/${targetClassifier}/${buildConfig}</directory>
+      <outputDirectory>${targetClassifier}/${buildConfig}/${project.artifactId}</outputDirectory>
+      <includes>
+        <!-- Todo : add specific include here if needed -->
+        <!--
+        <include>${project.name}${executableSuffix}</include>
+        <include>${sharedLibraryPrefix}${project.name}${sharedLibrarySuffix}</include>
+        <include>${sharedModulePrefix}${project.name}${sharedModuleSuffix}</include>
+        <include>${staticLibraryPrefix}${project.name}${staticLibrarySuffix}</include>
+        -->
+        <!-- Use carefully following includes and don't forget to exclude your unit
+             test binaries or you might lose all your unit tests relevance.
+             Following includes can be used to aggregate all project dependencies.-->
+        
+        <include>**/Sample</include>
+        <include>**/*${sharedLibrarySuffix}</include>
+        <include>**/*${sharedModuleSuffix}</include>
+        <include>**/*${staticLibrarySuffix}</include>
+        <include>**/*.pdb</include>
+        
+      </includes>
+      <excludes>
+        <!-- Todo : add specific excludes here if needed -->
+        <exclude>*.exp</exclude>
+        <exclude>*.ilk</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets> 
+</assembly>

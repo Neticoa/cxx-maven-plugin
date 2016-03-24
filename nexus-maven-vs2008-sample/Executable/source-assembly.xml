@@ -1,0 +1,50 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+  <!-- the id is used as artifact's classifier when deploying. -->
+  <id>source</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <baseDirectory>${project.name}</baseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>/</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <!-- Todo : add more include here if needed -->
+        <include>**/*.txt</include>
+        <include>**/*.template</include>
+        <include>**/*.cpp</include>
+        <include>**/*.cxx</include>
+        <include>**/*.c</include>
+        <include>**/*.hpp</include>
+        <include>**/*.hxx</include>
+        <include>**/*.h</include>
+        <include>**/*.inc</include>
+        <include>**/*.sln</include>
+        <include>**/*.vcproj</include>
+        <include>**/*.xml</include>
+        <include>**/*.res</include>
+        <include>**/*.resx</include>
+        <include>**/*.rc</include>
+        <include>**/*.rc2</include>
+        <include>**/*.ts</include>
+        <include>**/*.ui</include>
+        <include>**/*.qrc</include>
+        <include>**/*.ico</include>
+        <include>**/*.jpg</include>
+        <include>**/*.png</include>
+        <include>**/*.jpeg</include>
+        <include>**/*.gif</include>
+        <include>**/*.sql</include>
+        <include>**/*.bat</include>
+        <include>**/*.sh</include>
+      </includes>
+      <excludes>
+         <!-- Todo : add more exludes here if needed -->
+         <exclude>*-reports/**</exclude>
+         <exclude>target/**</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets> 
+</assembly>

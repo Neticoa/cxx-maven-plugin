@@ -1,0 +1,100 @@
+########################################################################################
+# Usefull MAVEN properties
+# CMAKE_BUILD_TYPE {debug|release}
+# TARGET_ID {artifact name, lowercase use for path and identifier}
+# TARGET_NAME {artifact name, use for final binary name}
+# DEPENDENCY_DIR {where to find maven dependencies}
+# TARGET_VERSION {artifact version}
+# TARGET_CLASSIFIER {nexus classifier}
+# TARGET_PLATFORM 
+# TARGET_ARCHITECTURE 
+
+########################################################################################
+# QT5. Optionnal
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+find_package(Qt5Widgets REQUIRED)
+
+########################################################################################
+# INTERNAL SOURCES DEFINITION (source that are private and not visible from outside)
+
+# CMAKE Recommendation. Add your custom include path in this list
+# manage_maven_dependencies.cmake whill update current project dependencies include directory, 
+# see below
+include_directories(
+    "${PROJECT_SOURCE_DIR}"
+    "${PROJECT_SOURCE_DIR}/${TARGET_ID}/include"
+    "${DEPENDENCY_DIR}/include"
+)
+
+# CMAKE Convention. Set the base directory of your source files
+SET(INTERNAL_SRC_DIR "${TARGET_ID}/src" )
+
+# CMAKE Convention. Add your private source files here !
+SET(INTERNAL_SRC
+    "${INTERNAL_SRC_DIR}/moduleb.cpp"
+)
+
+# CMAKE Convention. Add your private header files here !
+SET(INTERNAL_HDRS
+)
+
+# CMAKE Convention. Add your private compilable resource files here !
+SET(INTERNAL_RC
+)
+
+# CMAKE Convention. Add your private embeded resource files here !
+SET(INTERNAL_EMBD_RC
+)
+
+# QT5 Optionnal. qrc depends on embeded resources
+#SET_SOURCE_FILES_PROPERTIES("${INTERNAL_SRC_DIR}/moduleb.qrc"
+#        PROPERTIES OBJECT_DEPENDS
+#        "${INTERNAL_EMBD_RC}"
+#)
+
+# CMAKE Convention. Group the files here !
+SOURCE_GROUP(src FILES 
+    ${INTERNAL_SRC}
+    ${INTERNAL_HDRS}
+)
+
+# CMAKE Convention. Group the files here !
+SOURCE_GROUP(res FILES 
+    ${INTERNAL_RC}
+    ${INTERNAL_EMBD_RC}
+)
+        
+########################################################################################
+# PUBLIC HEADERS DEFINITION (headers that are public and visible from outside)
+
+# Set the base directory of your public files
+SET(PUBLIC_HDRS_DIR "${TARGET_ID}/include/${TARGET_ID}" )
+
+# Add your public files here !
+SET(PUBLIC_HDRS
+    "${PUBLIC_HDRS_DIR}/moduleb.h"
+)
+
+# Group the files here !
+SOURCE_GROUP(include FILES 
+    ${PUBLIC_HDRS}
+)
+
+########################################################################################
+# TARGET DEFINITION
+
+# CMAKE Mandatory. Target definition
+add_library(${TARGET_NAME} SHARED
+    ${INTERNAL_SRC}
+    ${INTERNAL_HDRS}
+    ${INTERNAL_RC}
+    ${INTERNAL_EMBD_RC}
+    ${PUBLIC_HDRS}
+)
+ADD_DEFINITIONS(-DMODULEB_LIB)
+
+# QT5 Optionnal. Link with Qt libraries
+target_link_libraries(${TARGET_NAME} Qt5::Widgets)

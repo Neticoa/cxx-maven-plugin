@@ -1,0 +1,22 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+  <!-- the id is used as artifact's classifier when deploying. -->
+  <id>interface</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <baseDirectory>/</baseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>${project.artifactId}/include</directory>
+      <outputDirectory>include</outputDirectory>
+      <includes>
+        <!-- Todo : add specific include here if needed -->
+        <include>**/**</include>
+      </includes>
+      <excludes>
+        <!-- Todo : add specific exludes here if needed -->
+      </excludes>
+    </fileSet>
+  </fileSets>
+</assembly>

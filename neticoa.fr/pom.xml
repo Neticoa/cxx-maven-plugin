@@ -1,0 +1,900 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--
+Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
+Author(s) : Franck Bonin, Neticoa SAS France
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>fr.neticoa</groupId>
+  <artifactId>cpp-super-pom</artifactId>
+  <name>Super Pom C++</name>
+  <packaging>pom</packaging>
+  <version>1.1.0.0</version>
+  
+  <!-- minimal requirement : Apache Maven 3.0.4 -->
+  
+  <!-- set scm project location here -->
+  <!--
+  <scm>
+    <connection></connection>
+    <developerConnection></developerConnection>
+  </scm>
+  -->
+  
+  <properties>
+    <!-- use scm.dependencies.source.targetDir to force a sub dir when importing this artifact source from SCM infos -->
+    <!-- <scm.dependencies.source.targetDir></scm.dependencies.source.targetDir> -->
+    <!-- override general.excludes in child pom -->
+    <general.excludes>
+    <!--
+      **/GeneratedFiles/**,
+      **/JsonRpc/**, **/QJsonRpc/**,
+      **/QtSingleApplication/**,
+      **/easylogging*
+    -->
+    </general.excludes>
+    <cmake.makefile.generator>"Unix Makefiles"</cmake.makefile.generator>
+    <sonar.language>c++</sonar.language>
+    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+    <!-- since sonar cxx plugin v0.3 -->
+    <sonar.cxx.coverage.reportPath>gcovr-reports/gcovr-result-*.xml</sonar.cxx.coverage.reportPath>
+    <sonar.cxx.cppcheck.reportPath>cppcheck-reports/cppcheck-result-*.xml</sonar.cxx.cppcheck.reportPath>
+    <sonar.cxx.valgrind.reportPath>valgrind-reports/valgrind-result-*.xml</sonar.cxx.valgrind.reportPath>
+    <sonar.cxx.vera.reportPath>vera++-reports/vera++-result-*.xml</sonar.cxx.vera.reportPath>
+    <sonar.cxx.pclint.reportPath>pclint-reports/pclint-result-*.xml</sonar.cxx.pclint.reportPath>
+    <sonar.cxx.xunit.reportPath>xunit-reports/xunit-result-*.xml</sonar.cxx.xunit.reportPath>
+    <sonar.cxx.xunit.provideDetails>true</sonar.cxx.xunit.provideDetails>
+    <!-- you may override project.build.testSourceDirectory in child pom -->
+    <!-- <project.build.testSourceDirectory>TESTU</project.build.testSourceDirectory> -->
+    <!-- you may override sonar.tests and sonar.tests.exclude in child pom -->
+    <sonar.tests>TESTU</sonar.tests>
+    <sonar.tests.excludes>TESTU/**</sonar.tests.excludes>
+    <!--<sonar.cxx.suffixes.sources>PC,C,c,pc,cpp</sonar.cxx.suffixes.sources>-->
+    <!-- override sonar.cxx.moredefines in child pom -->
+    <sonar.cxx.moredefines>
+    <!-- 
+      NATIVEUTILS_API 
+    -->
+    </sonar.cxx.moredefines>
+    <sonar.cxx.defines>
+    ${sonar.cxx.moredefines} 
+    and &amp;&amp; 
+    and_eq &amp;= 
+    bitand &amp; 
+    bitor | 
+    compl ~ 
+    not ! 
+    not_eq != 
+    or || 
+    or_eq |= 
+    xor ^ 
+    xor_eq ^= 
+    Q_OBJECT 
+    slots 
+    emit 
+    Q_SLOTS 
+    Q_INVOKABLE 
+    Q_INTERFACES(x) 
+    Q_PROPERTY(text) 
+    Q_ENUMS(x) 
+    Q_CLASSINFO(x,y) 
+    Q_EXPORT_PLUGIN2(PLUGIN,PLUGINCLASS) 
+    Q_DECLARE_INTERFACE(IFace,IId) 
+    Q_DECL_IMPORT 
+    Q_DECL_EXPORT 
+    EXEC_QTEST(Test_QObject,c) 
+    Q_DECLARE_METATYPE(TYPE) 
+    Q_SIGNALS protected 
+    signals protected 
+    foreach(variable,container) for(;;) 
+    SIGNAL(a) "2"#a 
+    SLOT(a) "1"#a 
+    FUNC(a) #a 
+    CONTENT_TO_STRING(s) "" 
+    SWAP_OBJECT(TYPE,one,two) 
+    QVERIFY2(statement,description) 
+    Q_DECLARE_FLAGS(Flags,Enum) 
+    Q_UNUSED(x) (void)x; 
+    Q_DECLARE_OPERATORS_FOR_FLAGS(Flags) 
+    QT_BEGIN_NAMESPACE 
+    QT_END_NAMESPACE 
+    DEBUG_NEW new 
+    VTS_NONE " " 
+    VTS_BOOL "B" 
+    VTS_I2 "2" 
+    VTS_I4 "4" 
+    VTS_R4 "4" 
+    VTS_BSTR "S" 
+    VTS_VARIANT "V" 
+    VTS_DATE "D" 
+    VTS_PBOOL "P" 
+    VTS_PI2 "P" 
+    VTS_PI4 "P" 
+    VTS_PR4 "P" 
+    VTS_PVARIANT "P" 
+    VTS_PBSTR "P" 
+    VTS_PDATE "P" 
+    TRY try 
+    CATCH(x,y) catch(x y) 
+    END_CATCH 
+    cdecl 
+    far 
+    fortran 
+    huge 
+    interrupt 
+    near 
+    pascal 
+    _asm 
+    _based 
+    _cdecl 
+    _export 
+    _far 
+    _fastcall 
+    _stdcall 
+    _fortran 
+    _huge 
+    _interrupt 
+    _loadds 
+    _near 
+    _pascal 
+    _saveregs 
+    _segment 
+    _segname 
+    _self 
+    __asm asm 
+    __based 
+    __cdecl 
+    __except 
+    __export 
+    __far 
+    __fastcall 
+    __fortran 
+    __huge 
+    __inline 
+    __interrupt 
+    __loadds 
+    __near 
+    __pascal 
+    __saveregs 
+    __segment 
+    __segname 
+    __self 
+    __stdcall 
+    __syscall 
+    __try 
+    __except(x) 
+    __leave 
+    __declspec(x) 
+    EXPORTSPEC 
+    DECL2 
+    afx_msg 
+    WINAPI 
+    sealed 
+    final 
+    AFX_CLASS_IMPORT 
+    AFX_EXT_CLASS 
+    IMPLEMENT_DYNAMIC(x,y) 
+    DECLARE_DYNAMIC(x) 
+    IMPLEMENT_DYNCREATE(x,y) 
+    DECLARE_DYNCREATE(x) 
+    BEGIN_MESSAGE_MAP(x,y) 
+    END_MESSAGE_MAP() 
+    DECLARE_MESSAGE_MAP() 
+    BEGIN_EVENTSINK_MAP(x,y) 
+    END_EVENTSINK_MAP() 
+    DECLARE_EVENTSINK_MAP() 
+    ON_BN_CLICKED(x,y) 
+    ON_CBN_SELCHANGE(x,y) 
+    ON_COMMAND(x,y) 
+    ON_CONTROL_REFLECT(x,y) 
+    ON_CONTROL_REFLECT_EX(x,y) 
+    ON_EVENT(x,y,z,t,u) 
+    ON_LBN_SELCHANGE(x,y) 
+    ON_MESSAGE(x,y) 
+    ON_NOTIFY(x,y,z) 
+    ON_NOTIFY_REFLECT(x,y) 
+    ON_WM_ACTIVATE() 
+    ON_WM_CANCELMODE() 
+    ON_WM_CHAR() 
+    ON_WM_CLOSE() 
+    ON_WM_CREATE() 
+    ON_WM_CTLCOLOR() 
+    ON_WM_CTLCOLOR_REFLECT() 
+    ON_WM_DELETEITEM() 
+    ON_WM_DESTROY() 
+    ON_WM_ENABLE() 
+    ON_WM_GETDLGCODE() 
+    ON_WM_HSCROLL() 
+    ON_WM_KILLFOCUS() 
+    ON_WM_LBUTTONDBLCLK() 
+    ON_WM_LBUTTONDOWN() 
+    ON_WM_LBUTTONUP() 
+    ON_WM_MENUCHAR() 
+    ON_WM_MEASUREITEM() 
+    ON_WM_MOUSELEAVE() 
+    ON_WM_MOUSEMOVE() 
+    ON_WM_MOUSEWHEEL() 
+    ON_WM_NCCALCSIZE() 
+    ON_WM_NCHITTEST() 
+    ON_WM_NCPAINT() 
+    ON_WM_PAINT() 
+    ON_WM_QUERYDRAGICON() 
+    ON_WM_SETCURSOR() 
+    ON_WM_SIZE() 
+    ON_WM_SHOWWINDOW() 
+    ON_WM_SYSCOLORCHANGE() 
+    ON_WM_SYSCOMMAND() 
+    ON_WM_TIMER() 
+    ON_WM_VSCROLL() 
+    ON_WM_WINDOWPOSCHANGING() 
+    BEGIN_DECLARE_FACTORY(a) 
+    END_DECLARE_FACTORY(a) 
+    IMPL_FACTORY(a) 
+    DYN_DECLARE_DATA_ACCESS_FACTORY(a) 
+    DYN_LOAD_DATA_ACCESS_FACTORY(a) 
+    DYN_CALL_DATA_ACCESS_PARAM0_RET(a,b,c) 
+    DYN_CALL_DATA_ACCESS_PARAM1(a,b,c)
+    </sonar.cxx.defines>
+    <!-- scm for sonar define content in child pom-->
+    <sonar.scm.url><!--scm:svn:https://svn.neticoa.ovh/svn/project/trunk--></sonar.scm.url>
+    <sonar.exclusions>
+      ${sonar.tests.excludes},
+      ${general.excludes}
+    </sonar.exclusions>
+    <sonar.sources>${basedir}</sonar.sources>
+    <sonar.cxx.include_directories>
+    ${basedir}/${project.name}/include, ${project.build.directory}/dependency/include
+    </sonar.cxx.include_directories>
+    <sonar.cxx.includeDirectories>
+    ${sonar.cxx.include_directories}
+    </sonar.cxx.includeDirectories>
+  </properties>
+  
+  <!-- 
+      Everything you need to know about maven profiles
+      https://maven.apache.org/pom.html#Activation
+      https://maven.apache.org/guides/introduction/introduction-to-profiles.html
+      https://maven.apache.org/enforcer/enforcer-rules/requireOS.html
+  -->
+   
+  <profiles>
+    <profile>
+      <activation>
+        <property>
+          <!--
+              This property expression activate public deployment and desactivate
+              internal deployment call maven using 'mvn deploy -D deployment.public'
+          -->
+          <name>deployment.public</name>
+        </property>
+      </activation>
+      <id>public-deployment</id>
+      <distributionManagement>
+        <repository>
+          <id>neticoa-nexus-public</id>
+          <name>neticoa public release</name>
+          <url>https://nexus.neticoa.fr/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+          <id>neticoa-nexus-public</id>
+          <name>neticoa public snapshots</name>
+          <url>https://nexus.neticoa.fr/content/repositories/snapshots</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+    
+    <profile>
+      <activation>
+        <property>
+          <!-- this property expression activate this profile by default -->
+          <name>!deployment.public</name>
+        </property>
+      </activation>
+      <id>internal-deployment</id>
+      <distributionManagement>
+        <repository>
+          <id>neticoa-nexus</id>
+          <name>neticoa releases</name>
+          <url>http://nexus.neticoa.ovh:8080/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+          <id>neticoa-nexus</id>
+          <name>neticoa snapshots</name>
+          <url>http://nexus.neticoa.ovh:8080/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>    
+
+    <!--
+       Build Config profiles
+       Prefer the "-D buildConfig=release|debug" syntax rather the "-P release|debug" syntax, 
+       in order to activate the desired profile. This is required if you use dependencies intensively
+       since Maven Reactor is called so early that all xml properties are not yet interpolated.
+       ${buildConfig} is used in dependencies node and need to be set by command line to work
+       properly under Reactor Context
+    -->
+    <profile>
+      <id>release</id>
+      <activation>
+        <property>
+          <name>buildConfig</name>
+          <value>release</value>
+        </property>
+      </activation>
+      <properties>
+        <!-- buildext is for build aim it, beta, rc, etc. -->
+        <buildext>rc</buildext>
+        <buildConfig>release</buildConfig>
+      </properties>
+    </profile>
+    
+    <profile>
+      <id>relcov</id>
+      <activation>
+        <property>
+          <name>buildConfig</name>
+          <value>relcov</value>
+        </property>
+      </activation>
+      <properties>
+        <!-- buildext is for build aim it, beta, rc, etc. -->
+        <buildext>rc</buildext>
+        <buildConfig>relcov</buildConfig>
+      </properties>
+    </profile>
+    
+    <profile>
+      <id>relinfo</id>
+      <activation>
+        <property>
+          <name>buildConfig</name>
+          <value>relinfo</value>
+        </property>
+      </activation>
+      <properties>
+        <!-- buildext is for build aim it, beta, rc, etc. -->
+        <buildext>rc</buildext>
+        <buildConfig>relinfo</buildConfig>
+      </properties>
+    </profile>
+       
+    <profile>
+      <id>debug</id>
+      <activation>
+        <property>
+          <name>buildConfig</name>
+          <value>debug</value>
+        </property>
+      </activation>
+      <properties>
+        <!-- buildext is for build aim it, beta, rc, etc. -->
+        <buildext>rc</buildext>
+        <buildConfig>debug</buildConfig>
+      </properties>
+    </profile>
+    
+    <profile>
+      <id>debcov</id>
+      <activation>
+        <property>
+          <name>buildConfig</name>
+          <value>debcov</value>
+        </property>
+      </activation>
+      <properties>
+        <!-- buildext is for build aim it, beta, rc, etc. -->
+        <buildext>rc</buildext>
+        <buildConfig>debcov</buildConfig>
+      </properties>
+    </profile>
+        
+    <!--
+         Usefull profile to dump the full list of system properties,
+         including those set by Maven such as project.build.outputDirectory,
+         basedir, os.name etc. activate with '-D echo.properties'
+    -->
+    <profile>
+      <id>echo-properties</id>
+      <activation>
+        <property>
+          <name>echo.properties</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>validate</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <tasks>
+                    <echoproperties />
+                  </tasks>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
+    
+    <!--
+        Collection of profiles to detect or force active target platform and architecture.
+        'OS' values can be displayed using 'mvn -v', 'mvn help:system', 'mvn enforcer:display-info' 
+        TRICK : 'os.name' and 'os.arch' ARE maven properties but 'os.family' is not !
+        'os.family' is just a profile activation key, not a maven property 
+        Activate 'echo.properties' profile ('mvn validate -D echo.properties') to see all maven
+        active properties
+    -->
+    
+    <!-- 
+        Declare 'auto-undefine' profile BEFORE any other auto-* profile declaration.
+        'undefine' classifier will be setted unless a better auto-* profile is found
+    -->
+    <profile>
+      <id>auto-undefine</id>
+      <activation>
+        <property>
+          <name>!targetClassifier</name>
+        </property>
+      </activation>
+      <properties>
+        <targetClassifier>undefine</targetClassifier>
+        <targetPlatform>undefine</targetPlatform>
+        <targetArchitecture>undefine</targetArchitecture>
+        <executableSuffix></executableSuffix>
+        <sharedLibraryPrefix></sharedLibraryPrefix>
+        <sharedLibrarySuffix></sharedLibrarySuffix>
+        <sharedModulePrefix></sharedModulePrefix>
+        <sharedModuleSuffix></sharedModuleSuffix>
+        <staticLibraryPrefix></staticLibraryPrefix> 
+        <staticLibrarySuffix></staticLibrarySuffix>
+      </properties>
+    </profile>
+    
+    <profile>
+      <id>auto-win32</id>
+      <activation>
+        <os>
+          <family>windows</family>
+          <arch>x86</arch>
+        </os>
+      </activation>
+      <properties>
+        <cmake.makefile.generator>"MinGW Makefiles"</cmake.makefile.generator>
+        <targetClassifier>win32</targetClassifier>
+        <targetPlatform>win32</targetPlatform>
+        <targetArchitecture>x86</targetArchitecture>
+        <executableSuffix>.exe</executableSuffix>
+        <sharedLibraryPrefix>lib</sharedLibraryPrefix>
+        <sharedLibrarySuffix>.dll</sharedLibrarySuffix>
+        <sharedModulePrefix>lib</sharedModulePrefix>
+        <sharedModuleSuffix>.dll</sharedModuleSuffix>
+        <staticLibraryPrefix>lib</staticLibraryPrefix> 
+        <staticLibrarySuffix>.lib</staticLibrarySuffix>
+      </properties>
+    </profile>
+    <profile>
+      <id>auto-win64</id>
+      <activation>
+        <os>
+          <family>windows</family>
+          <arch>amd64</arch>
+        </os>
+      </activation>
+      <properties>
+        <cmake.makefile.generator>"MinGW Makefiles"</cmake.makefile.generator>
+        <targetClassifier>win64</targetClassifier>
+        <targetPlatform>win64</targetPlatform>
+        <targetArchitecture>amd64</targetArchitecture>
+        <executableSuffix>.exe</executableSuffix>
+        <sharedLibraryPrefix>lib</sharedLibraryPrefix>
+        <sharedLibrarySuffix>.dll</sharedLibrarySuffix>
+        <sharedModulePrefix>lib</sharedModulePrefix>
+        <sharedModuleSuffix>.dll</sharedModuleSuffix>
+        <staticLibraryPrefix>lib</staticLibraryPrefix> 
+        <staticLibrarySuffix>.lib</staticLibrarySuffix>
+      </properties>
+    </profile>
+    
+    <profile>
+      <id>auto-linux-amd64-x86_64</id>
+      <activation>
+        <os>
+          <family>Linux</family>
+          <arch>amd64</arch>
+        </os>
+      </activation>
+      <properties>
+        <targetClassifier>linux-x86_64</targetClassifier>
+        <targetPlatform>linux</targetPlatform>
+        <targetArchitecture>x86_64</targetArchitecture>
+        <executableSuffix></executableSuffix>
+        <sharedLibraryPrefix>lib</sharedLibraryPrefix>
+        <sharedLibrarySuffix>.so</sharedLibrarySuffix>
+        <sharedModulePrefix>lib</sharedModulePrefix>
+        <sharedModuleSuffix>.so</sharedModuleSuffix>
+        <staticLibraryPrefix>lib</staticLibraryPrefix> 
+        <staticLibrarySuffix>.a</staticLibrarySuffix>
+      </properties>
+    </profile>
+    <profile>
+      <id>auto-linux-x86_64</id>
+      <activation>
+        <os>
+          <family>Linux</family>
+          <arch>x86_64</arch>
+        </os>
+      </activation>
+      <properties>
+        <targetClassifier>linux-x86_64</targetClassifier>
+        <targetPlatform>linux</targetPlatform>
+        <targetArchitecture>x86_64</targetArchitecture>
+        <executableSuffix></executableSuffix>
+        <sharedLibraryPrefix>lib</sharedLibraryPrefix>
+        <sharedLibrarySuffix>.so</sharedLibrarySuffix>
+        <sharedModulePrefix>lib</sharedModulePrefix>
+        <sharedModuleSuffix>.so</sharedModuleSuffix>
+        <staticLibraryPrefix>lib</staticLibraryPrefix> 
+        <staticLibrarySuffix>.a</staticLibrarySuffix>
+      </properties>
+    </profile>
+    <profile>
+      <id>auto-linux-i686</id>
+      <activation>
+        <os>
+          <family>Linux</family>
+          <arch>i686</arch>
+        </os>
+      </activation>
+      <properties>
+        <targetClassifier>linux-i686</targetClassifier>
+        <targetPlatform>linux</targetPlatform>
+        <targetArchitecture>i686</targetArchitecture>
+        <executableSuffix></executableSuffix>
+        <sharedLibraryPrefix>lib</sharedLibraryPrefix>
+        <sharedLibrarySuffix>.so</sharedLibrarySuffix>
+        <sharedModulePrefix>lib</sharedModulePrefix>
+        <sharedModuleSuffix>.so</sharedModuleSuffix>
+        <staticLibraryPrefix>lib</staticLibraryPrefix> 
+        <staticLibrarySuffix>.a</staticLibrarySuffix>
+      </properties>
+    </profile>
+    
+    <profile>
+      <id>auto-mac-i686-i386</id>
+      <activation>
+        <os>
+          <family>mac</family>
+          <arch>i686</arch>
+        </os>
+      </activation>
+      <properties>
+        <targetClassifier>mac-i386</targetClassifier>
+        <targetPlatform>mac</targetPlatform>
+        <targetArchitecture>i386</targetArchitecture>
+        <executableSuffix></executableSuffix>
+        <sharedLibraryPrefix>lib</sharedLibraryPrefix>
+        <sharedLibrarySuffix>.dylib</sharedLibrarySuffix>
+        <sharedModulePrefix>lib</sharedModulePrefix>
+        <sharedModuleSuffix>.bundle</sharedModuleSuffix>
+        <staticLibraryPrefix>lib</staticLibraryPrefix> 
+        <staticLibrarySuffix>.a</staticLibrarySuffix>
+      </properties>
+    </profile>
+    <profile>
+      <id>auto-mac-i386</id>
+      <activation>
+        <os>
+          <family>mac</family>
+          <arch>i386</arch>
+        </os>
+      </activation>
+      <properties>
+        <targetClassifier>mac-i386</targetClassifier>
+        <targetPlatform>mac</targetPlatform>
+        <targetArchitecture>i386</targetArchitecture>
+        <executableSuffix></executableSuffix>
+        <sharedLibraryPrefix>lib</sharedLibraryPrefix>
+        <sharedLibrarySuffix>.dylib</sharedLibrarySuffix>
+        <sharedModulePrefix>lib</sharedModulePrefix>
+        <sharedModuleSuffix>.bundle</sharedModuleSuffix>
+        <staticLibraryPrefix>lib</staticLibraryPrefix> 
+        <staticLibrarySuffix>.a</staticLibrarySuffix>
+      </properties>
+    </profile>
+    <profile>
+      <id>auto-mac-amd64-x86_64</id>
+      <activation>
+        <os>
+          <family>mac</family>
+          <arch>amd64</arch>
+        </os>
+      </activation>
+      <properties>
+        <targetClassifier>mac-x86_64</targetClassifier>
+        <targetPlatform>mac</targetPlatform>
+        <targetArchitecture>x86_64</targetArchitecture>
+        <executableSuffix></executableSuffix>
+        <sharedLibraryPrefix>lib</sharedLibraryPrefix>
+        <sharedLibrarySuffix>.dylib</sharedLibrarySuffix>
+        <sharedModulePrefix>lib</sharedModulePrefix>
+        <sharedModuleSuffix>.bundle</sharedModuleSuffix>
+        <staticLibraryPrefix>lib</staticLibraryPrefix> 
+        <staticLibrarySuffix>.a</staticLibrarySuffix>
+      </properties>
+    </profile> 
+    <profile>
+      <id>auto-mac-x86_64</id>
+      <activation>
+        <os>
+          <family>mac</family>
+          <arch>x86_64</arch>
+        </os>
+      </activation>
+      <properties>
+        <targetClassifier>mac-x86_64</targetClassifier>
+        <targetPlatform>mac</targetPlatform>
+        <targetArchitecture>x86_64</targetArchitecture>
+        <executableSuffix></executableSuffix>
+        <sharedLibraryPrefix>lib</sharedLibraryPrefix>
+        <sharedLibrarySuffix>.dylib</sharedLibrarySuffix>
+        <sharedModulePrefix>lib</sharedModulePrefix>
+        <sharedModuleSuffix>.bundle</sharedModuleSuffix>
+        <staticLibraryPrefix>lib</staticLibraryPrefix> 
+        <staticLibrarySuffix>.a</staticLibrarySuffix>
+      </properties>
+    </profile>
+        
+    <!--
+        Collection of profiles to force active target platform and architecture
+        ex: -D targetClassifier=win32
+        Declare all 'force-*' profile AFTER all 'auto-*' profile declaration
+        automated found classifier will be setted unless a better force-* profile is found
+    -->
+    <profile>
+      <id>force-win32</id>
+      <activation>
+        <property>
+          <name>targetClassifier</name>
+          <value>win32</value>
+        </property>
+      </activation>
+      <properties>
+        <targetClassifier>win32</targetClassifier>
+        <targetPlatform>win32</targetPlatform>
+        <targetArchitecture>x86</targetArchitecture>
+        <executableSuffix>.exe</executableSuffix>
+        <sharedLibraryPrefix>lib</sharedLibraryPrefix>
+        <sharedLibrarySuffix>.dll</sharedLibrarySuffix>
+        <sharedModulePrefix>lib</sharedModulePrefix>
+        <sharedModuleSuffix>.dll</sharedModuleSuffix>
+        <staticLibraryPrefix>lib</staticLibraryPrefix> 
+        <staticLibrarySuffix>.lib</staticLibrarySuffix>
+      </properties>
+    </profile>
+    <profile>
+      <id>force-win64</id>
+      <activation>
+        <property>
+          <name>targetClassifier</name>
+          <value>win64</value>
+        </property>
+      </activation>
+      <properties>
+        <targetClassifier>win64</targetClassifier>
+        <targetPlatform>win64</targetPlatform>
+        <targetArchitecture>amd64</targetArchitecture>
+        <executableSuffix>.exe</executableSuffix>
+        <sharedLibraryPrefix>lib</sharedLibraryPrefix>
+        <sharedLibrarySuffix>.dll</sharedLibrarySuffix>
+        <sharedModulePrefix>lib</sharedModulePrefix>
+        <sharedModuleSuffix>.dll</sharedModuleSuffix>
+        <staticLibraryPrefix>lib</staticLibraryPrefix> 
+        <staticLibrarySuffix>.lib</staticLibrarySuffix>
+      </properties>
+    </profile>
+    
+    <profile>
+      <id>force-linux-x86_64</id>
+      <activation>
+        <property>
+          <name>targetClassifier</name>
+          <value>linux-x86_64</value>
+        </property>
+      </activation>
+      <properties>
+        <targetClassifier>linux-x86_64</targetClassifier>
+        <targetPlatform>linux</targetPlatform>
+        <targetArchitecture>x86_64</targetArchitecture>
+        <executableSuffix></executableSuffix>
+        <sharedLibraryPrefix>lib</sharedLibraryPrefix>
+        <sharedLibrarySuffix>.so</sharedLibrarySuffix>
+        <sharedModulePrefix>lib</sharedModulePrefix>
+        <sharedModuleSuffix>.so</sharedModuleSuffix>
+        <staticLibraryPrefix>lib</staticLibraryPrefix> 
+        <staticLibrarySuffix>.a</staticLibrarySuffix>
+      </properties>
+    </profile>
+    <profile>
+      <id>force-linux-i686</id>
+      <activation>
+        <property>
+          <name>targetClassifier</name>
+          <value>linux-i686</value>
+        </property>
+      </activation>
+      <properties>
+        <targetClassifier>linux-i686</targetClassifier>
+        <targetPlatform>linux</targetPlatform>
+        <targetArchitecture>i686</targetArchitecture>
+        <executableSuffix></executableSuffix>
+        <sharedLibraryPrefix>lib</sharedLibraryPrefix>
+        <sharedLibrarySuffix>.so</sharedLibrarySuffix>
+        <sharedModulePrefix>lib</sharedModulePrefix>
+        <sharedModuleSuffix>.so</sharedModuleSuffix>
+        <staticLibraryPrefix>lib</staticLibraryPrefix> 
+        <staticLibrarySuffix>.a</staticLibrarySuffix>
+      </properties>
+    </profile>
+    
+    <profile>
+      <id>force-mac-x86_64</id>
+      <activation>
+        <property>
+          <name>targetClassifier</name>
+          <value>mac-x86_64</value>
+        </property>
+      </activation>
+      <properties>
+        <targetClassifier>mac-x86_64</targetClassifier>
+        <targetPlatform>mac</targetPlatform>
+        <targetArchitecture>x86_64</targetArchitecture>
+        <executableSuffix></executableSuffix>
+        <sharedLibraryPrefix>lib</sharedLibraryPrefix>
+        <sharedLibrarySuffix>.dylib</sharedLibrarySuffix>
+        <sharedModulePrefix>lib</sharedModulePrefix>
+        <sharedModuleSuffix>.bundle</sharedModuleSuffix>
+        <staticLibraryPrefix>lib</staticLibraryPrefix> 
+        <staticLibrarySuffix>.a</staticLibrarySuffix>
+      </properties>
+    </profile>
+    <profile>
+      <id>force-mac-i386</id>
+      <activation>
+        <property>
+          <name>targetClassifier</name>
+          <value>mac-i386</value>
+        </property>
+      </activation>
+      <properties>
+        <targetClassifier>mac-i386</targetClassifier>
+        <targetPlatform>mac</targetPlatform>
+        <targetArchitecture>i386</targetArchitecture>
+        <executableSuffix></executableSuffix>
+        <sharedLibraryPrefix>lib</sharedLibraryPrefix>
+        <sharedLibrarySuffix>.dylib</sharedLibrarySuffix>
+        <sharedModulePrefix>lib</sharedModulePrefix>
+        <sharedModuleSuffix>.bundle</sharedModuleSuffix>
+        <staticLibraryPrefix>lib</staticLibraryPrefix> 
+        <staticLibrarySuffix>.a</staticLibrarySuffix>
+      </properties>
+    </profile>
+  </profiles>
+    
+  <!-- To define dependency shared by all -->
+  <dependencyManagement>
+    <!--
+    <dependencies>
+      <dependency>
+        <groupId>fr.neticoa</groupId>
+        <artifactId>composant-a</artifactId>
+        <version>1.2.0.0</version>
+        <classifier>interface</classifier>
+        <type>zip</type>
+      </dependency>
+       
+      <dependency>
+        <groupId>fr.neticoa</groupId>
+        <artifactId>composant-a</artifactId>
+        <version>1.2.0.0</version>
+        <classifier>bin-${targetClassifier}-${buildConfig}</classifier>
+        <type>zip</type>
+      </dependency>
+       
+      <dependency>
+        <groupId>fr.neticoa</groupId>
+        <artifactId>composant-a</artifactId>
+        <version>1.2.0.0</version>
+        <classifier>bin-${targetClassifier}-${buildConfig}</classifier>
+        <type>zip</type>
+      </dependency>
+    </dependencies>
+    -->
+  </dependencyManagement>
+   
+  <build>
+    <!-- Define here your maven plugin version or in your project parent POM -->
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>cxx-maven-plugin</artifactId>
+          <version>0.0.6-SNAPSHOT</version>
+        </plugin>
+        <plugin>
+          <!-- see http://site.supose.org/doxygen-maven-plugin/ -->
+          <groupId>com.soebes.maven.plugins.dmg</groupId>
+          <artifactId>doxygen-maven-plugin</artifactId>
+          <version>1.0.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>sonar-maven-plugin</artifactId>
+          <version>2.6</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.3</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>2.10</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.7</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.7</version>
+        </plugin>
+        <plugin>
+          <artifactId>gmaven-plugin</artifactId>
+          <version>1.5</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-scm-plugin</artifactId>
+          <version>1.9.4</version>
+        </plugin>
+        <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.5.3</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <!-- Global rule for checkout or bootstrap -->
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-plugin</artifactId>
+        <configuration>
+          <checkoutDirectory>${basedir}/${project.artifactId}-${project.version}</checkoutDirectory>
+          <skipCheckoutIfExists>true</skipCheckoutIfExists>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

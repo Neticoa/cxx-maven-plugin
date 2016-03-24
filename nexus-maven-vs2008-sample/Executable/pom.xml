@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>fr.neticoa</groupId>
+    <artifactId>cpp-super-pom</artifactId>
+    <version>1.0.0.0</version>
+    <!-- an empty <relativePath> so that maven resolves the parent pom from the .m2 cache or repositories.-->
+    <relativePath></relativePath>
+  </parent>
+  
+  <groupId>fr.neticoa</groupId>
+  <!-- 'Executable' is a comming fromvisual studio 'Macro' (variable) used at pom generation -->
+  <artifactId>executable</artifactId>
+  <packaging>pom</packaging>
+  <!-- set the Solution / Main project name here -->
+  <name>Executable</name>
+  <!-- M$ version format : MAJORNUMBER.MINORNUMBER.BUILDNUMBER.MODIFICATIONNUMBER -->
+  <version>0.0.0.1</version>
+  <!--
+  Defaut version number are also located in version.inc:2
+  -->
+
+  <properties>
+    <general.excludes>
+    **/GeneratedFiles/**,
+    **/target/**,
+    </general.excludes>
+    <!-- scm for sonar todo define content -->
+    <sonar.scm.url><!--scm:svn:https://svn/svn/project/trunk--></sonar.scm.url>
+  </properties>
+  
+  <dependencies>
+    <!-- add bin and interface dependencies here -->
+    <dependency>
+      <groupId>fr.neticoa</groupId>
+      <artifactId>modulea</artifactId>
+      <version>0.0.0.1</version>
+      <classifier>interface</classifier>
+      <type>zip</type>
+    </dependency>
+    <dependency>
+      <groupId>fr.neticoa</groupId>
+      <artifactId>modulea</artifactId>
+      <version>0.0.0.1</version>
+      <classifier>bin-win32-${buildConfig}</classifier>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <!-- ToDo define plugins if used only in this pom -->
+    <pluginManagement>
+
+    </pluginManagement>
+    
+    <plugins>
+    
+      <!-- this unpack dependencies under target folder (binaries and interface) -->
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-all-dependencies</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeClassifiers>bin-win32-${buildConfig},interface</includeClassifiers>
+              <!--<outputDirectory>${project.build.directory}/dependency</outputDirectory>-->
+              <overWriteReleases>true</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <!-- this unpack dependencies under execution folder (binaries only) -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-dependencies-binaries</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <mkdir dir="${project.build.directory}/dependency"/>
+                <copy todir="${project.build.directory}/${targetPlatform}/${buildConfig}" flatten="true" overwrite="true">
+                  <fileset dir="${project.build.directory}/dependency">
+                    <include name="**/${targetPlatform}/${buildConfig}/**/*.dll"/>
+                    <include name="**/${targetPlatform}/${buildConfig}/**/*.exe"/>
+                    <include name="**/${targetPlatform}/${buildConfig}/**/*.lib"/>
+                    <include name="**/${targetPlatform}/${buildConfig}/**/*.pdb"/>
+                  </fileset>
+                </copy>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <!-- see http://site.supose.org/doxygen-maven-plugin/report-mojo.html -->
+<!--
+      <plugin>
+        <groupId>com.soebes.maven.plugins.dmg</groupId>
+        <artifactId>doxygen-maven-plugin</artifactId>
+        <version>1.0.1</version>
+        <configuration>
+          <outputDirectory>${basedir}/doxygen</outputDirectory>
+          <projectName>${project.name}</projectName>
+          <input>${project.name}</input>
+          <exclude>${general.excludes}</exclude>
+          <recursive>true</recursive>
+          <callerGraph>true</callerGraph>
+          <fullPathNames>false</fullPathNames>
+          <stripFromPath>${basedir}</stripFromPath>
+          <filePatterns>*.cxx *.h *.cpp *.c *.doxygen *.doxy</filePatterns>
+        </configuration>
+      </plugin>
+-->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cxx-maven-plugin</artifactId>
+        <executions>
+        
+          <!-- goal For sonar -->
+          <execution>
+            <id>addsource</id>
+            <goals>
+              <goal>addsource</goal>
+            </goals>
+          </execution>
+
+          <!-- this call VS cleanup process -->
+          <execution>
+            <id>clean</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>msbuild</goal>
+            </goals>
+            <configuration>
+              <solutionDir>${basedir}</solutionDir>
+              <solutionFileName>${project.name}.sln</solutionFileName>
+              <buildType>clean</buildType>
+              <buildConfig>${buildConfig}</buildConfig>
+              <targetPlatform>${targetPlatform}</targetPlatform>
+              <targetArchitecture>${targetArchitecture}</targetArchitecture>
+              <buildVersion>${project.version}</buildVersion>
+            </configuration>
+          </execution>
+        
+          <!-- this call VS build process -->
+          <execution>
+            <id>make</id>
+            <goals>
+              <goal>msbuild</goal>
+            </goals>
+            <configuration>
+              <solutionDir>${basedir}</solutionDir>
+              <solutionFileName>${project.name}.sln</solutionFileName>
+              <buildType>build</buildType>
+              <buildConfig>${buildConfig}</buildConfig>
+              <targetPlatform>${targetPlatform}</targetPlatform>
+              <targetArchitecture>${targetArchitecture}</targetArchitecture>
+              <buildVersion>${project.version}</buildVersion>
+              <compilerOptions>/DSV_BUILDEXT=\"${buildext}\"</compilerOptions>
+            </configuration>
+          </execution>
+
+          <!-- this call Unit test bash (.sh) script if any. Skip it with 'mvn -Dxunit.skiptest=true' -->
+          <execution>
+            <id>unit-test-sh</id>
+            <goals>
+              <goal>xunit</goal>
+            </goals>
+            <configuration>
+              <!-- when tests are ready remove following line -->
+              <skiptests>true</skiptests>
+              <executable>sh</executable>
+              <workingDir>${basedir}/xunit-reports</workingDir>
+              <commandArgs>"${basedir}/scripts/exec-unit-tests.sh" "${project.build.directory}/${targetPlatform}/${buildConfig}/UnitTests.exe" "${basedir}/xunit-reports/xunit-result-${project.name}.xml"</commandArgs>
+            </configuration>
+          </execution>
+
+          <!-- this call Unit test batch (.bat) script if any. Skip it with 'mvn -Dxunit.skiptest=true' -->
+          <execution>
+            <id>unit-test-bat</id>
+            <goals>
+              <goal>xunit</goal>
+            </goals>
+            <configuration>
+              <!-- when tests are ready remove following line -->
+              <skiptests>true</skiptests>
+              <executable>"${basedir}/scripts/exec-unit-tests.bat"</executable>
+              <workingDir>${basedir}/xunit-reports</workingDir>
+              <commandArgs>"${project.build.directory}/${targetPlatform}/${buildConfig}/UnitTests.exe" "${basedir}/xunit-reports/xunit-result-${project.name}.xml"</commandArgs>
+            </configuration>
+          </execution>
+
+          <!-- this call cppcheck test process -->
+          <!-- when cppcheck is available activate following block -->
+          <!--
+          <execution>
+            <id>cppcheck</id>
+            <goals>
+              <goal>cppcheck</goal>
+            </goals>
+            <configuration>
+             
+              <excludes>${general.excludes}</excludes>
+              <reportIdentifier>${project.name}</reportIdentifier>
+            </configuration>
+          </execution>
+          -->
+          
+          <!-- this call vera++ test process -->
+          <!-- when vera++ is available activate following block -->
+          <!--
+          <execution>
+            <id>veraxx</id>
+            <goals>
+              <goal>veraxx</goal>
+            </goals>
+            <configuration>
+              <excludes>${general.excludes}</excludes>
+              <reportIdentifier>${project.name}</reportIdentifier>
+            </configuration>
+          </execution>
+          -->
+          
+          <!-- custom package process -->
+<!--              
+          <execution>
+            <id>package</id>
+            <phase>package</phase>
+            <goals>
+              <goal>launch</goal>
+            </goals>
+            <configuration>
+              <executable>${basedir}/scripts/package.bat</executable>
+              <workingDir>${basedir}</workingDir>
+              <commandArgs>"${basedir}" ${project.version}</commandArgs>
+            </configuration>
+          </execution>
+-->   
+        </executions>
+<!-- main configuration node is mainly used by sonar cxx sensor -->
+        <configuration>
+<!-- <sourceDirs> is used by cppcheck, cppncss and veraxx goal to identify source files -->
+<!-- <sourceDirs> is also used by sonar cxx sensor to identify source files -->
+          <sourceDirs>
+            <!-- always start with ${basedir} in order identify correctly resources during sonar analysies -->
+            <sourceDir>${basedir}/${project.name}</sourceDir>
+            <!-- add Subproject directories here -->
+            <!--<sourceDir>${basedir}/${project.name}/subdir1</sourceDir>
+            <sourceDir>${basedir}/${project.name}/subdir2</sourceDir>
+            <sourceDir>${basedir}/${project.name}/subdir3</sourceDir>
+            <sourceDir>${basedir}/${project.name}/subdir4</sourceDir>
+            <sourceDir>${basedir}/${project.name}/subdir5</sourceDir>
+            <sourceDir>${basedir}/${project.name}/subdir6</sourceDir>-->
+          </sourceDirs>
+        </configuration>
+      </plugin>
+      
+      <!-- this buil binaries and interface assemblies (.zip) -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+          <descriptor>bin-assembly.xml</descriptor>
+          <descriptor>interface-assembly.xml</descriptor> <!-- this assembly contains the public interface (.h files) -->
+          <descriptor>source-assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      
+    </plugins>
+  </build>
+</project>

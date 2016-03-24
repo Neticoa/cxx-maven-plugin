@@ -1,0 +1,45 @@
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+#include "maven_version.inc"
+#include "maven_version_tools.inc"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION SV_MAJORNUMBER,SV_MINORNUMBER,SV_BUILDNUMBER,SV_MODIFICATIONNUMBER
+ PRODUCTVERSION SV_MAJORNUMBER,SV_MINORNUMBER,SV_BUILDNUMBER,SV_MODIFICATIONNUMBER
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "000004b0"
+        BEGIN
+            VALUE "Comments", "Executable"
+            VALUE "CompanyName", "Neticoa"
+            VALUE "FileDescription", "Executable"
+            VALUE "FileVersion", "1.0.0"
+            VALUE "InternalName", "Executable"
+            VALUE "LegalCopyright", "Copyright (C) Neticoa 2013-" STRINGIZE(SV_DATEYEAR) 
+            VALUE "PrivateBuild", ""
+            VALUE "OriginalFilename", "Executable.exe" 
+            VALUE "ProductName", "Executable"
+            VALUE "ProductVersion", SV_FULLVERSION_STR
+            VALUE "SpecialBuild", SV_BUILDEXT
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0, 1200
+    END
+END
+
+// don't forget empty end line:
