@@ -1,0 +1,10 @@
+org.apache.maven.plugin.cxx
+org.apache.maven.plugin.cxx.utils
+org.apache.maven.plugin.cxx.utils.svn
+org.codehaus.plexus.archiver
+org.codehaus.plexus.archiver.bzip2
+org.codehaus.plexus.archiver.gzip
+org.codehaus.plexus.archiver.manager
+org.codehaus.plexus.archiver.snappy
+org.codehaus.plexus.archiver.tar
+org.codehaus.plexus.archiver.zip

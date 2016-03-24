@@ -1,0 +1,670 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<rss version="0.91">
+  <channel>
+    <title>cxx-maven-plugin Maven Mojo - Checkstyle report</title>
+    <link>https://github.com/franckbonin/cxx-maven-plugin</link>
+    <description>cxx-maven-plugin Maven Mojo - Checkstyle report</description>
+    <language>en-us</language>
+    <copyright>&#169;2010 - 2016 Neticoa SAS</copyright>
+    <item>
+      <title>File: 44,
+             Errors: 24,
+             Warnings: 158,
+             Infos: 20
+      </title>
+            <link>https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html</link>
+      <description>
+        <p>Click <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html">here</a> for the full Checkstyle report.</p>
+
+        <table summary="Files" boder="1">
+          <thead>
+            <tr>
+              <th>Files</th>
+              <th style="width:30px;"><abbr title="Info">I</abbr></th>
+              <th style="width:30px;"><abbr title="Warning">W</abbr></th>
+              <th style="width:30px;"><abbr title="Error">E</abbr></th>
+            </tr>
+          </thead>
+          <tbody>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.ScmDependenciesMojo.java">org/apache/maven/plugin/cxx/ScmDependenciesMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  6
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.utils.svn.SvnExternalsEntries.java">org/apache/maven/plugin/cxx/utils/svn/SvnExternalsEntries.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.UnpackDependenciesMojo.java">org/apache/maven/plugin/cxx/UnpackDependenciesMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  5
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.utils.Action.java">org/apache/maven/plugin/cxx/utils/Action.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.plexus.archiver.tar.TarArchiveContentLister.java">org/codehaus/plexus/archiver/tar/TarArchiveContentLister.java</a>
+                </td>
+                <td>
+                  4
+                </td>
+                <td>
+                  4
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.plexus.archiver.zip.ZipArchiveContentLister.java">org/codehaus/plexus/archiver/zip/ZipArchiveContentLister.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.MakeMojo.java">org/apache/maven/plugin/cxx/MakeMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.XUnitMojo.java">org/apache/maven/plugin/cxx/XUnitMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.plexus.archiver.manager.ArchiveContentListerManager.java">org/codehaus/plexus/archiver/manager/ArchiveContentListerManager.java</a>
+                </td>
+                <td>
+                  1
+                </td>
+                <td>
+                  2
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.plexus.archiver.tar.TarBZip2ArchiveContentLister.java">org/codehaus/plexus/archiver/tar/TarBZip2ArchiveContentLister.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.plexus.archiver.zip.AbstractZipArchiveContentLister.java">org/codehaus/plexus/archiver/zip/AbstractZipArchiveContentLister.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  4
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.CoverageMojo.java">org/apache/maven/plugin/cxx/CoverageMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.CppCheckMojo.java">org/apache/maven/plugin/cxx/CppCheckMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.utils.FileSetManager.java">org/apache/maven/plugin/cxx/utils/FileSetManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  4
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.plexus.archiver.AbstractArchiveContentLister.java">org/codehaus/plexus/archiver/AbstractArchiveContentLister.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  10
+                </td>
+                <td>
+                  4
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.plexus.archiver.snappy.SnappyArchiveContentLister.java">org/codehaus/plexus/archiver/snappy/SnappyArchiveContentLister.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  6
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.utils.Automate.java">org/apache/maven/plugin/cxx/utils/Automate.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  19
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.AddSourceMojo.java">org/apache/maven/plugin/cxx/AddSourceMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.utils.ActionExecutor.java">org/apache/maven/plugin/cxx/utils/ActionExecutor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.utils.ExecutorService.java">org/apache/maven/plugin/cxx/utils/ExecutorService.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.utils.SourceTarget.java">org/apache/maven/plugin/cxx/utils/SourceTarget.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.ValgrindMojo.java">org/apache/maven/plugin/cxx/ValgrindMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.utils.AutomateException.java">org/apache/maven/plugin/cxx/utils/AutomateException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.AbstractLaunchMojo.java">org/apache/maven/plugin/cxx/AbstractLaunchMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  15
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.utils.svn.SvnInfo.java">org/apache/maven/plugin/cxx/utils/svn/SvnInfo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  7
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.VisualStudioMojo.java">org/apache/maven/plugin/cxx/VisualStudioMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.VeraxxMojo.java">org/apache/maven/plugin/cxx/VeraxxMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.utils.svn.SvnExternalEntry.java">org/apache/maven/plugin/cxx/utils/svn/SvnExternalEntry.java</a>
+                </td>
+                <td>
+                  4
+                </td>
+                <td>
+                  2
+                </td>
+                <td>
+                  4
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.plexus.archiver.manager.DefaultArchiveContentListerManager.java">org/codehaus/plexus/archiver/manager/DefaultArchiveContentListerManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  3
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.plexus.archiver.bzip2.BZip2ArchiveContentLister.java">org/codehaus/plexus/archiver/bzip2/BZip2ArchiveContentLister.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  6
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.CMakeMojo.java">org/apache/maven/plugin/cxx/CMakeMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  12
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.plexus.archiver.tar.TarGZipArchiveContentLister.java">org/codehaus/plexus/archiver/tar/TarGZipArchiveContentLister.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.plexus.archiver.tar.TarSnappyArchiveContentLister.java">org/codehaus/plexus/archiver/tar/TarSnappyArchiveContentLister.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.utils.Credential.java">org/apache/maven/plugin/cxx/utils/Credential.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  5
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.GenerateMojo.java">org/apache/maven/plugin/cxx/GenerateMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.QMakeMojo.java">org/apache/maven/plugin/cxx/QMakeMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  1
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.utils.ClassifierRegexFilter.java">org/apache/maven/plugin/cxx/utils/ClassifierRegexFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.plexus.archiver.ArchiveContentLister.java">org/codehaus/plexus/archiver/ArchiveContentLister.java</a>
+                </td>
+                <td>
+                  1
+                </td>
+                <td>
+                  6
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.CppNcssMojo.java">org/apache/maven/plugin/cxx/CppNcssMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.utils.svn.SvnService.java">org/apache/maven/plugin/cxx/utils/svn/SvnService.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  4
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.LaunchMojo.java">org/apache/maven/plugin/cxx/LaunchMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.apache.maven.plugin.cxx.utils.svn.SvnExternalsTokenizer.java">org/apache/maven/plugin/cxx/utils/svn/SvnExternalsTokenizer.java</a>
+                </td>
+                <td>
+                  6
+                </td>
+                <td>
+                  5
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.plexus.archiver.gzip.GZipArchiveContentLister.java">org/codehaus/plexus/archiver/gzip/GZipArchiveContentLister.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  6
+                </td>
+                <td>
+                  1
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/franckbonin/cxx-maven-plugin/checkstyle.html#org.codehaus.plexus.archiver.ArchiveContentEntry.java">org/codehaus/plexus/archiver/ArchiveContentEntry.java</a>
+                </td>
+                <td>
+                  4
+                </td>
+                <td>
+                  3
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                      </tbody>
+        </table>
+        
+      </description>
+    </item>
+  </channel>
+</rss>
+
