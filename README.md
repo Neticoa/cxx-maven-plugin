@@ -25,9 +25,13 @@
 ## Examples
 * [Master POM](https://github.com/Neticoa/cxx-maven-plugin/tree/gh-pages/neticoa.fr/pom.xml)
 
-* [VS sample](https://github.com/Neticoa/cxx-maven-plugin/tree/gh-pages/nexus-maven-vs2008-sample)
+* [VS sample](https://github.com/Neticoa/cxx-maven-plugin/tree/gh-pages/nexus-maven-vs2008-sample) 
+ * usage : mvn \<install|deploy> -D buildConfig=\<debug|release>
+ * VS IDE integrated usage need a dedicated VS add-in, contact NETICOA for availability.
 
 * [CMake sample](https://github.com/Neticoa/cxx-maven-plugin/tree/gh-pages/nexus-maven-cmake-sample)
+  * usage : mvn \<install|deploy> -D buildConfig=\<debug|release> to create all artefacts
+  * mvn \<install|deploy> will manage only POM artefacts for sources SCM scenario
 
 ## Old examples
 * [pom sample](http://neticoa.github.io/cxx-maven-plugin/SAMPLE-OLD/pom.xml)
