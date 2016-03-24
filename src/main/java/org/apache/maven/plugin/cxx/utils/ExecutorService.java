@@ -49,9 +49,9 @@ public class ExecutorService
     {
         File execFile = new File( executableName );
         String exec = null;
-        if ( execFile.exists() )
+        if ( execFile.exists() && execFile.isFile() && execFile.canExecute() )
         {
-            //getLog().debug( "Toolchains are ignored, 'executable' parameter is set to " + executableName );
+            //getLog().debug( "Toolchains are ignored, 'executable' parameter is set to " + execFile.getAbsolutePath() );
             exec = execFile.getAbsolutePath();
         }
         else
