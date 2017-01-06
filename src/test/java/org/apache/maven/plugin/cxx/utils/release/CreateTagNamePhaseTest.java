@@ -1,5 +1,4 @@
 package org.apache.maven.plugin.cxx.utils.release;
-//package org.apache.maven.shared.release.phase;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

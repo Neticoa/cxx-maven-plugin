@@ -18,13 +18,6 @@ package org.apache.maven.plugin.cxx.utils.release;
  *
  */
  
-import java.util.List;
-import org.apache.maven.shared.release.env.ReleaseEnvironment;
-import org.apache.maven.shared.release.ReleaseResult;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-
 /**
  * 
  * @author Franck Bonin
@@ -32,18 +25,7 @@ import org.apache.maven.plugin.MojoFailureException;
  * @plexus.component role="org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase" role-hint="ScmBranchPhase"
  */
 public class ScmBranchPhase
-    extends CxxAbstractReleasePhase
+    extends CxxAbstractMavenReleasePluginPhase
 {
-    @Override
-    public ReleaseResult run( CxxReleaseDescriptor releaseDescriptor, ReleaseEnvironment releaseEnvironment,
-                         List<MavenProject> reactorProjects )
-        throws MojoExecutionException, MojoFailureException
-    {
-        ReleaseResult result = new ReleaseResult();
-        
-        logInfo( result, "TODO" );
-        
-        return result;
-    }
 }
 

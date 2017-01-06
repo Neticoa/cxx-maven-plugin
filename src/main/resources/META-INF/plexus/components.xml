@@ -40,15 +40,25 @@ limitations under the License.
           MapReleaseVersionsPhase         DONE : fill releaseVersions MAP (map-release-versions) + new artifactId if needed  
           MapBranchVersionsPhase          DONE : fill releaseVersions MAP (map-branch-versions) + new artifactId if needed 
           MapDeveloppementVersionsPhase   DONE : fill developmentVersions MAP (map-development-versions) 
-          ScmBranchPhase                  TODO <=> maven release plugin scm-branch + extract branch 
+          ScmBranchPhase                  TODO <=> maven release plugin scm-branch  
           RewritePomsForBranchPhase       TODO <=> maven release plugin rewrite-poms-for-branch + change artefactId if needed 
-          CopyPomsIntoBranchPhase         TODO 
+                                                   idea : subclass maven release plugin RewritePomsForBranchPhase class
+                                                        + override transformScm method : call parent then do something like
+                                                        rewriteElement( "artifactId", newArtifactId, scmRoot, namespace );
+          CopyPomsIntoBranchPhase         TODO <=> NEW !!! extract branch to releasedescriptior.checkoutDirectory
+                                                  (= workingDirectory Mojo config, default set to ${project.build.directory}/checkout,
+                                                  see checkout-project-from-scm) + COPY POM files into it
           ScmCommitReleasePhase           TODO <=> maven release plugin scm-commit-release 
-          ScmCommitBranchPhase            TODO <~=> maven release plugin scm-commit-branch on extracted branch 
+          ScmCommitBranchPhase            TODO <~=> maven release plugin scm-commit-branch !! on extracted branch !!
+                                                   idea : call execute() or simulate() with a list of MavenProject pointing to
+                                                        branch POM files
           ScmCommitDevelopmentPhase       TODO <=> maven release plugin scm-commit-development 
           RestoreBackupPomsPhase          TODO <=> maven release plugin restore-backup-poms 
           RewritePomsForDevelopmentPhase  TODO <=> maven release plugin rewrite-poms-for-development 
           RewritePomsForReleasePhase      TODO <=> maven release plugin rewrite-poms-for-release + change artefactId if needed
+                                                   idea : subclass maven release plugin RewritePomsForReleasePhase class
+                                                        + override transformScm method : call parent then do something like
+                                                        rewriteElement( "artifactId", newArtifactId, scmRoot, namespace );
           RewriteOtherPomPhase            TODO LATER
           CreateTagNamePhase              DONE <=> maven release plugin input-variables phase, fill ScmReleaseLabel field 
           ScmTagPhase                     TODO <=> maven release plugin scm-tag 
@@ -80,7 +90,7 @@ limitations under the License.
           <phase>ScmSavPhase</phase>
           <phase>RewriteOtherPomPhase</phase>-->
           
-          <!-- starting from a Tag(read-only), we create a Branch (or a Trunk) with new version and artifactId if needed -->
+          <!-- starting from a Tag(read-only), a trunk or a branch, we create a branch with new version and artifactId if needed -->
           <!-- V2 -->
           <phase>PreCheckPomPhase</phase>               <!-- DONE -->
           <phase>ScmCheckModificationPhase</phase>      <!-- DONE -->
@@ -296,6 +306,16 @@ limitations under the License.
       <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
       <role-hint>ScmBranchPhase</role-hint>
       <implementation>org.apache.maven.plugin.cxx.utils.release.ScmBranchPhase</implementation>
+      <configuration>
+        <forceDryRun>true</forceDryRun>
+      </configuration>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.shared.release.phase.ReleasePhase</role>
+          <field-name>mavenReleasePhase</field-name>
+          <role-hint>scm-branch</role-hint>
+        </requirement>
+      </requirements>   
     </component>
     
     <component>
