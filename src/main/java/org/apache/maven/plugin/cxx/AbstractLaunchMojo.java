@@ -18,7 +18,6 @@ package org.apache.maven.plugin.cxx;
  *
  */
 
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.File;
@@ -40,29 +39,13 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.Executor;
 
-import org.apache.maven.plugins.annotations.Parameter;
-
 /**
  * Common mojo stuff to launch external tools
  *
  * @author Franck Bonin
  */
-public abstract class AbstractLaunchMojo extends AbstractMojo
-{
-    /**
-    * Current Project
-    */
-    @Parameter( property = "project" )
-    protected org.apache.maven.project.MavenProject project;
-
-     /**
-     * Pom directory location
-     * 
-     * @since 0.0.4
-     */
-    @Parameter( property = "basedir", readonly = true, required = true )
-    protected File basedir;
-    
+public abstract class AbstractLaunchMojo extends AbstractCxxMojo
+{    
     protected abstract List<String> getArgsList();
     
     protected abstract String getCommandArgs();

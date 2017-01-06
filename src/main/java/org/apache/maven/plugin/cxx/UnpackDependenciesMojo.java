@@ -36,7 +36,7 @@ import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 /* rewrite of  UnpackDependenciesMojo from maven-dependency plugin, goal 'unpack-dependencies' */
 //import org.apache.maven.plugin.dependency.fromDependencies.AbstractFromDependenciesMojo;
 
-import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;

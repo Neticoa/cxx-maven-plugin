@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashSet;
 
-import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.util.StringUtils;
 
 /* Use enhanced FileSet and FileManager (not the one provided in this project)*/
 import org.apache.maven.shared.model.fileset.FileSet;

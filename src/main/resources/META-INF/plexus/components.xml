@@ -21,6 +21,113 @@ limitations under the License.
   <components>
     
     <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleaseManager</role>
+      <role-hint>default</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.DefaultCxxReleaseManager</implementation>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+          <field-name>phases</field-name>
+        </requirement>
+      </requirements>
+      <configuration>
+        <branchPhases>
+          <!-- in maven-release-plugin :
+          <phase>check-poms</phase>
+          <phase>scm-check-modifications</phase>
+          <phase>create-backup-poms</phase>
+          <phase>map-branch-versions</phase>
+          <phase>map-development-versions</phase>
+          <phase>rewrite-poms-for-branch</phase>
+          <phase>scm-commit-branch</phase>
+          <phase>scm-branch</phase>
+          <phase>rewrite-poms-for-development</phase>
+          <phase>scm-commit-development</phase>
+          <phase>end-release</phase>
+          -->
+          <!-- V1
+          <phase>PreCheckPomPhase</phase>
+          <phase>ScmCheckModificationPhase</phase>
+          <phase>CreateBackupPomsPhase</phase>
+          <phase>VersionPhase</phase>
+          <phase>ScmCopyPhase</phase>
+          <phase>SwitchToCopyPhase</phase>
+          <phase>RewritePomPhase</phase>
+          <phase>ScmSavPhase</phase>
+          <phase>RewriteOtherPomPhase</phase>-->
+          
+          <!-- starting from a Tag(read-only), we create a Branch (or a Trunk) with new version and artifactId if needed -->
+          <!-- V2 -->
+          <phase>PreCheckPomPhase</phase> <!-- <=> maven release plugin scm-check-modifications phase + custom checks-->
+          <phase>ScmCheckModificationPhase</phase> <!-- <=> maven release plugin scm-check-modifications phase -->
+          <phase>CheckDependencySnapshotsPhase</phase> <!-- <=> maven release plugin check-dependency-snapshots phase -->
+          <phase>CreateBackupPomsPhase</phase> <!-- <=> maven release plugin create-backup-poms phase -->
+          <phase>MapBranchVersionsPhase</phase> <!-- fill releaseVersions MAP (map-branch-versions) + TODO MAP of new artifactId if needed-->
+          <phase>MapDeveloppementVersionsPhase</phase> <!-- fill developmentVersions MAP (map-development-versions) -->
+          <phase>ScmBranchPhase</phase> <!-- <=> maven release plugin scm-branch + extract branch -->
+          <phase>RewritePomsForBranchPhase</phase> <!-- <=> maven release plugin rewrite-poms-for-branch + TODO change artefactId if needed-->
+          <phase>CopyPomsIntoBranchPhase</phase> <!-- TODO -->
+          <phase>ScmCommitBranchPhase</phase> <!-- ~<=> maven release plugin scm-commit-branch on extracted branch -->
+          <phase>RestoreBackupPomsPhase</phase> <!-- <=> maven release plugin restore-backup-poms -->
+          <phase>RewritePomsForDevelopmentPhase</phase> <!-- <=> maven release plugin rewrite-poms-for-development -->
+          <!--<phase>RewriteOtherPomPhase</phase>--> <!-- TODO -->
+          
+        </branchPhases>
+        <releasePhases>
+          <!-- in maven-release-plugin :
+          <phase>check-poms</phase>
+          <phase>scm-check-modifications</phase>
+          <phase>check-dependency-snapshots</phase>
+          <phase>create-backup-poms</phase>
+          <phase>map-release-versions</phase>
+          <phase>input-variables</phase>
+          <phase>map-development-versions</phase>
+          <phase>rewrite-poms-for-release</phase>
+          <phase>generate-release-poms</phase>
+          <phase>run-preparation-goals</phase>
+          <phase>scm-commit-release</phase>
+          <phase>scm-tag</phase>
+          <phase>rewrite-poms-for-development</phase>
+          <phase>remove-release-poms</phase>
+          <phase>run-completion-goals</phase>
+          <phase>scm-commit-development</phase>
+          <phase>end-release</phase>
+          -->
+          <!-- V1
+          <phase>PreCheckPomPhase</phase>
+          <phase>ScmCheckModificationPhase</phase>
+          <phase>VersionPhase</phase>
+          <phase>RewritePomPhase</phase>
+          <phase>ScmSavPhase</phase>
+          <phase>ScmCopyPhase</phase>
+          <phase>RestorePomPhase</phase>
+          <phase>RewriteOtherPomPhase</phase>-->
+          
+          <!-- starting from a Branch or Trunk, we create a tag with new version if needed, then we 
+               change version in originate Branch or Trunk-->
+          <!-- V2 -->
+          <phase>PreCheckPomPhase</phase> <!-- <=> maven release plugin scm-check-modifications phase + custom checks -->
+          <phase>ScmCheckModificationPhase</phase> <!-- <=> maven release plugin scm-check-modifications phase -->
+          <phase>CheckDependencySnapshotsPhase</phase> <!-- <=> maven release plugin check-dependency-snapshots phase -->
+          <phase>CreateBackupPomsPhase</phase> <!-- <=> maven release plugin create-backup-poms phase -->
+          <phase>MapReleaseVersionsPhase</phase> <!-- fill releaseVersions MAP (map-release-versions) -->
+          <phase>MapDeveloppementVersionsPhase</phase> <!-- fill developmentVersions MAP (map-development-versions) -->
+          <phase>CreateTagNamePhase</phase> <!-- <=> maven release plugin input-variables phase, fill ScmReleaseLabel field -->
+          <phase>RewritePomsForReleasePhase</phase> <!-- <=> maven release plugin rewrite-poms-for-release -->
+          <!--<phase>generate-release-poms</phase>--> <!-- TO NOT DO ? -->
+          <phase>ScmCommitReleasePhase</phase> <!-- <=> maven release plugin scm-commit-release -->
+          <phase>ScmTagPhase</phase> <!-- <=> maven release plugin scm-tag -->
+          <phase>RewritePomsForDevelopmentPhase</phase> <!-- <=> maven release plugin rewrite-poms-for-development -->
+          <!--<phase>remove-release-poms</phase>--> <!-- TO NOT DO ? -->
+          <phase>ScmCommitDevelopmentPhase</phase>  <!-- <=> maven release plugin scm-commit-development -->
+          <!--<phase>RewriteOtherPomPhase</phase> --> <!-- TODO -->
+          <!--<phase>DeleteBackupPomsPhase</phase> -->  <!-- TO NOT DO ? -->
+          
+        </releasePhases>
+      </configuration>
+    </component>
+    
+    <component>
       <role>org.sonatype.plexus.components.sec.dispatcher.SecDispatcher</role>
       <role-hint>mng-4384</role-hint>
       <implementation>org.sonatype.plexus.components.sec.dispatcher.DefaultSecDispatcher</implementation>
@@ -35,10 +142,236 @@ limitations under the License.
         <_configuration-file>~/.m2/settings-security.xml</_configuration-file>
       </configuration>
     </component>
+    
     <component>
       <role>org.sonatype.plexus.components.cipher.PlexusCipher</role>
       <role-hint>mng-4384</role-hint>
       <implementation>org.sonatype.plexus.components.cipher.DefaultPlexusCipher</implementation>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>PreCheckPomPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.PreCheckPomPhase</implementation>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.shared.release.phase.ReleasePhase</role>
+          <field-name>mavenReleasePhase</field-name>
+          <role-hint>cxx-check-poms</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.sonatype.plexus.components.sec.dispatcher.SecDispatcher</role>
+          <field-name>secDispatcher</field-name>
+          <role-hint>mng-4384</role-hint>
+        </requirement>        
+      </requirements>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxVersionPolicy</role>
+      <role-hint>default</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.DefaultCxxVersionPolicy</implementation>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>ScmCheckModificationPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.ScmCheckModificationPhase</implementation>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.shared.release.phase.ReleasePhase</role>
+          <field-name>mavenReleasePhase</field-name>
+          <role-hint>scm-check-modifications</role-hint>
+        </requirement>
+      </requirements>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>CheckDependencySnapshotsPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.CheckDependencySnapshotsPhase</implementation>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.shared.release.phase.ReleasePhase</role>
+          <field-name>mavenReleasePhase</field-name>
+          <role-hint>check-dependency-snapshots</role-hint>
+        </requirement>
+      </requirements>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>CreateBackupPomsPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.CreateBackupPomsPhase</implementation>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.shared.release.phase.ReleasePhase</role>
+          <field-name>mavenReleasePhase</field-name>
+          <role-hint>create-backup-poms</role-hint>
+        </requirement>
+      </requirements>      
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>MapBranchVersionsPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.MapVersionsPhase</implementation>
+      <configuration>
+        <convertToSnapshot>true</convertToSnapshot>
+        <convertToBranch>true</convertToBranch>
+        <mode>branch</mode>
+      </configuration>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.components.interactivity.Prompter</role>
+          <role-hint>default</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.plugin.cxx.utils.release.CxxVersionPolicy</role>
+          <field-name>versionPolicies</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>MapDeveloppementVersionsPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.MapVersionsPhase</implementation>
+      <configuration>
+        <convertToSnapshot>true</convertToSnapshot>
+        <convertToBranch>false</convertToBranch>
+        <mode>dev</mode>
+      </configuration>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.components.interactivity.Prompter</role>
+          <role-hint>default</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.plugin.cxx.utils.release.CxxVersionPolicy</role>
+          <field-name>versionPolicies</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>MapReleaseVersionsPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.MapVersionsPhase</implementation>
+    </component>
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>MapReleaseVersionsPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.MapVersionsPhase</implementation>
+      <configuration>
+        <convertToSnapshot>false</convertToSnapshot>
+        <convertToBranch>false</convertToBranch>
+        <mode>release</mode>
+      </configuration>
+      <requirements>
+        <requirement>
+          <role>org.codehaus.plexus.components.interactivity.Prompter</role>
+          <role-hint>default</role-hint>
+        </requirement>
+        <requirement>
+          <role>org.apache.maven.plugin.cxx.utils.release.CxxVersionPolicy</role>
+          <field-name>versionPolicies</field-name>
+        </requirement>
+      </requirements>
+    </component>
+        
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>ScmBranchPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.ScmBranchPhase</implementation>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>ScmTagPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.ScmTagPhase</implementation>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>CopyPomsIntoBranchPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.CopyPomsIntoBranchPhase</implementation>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>RewritePomsForBranchPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.RewritePomsForBranchPhase</implementation>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>RewritePomsForDevelopmentPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.RewritePomsForDevelopmentPhase</implementation>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>RewritePomsForReleasePhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.RewritePomsForReleasePhase</implementation>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>ScmCommitBranchPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.ScmCommitBranchPhase</implementation>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>ScmCommitDevelopmentPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.ScmCommitDevelopmentPhase</implementation>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>ScmCommitReleasePhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.ScmCommitReleasePhase</implementation>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>RestoreBackupPomsPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.RestoreBackupPomsPhase</implementation>
+    </component> 
+<!--    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>RewriteOtherPomPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.RewriteOtherPomPhase</implementation>
+    </component> 
+-->        
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>CheckDependencySnapshotsPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.CheckDependencySnapshotsPhase</implementation>
+    </component>
+     
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>CreateTagNamePhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.CreateTagNamePhase</implementation>
+    </component>    
+
+    <!-- Tuned maven-release components -->
+    <component>
+      <role>org.apache.maven.shared.release.phase.ReleasePhase</role>
+      <role-hint>cxx-check-poms</role-hint>
+      <implementation>org.apache.maven.shared.release.phase.CheckPomPhase</implementation>
+      <configuration>
+        <scmRequired>true</scmRequired>
+        <snapshotsRequired>false</snapshotsRequired>
+      </configuration>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.shared.release.scm.ScmRepositoryConfigurator</role>
+        </requirement>
+      </requirements>
     </component>
     
     <!--

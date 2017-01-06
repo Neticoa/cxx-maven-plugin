@@ -18,7 +18,7 @@ package org.apache.maven.plugin.cxx.utils.svn;
  *
  */
  
-import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.util.StringUtils;
 
 /**
  * svn 

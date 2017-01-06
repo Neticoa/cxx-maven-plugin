@@ -22,7 +22,7 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.util.StringUtils;
 
 /**
  * 

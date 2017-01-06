@@ -38,7 +38,7 @@ import java.text.StringCharacterIterator;
  
 import org.apache.commons.exec.CommandLine;
 
-import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.util.StringUtils;
  
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;

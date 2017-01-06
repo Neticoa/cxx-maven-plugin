@@ -23,9 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.project.MavenProject;
-
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -38,7 +35,7 @@ import org.apache.maven.plugins.annotations.Parameter;
  * @since 0.0.5
  */
 @Mojo( name = "addsource", defaultPhase = LifecyclePhase.INITIALIZE, threadSafe = true )
-public class AddSourceMojo extends AbstractMojo
+public class AddSourceMojo extends AbstractCxxMojo
 {
     /**
      * directory were sources are
@@ -48,11 +45,6 @@ public class AddSourceMojo extends AbstractMojo
     @Parameter()
     private List sourceDirs = new ArrayList();
 
-    /**
-     * @since 0.0.5
-     */
-    @Parameter( property = "project", readonly = true, required = true )
-    private MavenProject project;
 
     @Override
     public void execute()

@@ -23,7 +23,7 @@ import java.io.File;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import org.codehaus.plexus.util.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.util.StringUtils;
 
 public class LaunchMojoTest
     extends AbstractCxxMojoTestCase

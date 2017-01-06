@@ -33,7 +33,7 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 
-import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,8 +41,6 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.Properties;
-import java.net.URL;
-import java.net.MalformedURLException;
 
 import org.apache.maven.shared.artifact.filter.collection.ArtifactFilterException;
 import org.apache.maven.plugin.cxx.utils.ClassifierRegexFilter;
@@ -66,7 +64,6 @@ import org.apache.maven.plugin.cxx.utils.svn.SvnInfo;
 import org.apache.maven.plugin.cxx.utils.svn.SvnExternalEntry;
 import org.apache.maven.plugin.cxx.utils.svn.SvnExternalsEntries;
 
-import org.apache.maven.settings.Server;
 import org.apache.maven.settings.Settings;
 // require Maven 3 API :
 /*import org.apache.maven.settings.crypto.DefaultSettingsDecryptionRequest;
@@ -74,7 +71,6 @@ import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.settings.crypto.SettingsDecryptionRequest;
 import org.apache.maven.settings.crypto.SettingsDecryptionResult;*/
 import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
-import org.sonatype.plexus.components.sec.dispatcher.SecDispatcherException;
 
 /**
  * Goal that retrieve source dependencies from the SCM.
@@ -396,89 +392,7 @@ public class ScmDependenciesMojo
         final SettingsDecryptionResult decrypt = settingsDecrypter.decrypt( settingsDecryptionRequest );
         return decrypt.getServers();
     }*/
-        
-    /**
-     * Load username password from settings if user has not set them in JVM properties
-     * 
-     * @see http://blog.sonatype.com/2009/10/maven-tips-and-tricks-encrypting-passwords
-     * 
-     * origin : derived from org.apache.maven.scm.plugin.AbstractScmMojo::loadInfosFromSettings()
-     *
-     * @param url not null
-     */
-    private Credential loadInfosFromSettings( String url /*ScmProviderRepositoryWithHost repo*/ )
-    {
-        Credential ret = new Credential( username, password );
-        if ( username == null || password == null )
-        {
-            String host = settingsServerId;
-            if ( StringUtils.isEmpty( host ) )
-            {
-                URL aURL = null;
-                try
-                {
-                    aURL = new URL( url );
-                }
-                catch ( MalformedURLException e )
-                {
-                    getLog().warn( "Failed to parse url '" + url
-                        + "' while trying to find associated maven credentials info from maven settings" );
-                    return ret;
-                }
 
-                host = /*repo*/aURL.getHost();
-
-                int port = /*repo*/aURL.getPort();
-
-                if ( port > 0 )
-                {
-                    host += ":" + port;
-                }
-            }
-
-            Server server = this.settings.getServer( host );
-
-            if ( server != null )
-            {
-                if ( username == null )
-                {
-                    //username = server.getUsername();
-                    ret.setUsername( server.getUsername() );
-                }
-
-                if ( password == null )
-                {
-                    //password = decrypt( server.getPassword(), host );
-                    ret.setPassword( decrypt( server.getPassword(), host ) );
-                }
-
-                /*if ( privateKey == null )
-                {
-                    privateKey = server.getPrivateKey();
-                }
-
-                if ( passphrase == null )
-                {
-                    passphrase = decrypt( server.getPassphrase(), host );
-                }*/
-            }
-        }
-        return ret;
-    }
-
-    private String decrypt( String str, String server )
-    {
-        try
-        {
-            return secDispatcher.decrypt( str );
-        }
-        catch ( SecDispatcherException e )
-        {
-            getLog().warn( "Failed to decrypt password/passphrase for server " + server + ", using auth token as is" );
-            return str;
-        }
-    }
-    
     SvnExternalEntry buildExternalEntryFromProvidedInfos( String targetDir, Artifact artifact,
         MavenProject dependencyProject, SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
     {
@@ -686,9 +600,11 @@ public class ScmDependenciesMojo
                     
                     getLog().info( "Svn initial externals are '" + externalsEntries.values().toString() + "'" );
                 }
-                
-                SvnInfo dependencySvnInfo = SvnService.getSvnInfo( basedir,
-                    loadInfosFromSettings( dependencySvnUri ), dependencySvnUri, getLog(), false );
+                Credential credential = Credential.createCredential(
+                    dependencySvnUri, username, password, settingsServerId, settings, secDispatcher, getLog() );
+                    
+                SvnInfo dependencySvnInfo = SvnService.getSvnInfo( basedir, credential, dependencySvnUri,
+                    getLog(), false );
                 
                 if ( ! dependencySvnInfo.isValide() )
                 {

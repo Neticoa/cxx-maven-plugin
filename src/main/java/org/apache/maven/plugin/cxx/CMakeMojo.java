@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 import java.util.Set;
 import java.util.Properties;
 
-import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.util.StringUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.exec.CommandLine;

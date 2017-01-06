@@ -33,7 +33,7 @@ import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.OS;
 import org.apache.commons.exec.PumpStreamHandler;
-import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Executor service
@@ -51,7 +51,7 @@ public class ExecutorService
         String exec = null;
         if ( execFile.exists() && execFile.isFile() && execFile.canExecute() )
         {
-            //getLog().debug( "Toolchains are ignored, 'executable' parameter is set to " + execFile.getAbsolutePath() );
+          //getLog().debug( "Toolchains are ignored, 'executable' parameter is set to " + execFile.getAbsolutePath() );
             exec = execFile.getAbsolutePath();
         }
         else

@@ -19,11 +19,8 @@ package org.apache.maven.plugin.cxx;
  */
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.util.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
-import org.apache.maven.execution.MavenSession;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.ContextEnabled;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -70,10 +67,9 @@ import org.apache.maven.plugin.cxx.utils.svn.SvnInfo;
 @Mojo( name = "generate", requiresProject = false )
 @Execute( phase = LifecyclePhase.GENERATE_SOURCES )
 public class GenerateMojo
-    extends AbstractMojo
+    extends AbstractCxxMojo
     implements ContextEnabled
 {
-
     /**
      * The archetype's artifactId 
      * {cmake-cpp-project | source-project | aggregator-pom | project-parent-pom | cpp-super-pom }
@@ -97,27 +93,6 @@ public class GenerateMojo
      */
     @Parameter( property = "archetypeVersion", defaultValue = "0.1" )
     private String archetypeVersion;
-    
-    /**
-     * Pom directory location
-     * @since 0.0.6
-     */
-    @Parameter( defaultValue = "${basedir}", readonly = true, required = true )
-    private File basedir;
-
-    /**
-     * Pom directory location
-     * 
-     * @since 0.0.6
-     */
-    @Parameter( defaultValue = "${session}", readonly = true, required = true )
-    private MavenSession session;
-    
-    /**
-     * @since 0.0.5
-     */
-    @Parameter( defaultValue = "${project}", readonly = true, required = true )
-    private MavenProject project;
     
     /**
      * The generated pom parent groupId.
