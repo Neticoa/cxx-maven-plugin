@@ -110,5 +110,12 @@ public class PerformBranchMojo
         releaseManager.setLog( getLog() );
         
         releaseManager.branch( createReleaseDescriptor(), getReleaseEnvironment(), reactorProjects );
+        
+        /* require maven API 3 or more :
+        org.apache.maven.execution.MavenExecutionResult result = session.getResult();
+        for ( MavenProject subProject : reactorProjects )
+        {
+            result.addBuildSummary( new org.apache.maven.execution.BuildSuccess( subProject, 0 ) );
+        }*/
     }
 }

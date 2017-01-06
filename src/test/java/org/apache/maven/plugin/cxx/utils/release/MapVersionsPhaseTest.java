@@ -54,6 +54,20 @@ import org.apache.maven.plugin.logging.Log;
 public class MapVersionsPhaseTest
     extends PlexusTestCase
 {
+    /* !IMPORTANT! see
+     * https://codehaus-plexus.github.io/guides/developer-guide/building-components/component-testing.html:
+     * 
+     * Normal [component discovery] is performed during the initialization of the test case.
+     * It means that if your component descriptor was already added to /META-INF/plexus/components.xml file it
+     * will be visible during tests.
+     *
+     * In case when you want to override the defaults, the only thing you have to do is to create new xml file
+     * having the name which matches the class name but with extentinon ".xml". This file must be placed in
+     * !!the same package!! as the test class and be visible in the unit test's classpath.
+     * 
+     * In case of "DefaultHelloWorldTest" the file should be named "DefaultHelloWorldTest.xml" and placed under the
+     * right folder hierarchie
+     */
     private static final String TEST_MAP_BRANCH_VERSIONS = "TestMapBranchVersionsPhase";
     private static final String TEST_MAP_DEVELOPMENT_VERSIONS = "TestMapDeveloppementVersionsPhase";
     private static final String TEST_MAP_RELEASE_VERSIONS = "TestMapReleaseVersionsPhase";

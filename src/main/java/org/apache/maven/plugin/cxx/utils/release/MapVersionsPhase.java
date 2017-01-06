@@ -159,7 +159,8 @@ public class MapVersionsPhase
                     
                 if ( subProjectId.equals( projectId ) ) 
                 {
-                    logInfo( result, "skip re-versionning \"" + subProjectId + "\" since it is the main root project :\"" + projectId + "\"" );
+                    logInfo( result, "skip re-versionning \"" + subProjectId 
+                        + "\" since it is the main root project :\"" + projectId + "\"" );
                     continue;
                 }
 
@@ -222,12 +223,12 @@ public class MapVersionsPhase
                 {
                     if ( releaseDescriptor.isBranchCreation() && convertToBranch )
                     {
-                        logInfo( result, "(branch & snapshot) " + projectId + " next version will be " + nextVersion );
+                        logInfo( result,  + projectId + " next version will be " + nextVersion );
                         releaseDescriptor.mapReleaseVersion( projectId, nextVersion );
                     }
                     else
                     {
-                        logInfo( result, "(snapshot) " + projectId + " next development version will be " + nextVersion );
+                        logInfo( result, projectId + " next development version will be " + nextVersion );
                         releaseDescriptor.mapDevelopmentVersion( projectId, nextVersion );
                     }
                 }
@@ -290,10 +291,13 @@ public class MapVersionsPhase
             // no branch version modification
             if ( !releaseDescriptor.isUpdateBranchVersions() )
             {
-                logInfo( result, "next branch version for " + projectId + " shall stay current version : " + project.getVersion() );
+                logInfo( result, "next branch version for " + projectId
+                    + " shall stay current version : " + project.getVersion() );
                 return project.getVersion();
             }
-            logInfo( result, "UpdateBranchVersion flag set, search for a previously provided branch version for " + projectId );
+            logInfo( result, 
+                "UpdateBranchVersion flag set, search for a previously provided branch version for "
+                + projectId );
             
             snapshotNeeded = releaseDescriptor.isUpdateVersionsToSnapshot();
 
@@ -306,10 +310,13 @@ public class MapVersionsPhase
             // no working copy modification
             if ( !releaseDescriptor.isUpdateWorkingCopyVersions() )
             {
-                logInfo( result, "next dev version for " + projectId + " shall stay current version : " + project.getVersion() );
+                logInfo( result, "next dev version for " + projectId 
+                    + " shall stay current version : " + project.getVersion() );
                 return project.getVersion();
             }
-            logInfo( result, "UpdateWorkingCopyVersions flag set, search for a previously provided dev version for " + projectId );
+            logInfo( result,
+                "UpdateWorkingCopyVersions flag set, search for a previously provided dev version for "
+                + projectId );
             
             snapshotNeeded = releaseDescriptor.isSnapshotDevelopmentVersion();
             
@@ -356,7 +363,9 @@ public class MapVersionsPhase
                     if ( baseVersion == null )
                     {
                         baseVersion = project.getVersion();
-                        logInfo( result, "unspecified and unmapped version, so use project version as base for suggestion : " + baseVersion );
+                        logInfo( result, 
+                            "unspecified and unmapped version, so use project version as base for suggestion : "
+                            + baseVersion );
                     }
 
                     try
@@ -417,7 +426,8 @@ public class MapVersionsPhase
         return nextVersion;
     }
 
-    private String resolveSuggestedVersion( boolean convertToSnapshot, boolean nextSnapShot, String baseVersion, String policyId )
+    private String resolveSuggestedVersion( boolean convertToSnapshot, boolean nextSnapShot,
+        String baseVersion, String policyId )
         throws PolicyException, VersionParseException
     {
         CxxVersionPolicy policy = versionPolicies.get( policyId );
@@ -426,10 +436,10 @@ public class MapVersionsPhase
         //return convertToSnapshot ? policy.getDevelopmentVersion( request ).getVersion()
         //                : policy.getReleaseVersion( request ).getVersion();
         return nextSnapShot ? policy.getSnapshotVersion( request ).getVersion() // next snapshot version only
-                : convertToSnapshot ? policy.getDevelopmentVersion( request ).getVersion() // current snapshot version
-                : ( mode == Mode.dev ) ? policy.getBranchVersion( request ).getVersion() // no snapshot, just next version
-                : ( mode == Mode.branch ) ? policy.getBranchVersion( request ).getVersion()
-                : policy.getReleaseVersion( request ).getVersion(); // no snapshot, just cleaned-up current version
+            : convertToSnapshot ? policy.getDevelopmentVersion( request ).getVersion() // current snapshot version
+            : ( mode == Mode.dev ) ? policy.getBranchVersion( request ).getVersion() // no snapshot, just next version
+            : ( mode == Mode.branch ) ? policy.getBranchVersion( request ).getVersion()
+            : policy.getReleaseVersion( request ).getVersion(); // no snapshot, just cleaned-up current version
     }
 
     private String getDevelopmentVersion( String projectId, ReleaseDescriptor releaseDescriptor )

@@ -145,8 +145,9 @@ public abstract class AbstractPerformBranchReleaseMojo
      *   - the user will be prompted for each submodules version 
      *     if settings.isInteractiveMode()/-B,--batch-mode flag not set
      *   - auto-computed if !settings.isInteractiveMode()/-B,--batch-mode flag set
-     * Submodule version are updates only if they are child of main module, according to SCM tree.
-     * Only and only if :
+     * !!PLUS!! :
+     * Submodule version are updated only if they are "real" child of main module, according to SCM tree.
+     * Aka. Only and only if :
      *   - submodule dir is under scm configuration
      *   - submodule dir is not an external dir
      *   - (futur ?) submodule dir is an external dir AND settings.isInteractiveMode()/-B,--batch-mode flag not set

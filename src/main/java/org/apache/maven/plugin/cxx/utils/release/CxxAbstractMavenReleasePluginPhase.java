@@ -40,6 +40,16 @@ public abstract class CxxAbstractMavenReleasePluginPhase
      * component loaded with plexus, see components.xml
      */
     private org.apache.maven.shared.release.phase.ReleasePhase mavenReleasePhase;
+    
+    org.apache.maven.shared.release.phase.ReleasePhase getMavenReleasePhase()
+    {
+        return mavenReleasePhase;
+    }
+    
+    /**
+     * forceDryRun settable with plexus, see components.xml
+     */
+    private boolean forceDryRun = false;
   
     @Override
     public ReleaseResult run( CxxReleaseDescriptor releaseDescriptor, ReleaseEnvironment releaseEnvironment,
@@ -52,7 +62,7 @@ public abstract class CxxAbstractMavenReleasePluginPhase
         {   
             if ( null != mavenReleasePhase )
             {                
-                if ( releaseDescriptor.getDryRun() )
+                if ( releaseDescriptor.getDryRun() || forceDryRun )
                 {
                      result = mavenReleasePhase.simulate( releaseDescriptor, releaseEnvironment, reactorProjects );
                 }
@@ -68,11 +78,11 @@ public abstract class CxxAbstractMavenReleasePluginPhase
         }
         catch ( ReleaseExecutionException e )
         {
-            throw new MojoExecutionException( e.toString() );
+            throw new MojoExecutionException( e.toString(), e.getCause() );
         }
         catch ( ReleaseFailureException e )
         {
-            throw new MojoFailureException( e.toString() );
+            throw new MojoFailureException( e.toString(), e.getCause() );
         }
         
         return result;

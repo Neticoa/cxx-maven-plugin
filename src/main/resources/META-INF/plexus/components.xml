@@ -31,6 +31,30 @@ limitations under the License.
         </requirement>
       </requirements>
       <configuration>
+        <!--
+        ALL PHASE STATUS !
+          PreCheckPomPhase                DONE <=> maven release plugin scm-check-modifications phase + custom checks + filter project 
+          ScmCheckModificationPhase       DONE <=> maven release plugin scm-check-modifications phase 
+          CheckDependencySnapshotsPhase   DONE <=> maven release plugin check-dependency-snapshots phase 
+          CreateBackupPomsPhase           DONE <=> maven release plugin create-backup-poms phase 
+          MapReleaseVersionsPhase         DONE : fill releaseVersions MAP (map-release-versions) + new artifactId if needed  
+          MapBranchVersionsPhase          DONE : fill releaseVersions MAP (map-branch-versions) + new artifactId if needed 
+          MapDeveloppementVersionsPhase   DONE : fill developmentVersions MAP (map-development-versions) 
+          ScmBranchPhase                  TODO <=> maven release plugin scm-branch + extract branch 
+          RewritePomsForBranchPhase       TODO <=> maven release plugin rewrite-poms-for-branch + change artefactId if needed 
+          CopyPomsIntoBranchPhase         TODO 
+          ScmCommitReleasePhase           TODO <=> maven release plugin scm-commit-release 
+          ScmCommitBranchPhase            TODO <~=> maven release plugin scm-commit-branch on extracted branch 
+          ScmCommitDevelopmentPhase       TODO <=> maven release plugin scm-commit-development 
+          RestoreBackupPomsPhase          TODO <=> maven release plugin restore-backup-poms 
+          RewritePomsForDevelopmentPhase  TODO <=> maven release plugin rewrite-poms-for-development 
+          RewritePomsForReleasePhase      TODO <=> maven release plugin rewrite-poms-for-release + change artefactId if needed
+          RewriteOtherPomPhase            TODO LATER
+          CreateTagNamePhase              DONE <=> maven release plugin input-variables phase, fill ScmReleaseLabel field 
+          ScmTagPhase                     TODO <=> maven release plugin scm-tag 
+          generate-release-poms           TO NOT DO ? 
+          remove-release-poms             TO NOT DO ? 
+        -->
         <branchPhases>
           <!-- in maven-release-plugin :
           <phase>check-poms</phase>
@@ -58,19 +82,19 @@ limitations under the License.
           
           <!-- starting from a Tag(read-only), we create a Branch (or a Trunk) with new version and artifactId if needed -->
           <!-- V2 -->
-          <phase>PreCheckPomPhase</phase> <!-- DONE <=> maven release plugin scm-check-modifications phase + custom checks-->
-          <phase>ScmCheckModificationPhase</phase> <!--  DONE <=> maven release plugin scm-check-modifications phase -->
-          <phase>CheckDependencySnapshotsPhase</phase> <!-- DONE <=> maven release plugin check-dependency-snapshots phase -->
-          <phase>CreateBackupPomsPhase</phase> <!-- DONE <=> maven release plugin create-backup-poms phase -->
-          <phase>MapBranchVersionsPhase</phase> <!-- IN-PROGRESS : fill releaseVersions MAP (map-branch-versions) + new artifactId if needed -->
-          <phase>MapDeveloppementVersionsPhase</phase> <!-- DONE : fill developmentVersions MAP (map-development-versions) -->
-          <phase>ScmBranchPhase</phase> <!--TODO <=> maven release plugin scm-branch + extract branch -->
-          <phase>RewritePomsForBranchPhase</phase> <!-- TODO<=> maven release plugin rewrite-poms-for-branch + change artefactId if needed -->
-          <phase>CopyPomsIntoBranchPhase</phase> <!-- TODO -->
-          <phase>ScmCommitBranchPhase</phase> <!-- TODO ~<=> maven release plugin scm-commit-branch on extracted branch -->
-          <phase>RestoreBackupPomsPhase</phase> <!-- TODO <=> maven release plugin restore-backup-poms -->
-          <phase>RewritePomsForDevelopmentPhase</phase> <!-- TODO <=> maven release plugin rewrite-poms-for-development -->
-          <!--<phase>RewriteOtherPomPhase</phase>--> <!-- TODO LATER -->
+          <phase>PreCheckPomPhase</phase>               <!-- DONE -->
+          <phase>ScmCheckModificationPhase</phase>      <!-- DONE -->
+          <phase>CheckDependencySnapshotsPhase</phase>  <!-- DONE -->
+          <phase>CreateBackupPomsPhase</phase>          <!-- DONE -->
+          <phase>MapBranchVersionsPhase</phase>         <!-- DONE -->
+          <phase>MapDeveloppementVersionsPhase</phase>  <!-- DONE -->
+          <phase>ScmBranchPhase</phase>                 <!-- TODO -->
+          <phase>RewritePomsForBranchPhase</phase>      <!-- TODO -->
+          <phase>CopyPomsIntoBranchPhase</phase>        <!-- TODO -->
+          <phase>ScmCommitBranchPhase</phase>           <!-- TODO -->
+          <phase>RestoreBackupPomsPhase</phase>         <!-- TODO -->
+          <phase>RewritePomsForDevelopmentPhase</phase> <!-- TODO -->
+          <!--<phase>RewriteOtherPomPhase</phase>-->    <!-- TODO LATER -->
           
         </branchPhases>
         <releasePhases>
@@ -106,21 +130,21 @@ limitations under the License.
           <!-- starting from a Branch or Trunk, we create a tag with new version if needed, then we 
                change version in originate Branch or Trunk-->
           <!-- V2 -->
-          <phase>PreCheckPomPhase</phase> <!-- DONE <=> maven release plugin scm-check-modifications phase + custom checks -->
-          <phase>ScmCheckModificationPhase</phase> <!-- DONE <=> maven release plugin scm-check-modifications phase -->
-          <phase>CheckDependencySnapshotsPhase</phase> <!-- DONE <=> maven release plugin check-dependency-snapshots phase -->
-          <phase>CreateBackupPomsPhase</phase> <!-- DONE <=> maven release plugin create-backup-poms phase -->
-          <phase>MapReleaseVersionsPhase</phase> <!-- IN-PROGRESS : fill releaseVersions MAP (map-release-versions) + new artifactId if needed  -->
-          <phase>MapDeveloppementVersionsPhase</phase> <!-- DONE : fill developmentVersions MAP (map-development-versions) -->
-          <phase>CreateTagNamePhase</phase> <!-- TODO <=> maven release plugin input-variables phase, fill ScmReleaseLabel field -->
-          <phase>RewritePomsForReleasePhase</phase> <!-- TODO <=> maven release plugin rewrite-poms-for-release + change artefactId if needed-->
-          <!--<phase>generate-release-poms</phase>--> <!-- TO NOT DO ? -->
-          <phase>ScmCommitReleasePhase</phase> <!-- TODO <=> maven release plugin scm-commit-release -->
-          <phase>ScmTagPhase</phase> <!-- TODO <=> maven release plugin scm-tag -->
-          <phase>RewritePomsForDevelopmentPhase</phase> <!-- TODO <=> maven release plugin rewrite-poms-for-development -->
-          <!--<phase>remove-release-poms</phase>--> <!-- TO NOT DO ? -->
-          <phase>ScmCommitDevelopmentPhase</phase>  <!-- TODO <=> maven release plugin scm-commit-development -->
-          <!--<phase>RewriteOtherPomPhase</phase> --> <!-- TODO LATER -->
+          <phase>PreCheckPomPhase</phase>               <!-- DONE -->
+          <phase>ScmCheckModificationPhase</phase>      <!-- DONE -->
+          <phase>CheckDependencySnapshotsPhase</phase>  <!-- DONE -->
+          <phase>CreateBackupPomsPhase</phase>          <!-- DONE -->
+          <phase>MapReleaseVersionsPhase</phase>        <!-- DONE -->
+          <phase>MapDeveloppementVersionsPhase</phase>  <!-- DONE -->
+          <phase>CreateTagNamePhase</phase>             <!-- DONE -->
+          <phase>RewritePomsForReleasePhase</phase>     <!-- TODO -->
+          <!--<phase>generate-release-poms</phase>-->   <!-- TO NOT DO ? -->
+          <phase>ScmCommitReleasePhase</phase>          <!-- TODO -->
+          <phase>ScmTagPhase</phase>                    <!-- TODO -->
+          <phase>RewritePomsForDevelopmentPhase</phase> <!-- TODO-->
+          <!--<phase>remove-release-poms</phase>-->     <!-- TO NOT DO ? -->
+          <phase>ScmCommitDevelopmentPhase</phase>      <!-- TODO -->
+          <!--<phase>RewriteOtherPomPhase</phase> -->   <!-- TODO LATER -->
                     
         </releasePhases>
       </configuration>
@@ -344,6 +368,13 @@ limitations under the License.
       <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
       <role-hint>CreateTagNamePhase</role-hint>
       <implementation>org.apache.maven.plugin.cxx.utils.release.CreateTagNamePhase</implementation>
+      <requirements>
+        <requirement>
+          <role>org.apache.maven.shared.release.phase.ReleasePhase</role>
+          <field-name>mavenReleasePhase</field-name>
+          <role-hint>input-variables</role-hint>
+        </requirement>
+      </requirements>      
     </component>    
 
     <!-- Tuned maven-release components -->
