@@ -19,10 +19,8 @@ package org.apache.maven.plugin.cxx.utils.release;
  */
 
 import org.apache.maven.shared.release.policy.PolicyException;
-import org.apache.maven.shared.release.policy.version.VersionPolicy;
 import org.apache.maven.shared.release.policy.version.VersionPolicyRequest;
 import org.apache.maven.shared.release.policy.version.VersionPolicyResult;
-import org.apache.maven.shared.release.versions.DefaultVersionInfo;
 import org.apache.maven.shared.release.versions.VersionParseException;
 /**
  * An enhanced VersionPolicy interface.
@@ -37,15 +35,15 @@ public interface CxxVersionPolicy
      */
     String ROLE = CxxVersionPolicy.class.getName();
 
-    public VersionPolicyResult getReleaseVersion( VersionPolicyRequest request )
+    VersionPolicyResult getReleaseVersion( VersionPolicyRequest request )
         throws PolicyException, VersionParseException;
         
-    public VersionPolicyResult getBranchVersion( VersionPolicyRequest request )
+    VersionPolicyResult getBranchVersion( VersionPolicyRequest request )
         throws PolicyException, VersionParseException;
         
-    public VersionPolicyResult getSnapshotVersion( VersionPolicyRequest request )
+    VersionPolicyResult getSnapshotVersion( VersionPolicyRequest request )
         throws PolicyException, VersionParseException;
 
-    public VersionPolicyResult getDevelopmentVersion( VersionPolicyRequest request )
+    VersionPolicyResult getDevelopmentVersion( VersionPolicyRequest request )
         throws PolicyException, VersionParseException;
 }

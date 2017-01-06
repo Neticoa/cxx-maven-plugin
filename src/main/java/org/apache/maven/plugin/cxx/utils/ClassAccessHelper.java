@@ -38,7 +38,7 @@ public class ClassAccessHelper
             Object value = field.get( o );
             if ( null != value && cls.isInstance( value ) )
             {
-                return (T)value;
+                return (T) value;
             }
         }
         return null;

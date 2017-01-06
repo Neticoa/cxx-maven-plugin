@@ -279,6 +279,16 @@ limitations under the License.
     </pluginManagement>
 
     <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-Xmx256m</argLine>
+          <systemPropertyVariables>
+            <settings.security>${project.build.testOutputDirectory}/settings-security.xml</settings.security>
+            <injectedMavenHome>${maven.home}</injectedMavenHome>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
       <!-- 
       [INFO] Restricted to JDK 1.5 yet org.xerial.snappy:snappy-java:jar:1.1.1.6:compile contains org/xerial/snappy/OSInfo.class targeted to JDK 1.6
       [WARNING] Rule 0: org.apache.maven.plugins.enforcer.EnforceBytecodeVersion failed with message:
@@ -409,6 +419,12 @@ limitations under the License.
     	<groupId>org.python</groupId>
     	<artifactId>jython</artifactId>
     	<version>2.5.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>1.9.5</version>
+      <scope>test</scope>
     </dependency>
 
     <!-- 

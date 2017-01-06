@@ -34,6 +34,13 @@ import org.apache.maven.plugin.cxx.utils.release.CxxReleaseDescriptor;
 public class PerformReleaseMojo
     extends AbstractPerformBranchReleaseMojo
 {
+    /**
+     * Whether to update versions in the working copy.
+     *
+     * @since 0.0.6
+     */
+    @Parameter( defaultValue = "true", property = "updateWorkingCopyVersions" )
+    private boolean updateWorkingCopyVersions;
   
     /**
      * Default version to use when preparing a release.
@@ -84,7 +91,7 @@ public class PerformReleaseMojo
         //descriptor.setCommitByProject( commitByProject ); // TODO ?
         //descriptor.setAllowTimestampedSnapshots( allowTimestampedSnapshots );// TODO ?
         descriptor.setDefaultReleaseVersion( releaseVersion ); // version to tag
-        
+        descriptor.setUpdateWorkingCopyVersions( updateWorkingCopyVersions ); // activate defaultDevelopmentVersion
         /*descriptor.setScmCommentPrefix( scmCommentPrefix );
         descriptor.setPushChanges( pushChanges );*/
 

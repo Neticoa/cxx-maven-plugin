@@ -18,21 +18,11 @@ package org.apache.maven.plugin.cxx.utils.release;
  *
  */
 
-import java.util.List;
-import org.apache.maven.shared.release.env.ReleaseEnvironment;
-import org.apache.maven.shared.release.ReleaseResult;
-import org.apache.maven.shared.release.ReleaseExecutionException;
-import org.apache.maven.shared.release.ReleaseFailureException;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-
-import org.codehaus.plexus.component.annotations.Component;
-
 /**
  * 
- *
- * @author 
+ * @author Franck Bonin
+ * 
+ * @plexus.component role="org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase" role-hint="ScmCheckModificationPhase"
  */
 public class ScmCheckModificationPhase
     extends CxxAbstractMavenReleasePluginPhase

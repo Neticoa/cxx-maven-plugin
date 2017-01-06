@@ -18,17 +18,11 @@ package org.apache.maven.plugin.cxx.utils.release;
  *
  */
 
-import java.util.List;
-import org.apache.maven.shared.release.env.ReleaseEnvironment;
-import org.apache.maven.shared.release.ReleaseResult;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
-
 /**
  * 
- *
- * @author 
+ * @author Franck Bonin
+ * 
+ * @plexus.component role="org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase" role-hint="CreateBackupPomsPhase"
  */
 public class CreateBackupPomsPhase
     extends CxxAbstractMavenReleasePluginPhase

@@ -28,6 +28,13 @@ import org.apache.maven.shared.release.env.ReleaseEnvironment;
 import org.apache.maven.shared.release.ReleaseResult;
 import org.apache.maven.plugin.logging.Log;
 
+
+/**
+ * 
+ * @author Franck Bonin
+ * 
+ * @plexus.component role="org.apache.maven.plugin.cxx.utils.release.CxxReleaseManager" role-hint="default"
+ */
 public class DefaultCxxReleaseManager
     implements CxxReleaseManager
 {

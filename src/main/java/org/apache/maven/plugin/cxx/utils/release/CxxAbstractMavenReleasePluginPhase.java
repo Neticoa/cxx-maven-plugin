@@ -27,12 +27,10 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
-import org.codehaus.plexus.component.annotations.Component;
-
 /**
  * 
  *
- * @author 
+ * @author Franck bonin
  */
 public abstract class CxxAbstractMavenReleasePluginPhase
     extends CxxAbstractReleasePhase
@@ -82,7 +80,7 @@ public abstract class CxxAbstractMavenReleasePluginPhase
     
     public ReleaseResult clean( List<MavenProject> reactorProjects )
     {
-        if (null != mavenReleasePhase )
+        if ( null != mavenReleasePhase )
         {
             return mavenReleasePhase.clean( reactorProjects );
         }

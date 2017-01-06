@@ -36,8 +36,9 @@ import org.apache.maven.plugin.cxx.utils.svn.SvnInfo;
 
 /**
  * 
- *
- * @author 
+ * @author Franck Bonin
+ * 
+ * @plexus.component role="org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase" role-hint="PreCheckPomPhase"
  */
 public class PreCheckPomPhase
     extends CxxAbstractMavenReleasePluginPhase

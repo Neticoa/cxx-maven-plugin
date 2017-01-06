@@ -20,7 +20,7 @@ package org.apache.maven.plugin.cxx.utils.release;
  
 import org.apache.maven.shared.release.config.ReleaseDescriptor;
 
-/*
+/**
  * 
  * 
  * ReleaseDescriptor :
@@ -39,8 +39,8 @@ MAP resolvedSnapshotDependencies = MAP qui transforme les versions des dépenden
                              valeur1 = string (la version release à tagger ou brancher)
                              Cle2 "ReleaseDescriptor.DEVELOPMENT_KEY"
                              valeur2 = string (la version dev à laquelle revenir apres le tag ou la branche)
- */
-
+ * @author Franck bonin
+ **/
 public class CxxReleaseDescriptor extends ReleaseDescriptor
 {
     /**

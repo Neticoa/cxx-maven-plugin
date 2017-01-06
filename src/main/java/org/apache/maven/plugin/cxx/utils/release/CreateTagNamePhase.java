@@ -27,8 +27,9 @@ import org.apache.maven.plugin.MojoFailureException;
 
 /**
  * 
- *
- * @author 
+ * @author Franck Bonin
+ * 
+ * @plexus.component role="org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase" role-hint="CreateTagNamePhase"
  */
 public class CreateTagNamePhase
     extends CxxAbstractReleasePhase

@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--
+Copyright (C) 2011-2016, Neticoa SAS France - Tous droits réservés.
+Author(s) : Franck Bonin, Neticoa SAS France
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<component-set>
+  <components>
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>TestMapBranchVersionsPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.MapVersionsPhase</implementation>
+      <configuration>
+        <mode>branch</mode>
+        <logger>test</logger>
+      </configuration>
+      <requirements>
+        <!--<requirement>
+          <role>org.codehaus.plexus.components.interactivity.Prompter</role>
+          <role-hint>default</role-hint>
+        </requirement>-->
+        <requirement>
+          <role>org.apache.maven.plugin.cxx.utils.release.CxxVersionPolicy</role>
+          <field-name>versionPolicies</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>TestMapDeveloppementVersionsPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.MapVersionsPhase</implementation>
+      <configuration>
+        <mode>dev</mode>
+        <logger>test</logger>
+      </configuration>
+      <requirements>
+        <!--<requirement>
+          <role>org.codehaus.plexus.components.interactivity.Prompter</role>
+          <role-hint>default</role-hint>
+        </requirement>-->
+        <requirement>
+          <role>org.apache.maven.plugin.cxx.utils.release.CxxVersionPolicy</role>
+          <field-name>versionPolicies</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxReleasePhase</role>
+      <role-hint>TestMapReleaseVersionsPhase</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.MapVersionsPhase</implementation>
+      <configuration>
+        <mode>release</mode>
+        <logger>test</logger>
+      </configuration>
+      <requirements>
+        <!--<requirement>
+          <role>org.codehaus.plexus.components.interactivity.Prompter</role>
+          <role-hint>default</role-hint>
+        </requirement>-->
+        <requirement>
+          <role>org.apache.maven.plugin.cxx.utils.release.CxxVersionPolicy</role>
+          <field-name>versionPolicies</field-name>
+        </requirement>
+      </requirements>
+    </component>
+    <!-- Turn off info messages 
+    <component>
+      <role>org.codehaus.plexus.logging.LoggerManager</role>
+      <implementation>org.codehaus.plexus.logging.console.ConsoleLoggerManager</implementation>
+      <lifecycle-handler>basic</lifecycle-handler>
+      <configuration>
+        <threshold>ERROR</threshold>
+      </configuration>
+    </component>-->
+    <component>
+      <role>org.apache.maven.plugin.cxx.utils.release.CxxVersionPolicy</role>
+      <role-hint>default</role-hint>
+      <implementation>org.apache.maven.plugin.cxx.utils.release.DefaultCxxVersionPolicy</implementation>
+    </component>
+    <!-- For now always use default version policy 
+    <component>
+      <role>org.apache.maven.shared.release.policy.version.VersionPolicy</role>
+      <role-hint>default</role-hint>
+      <implementation>org.apache.maven.shared.release.policies.DefaultVersionPolicy</implementation>
+      <isolated-realm>false</isolated-realm>
+    </component>-->
+  </components>
+</component-set>

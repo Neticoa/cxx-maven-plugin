@@ -116,15 +116,7 @@ public abstract class AbstractPerformBranchReleaseMojo
     /**********************************************************************************************/
     /**********************************************************************************************/
     /**********************************************************************************************/
-    
-    /**
-     * Whether to update versions in the working copy.
-     *
-     * @since 0.0.6
-     */
-    @Parameter( defaultValue = "false", property = "updateWorkingCopyVersions" )
-    private boolean updateWorkingCopyVersions;
-    
+       
     /**
      * Specify the new version for the working copy.
      * This parameter is only meaningful if {@link #updateWorkingCopyVersions} = {@code true}.
@@ -234,7 +226,6 @@ public abstract class AbstractPerformBranchReleaseMojo
         descriptor.setUpdateDependencies( updateDependencies );
         descriptor.setAddSchema( addSchema );
         descriptor.setCheckoutDirectory( workingDirectory.getAbsolutePath() );
-        descriptor.setUpdateWorkingCopyVersions( updateWorkingCopyVersions ); // activate defaultDevelopmentVersion
         descriptor.setDefaultDevelopmentVersion( developmentVersion ); // version to fallback after tag or branch
         descriptor.setSnapshotDevelopmentVersion( snapshotDevelopmentVersion ); // developmentVersion shall be a SnapShot version
         //descriptor.setProjectVersionPolicyId( projectVersionPolicyId ); // TODO ?

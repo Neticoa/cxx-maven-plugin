@@ -36,6 +36,14 @@ public class PerformBranchMojo
     extends AbstractPerformBranchReleaseMojo
 {
     /**
+     * Whether to update versions in the working copy.
+     *
+     * @since 0.0.6
+     */
+    @Parameter( defaultValue = "false", property = "updateWorkingCopyVersions" )
+    private boolean updateWorkingCopyVersions;
+  
+    /**
      * Whether to update versions in the branch.
      *
      * @since 0.0.6
@@ -90,7 +98,8 @@ public class PerformBranchMojo
         descriptor.setBranchCreation( true );
         descriptor.setDefaultReleaseVersion( branchVersion ); // version to branch
         descriptor.setUpdateBranchVersions( updateBranchVersions ); // needed by defaultReleaseVersion
-
+        descriptor.setUpdateWorkingCopyVersions( updateWorkingCopyVersions ); // activate defaultDevelopmentVersion
+        
         return descriptor;
     }
     

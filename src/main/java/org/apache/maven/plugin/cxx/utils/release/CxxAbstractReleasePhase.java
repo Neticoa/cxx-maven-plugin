@@ -55,6 +55,13 @@ public abstract class CxxAbstractReleasePhase
         this.log = log;
     }
     
+    public void setLogger( String name )
+    {
+        this.log = new org.apache.maven.monitor.logging.DefaultLog( 
+            new org.codehaus.plexus.logging.console.ConsoleLogger( 
+                org.codehaus.plexus.logging.console.ConsoleLogger.LEVEL_INFO, name ) );
+    }
+    
     public ReleaseResult clean( List<MavenProject> reactorProjects )
     {
         // nothing to do by default

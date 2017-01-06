@@ -29,7 +29,6 @@ import org.apache.maven.shared.release.ReleaseResult;
 import org.apache.maven.shared.release.config.ReleaseDescriptor;
 import org.apache.maven.shared.release.env.ReleaseEnvironment;
 import org.apache.maven.shared.release.policy.PolicyException;
-import org.apache.maven.shared.release.policy.version.VersionPolicy;
 import org.apache.maven.shared.release.policy.version.VersionPolicyRequest;
 import org.apache.maven.shared.release.util.ReleaseUtil;
 import org.apache.maven.shared.release.versions.VersionParseException;
@@ -63,33 +62,32 @@ import org.apache.maven.plugin.MojoFailureException;
  *   </tr>
  * </table>
  *
- * @author <a href="mailto:brett@apache.org">Brett Porter</a>
- * @author Robert Scholte
+ * @author Franck Bonin
  */
 public class MapVersionsPhase
     extends CxxAbstractMavenReleasePluginPhase
 {
     private ResourceBundle resourceBundle;
-
-    /**
-     * Whether to convert input versions to a snapshot or a release versions.
-     */
-    //private boolean convertToSnapshot;
-
-    /**
-     * branch special case.
-     */
-    //private boolean convertToBranch;
     
-    enum Mode { release, branch, dev };  
+    enum Mode
+    { 
+        release,
+        branch,
+        dev
+    };
     
     private Mode mode = Mode.release;
+    
+    
+    public void setMode( String mode )
+    {
+        this.mode = Mode.valueOf( mode );
+    }
 
     /**
      * Component used to prompt for input.
      */
     private Prompter prompter;
-
 
     /**
      * Component used for custom or default version policy
@@ -114,8 +112,10 @@ public class MapVersionsPhase
 
         MavenProject rootProject = ReleaseUtil.getRootProject( reactorProjects );
 
-        if ( releaseDescriptor.isAutoVersionSubmodules() && ArtifactUtils.isSnapshot( rootProject.getVersion() ) )
+        //if ( releaseDescriptor.isAutoVersionSubmodules() && ArtifactUtils.isSnapshot( rootProject.getVersion() ) )
+        if ( releaseDescriptor.isAutoVersionSubmodules() )
         {
+            logInfo( result, "Sub-Module Auto Versionning mode" );
             // get the root project
             MavenProject project = rootProject;
 
@@ -123,8 +123,6 @@ public class MapVersionsPhase
 
             String nextVersion = resolveNextVersion( project, projectId, releaseDescriptor, result );
 
-            logInfo( result, "Sub-Module Auto Versionning mode since main component had a Snapshot version ("
-                    + rootProject.getVersion() + ")" );
             /*if ( convertToSnapshot )
             {
                 if ( releaseDescriptor.isBranchCreation() && convertToBranch )
@@ -143,7 +141,7 @@ public class MapVersionsPhase
                 logInfo( result, projectId + " next version will be " + nextVersion );
                 releaseDescriptor.mapReleaseVersion( projectId, nextVersion );
             }*/
-            if (mode == Mode.dev)
+            if ( mode == Mode.dev )
             {
                 logInfo( result, projectId + " next development version will be " + nextVersion );
                 releaseDescriptor.mapDevelopmentVersion( projectId, nextVersion );
@@ -158,6 +156,12 @@ public class MapVersionsPhase
             {
                 String subProjectId =
                     ArtifactUtils.versionlessKey( subProject.getGroupId(), subProject.getArtifactId() );
+                    
+                if ( subProjectId.equals( projectId ) ) 
+                {
+                    logInfo( result, "skip re-versionning \"" + subProjectId + "\" since it is the main root project :\"" + projectId + "\"" );
+                    continue;
+                }
 
                 /*if ( convertToSnapshot )
                 {
@@ -187,29 +191,21 @@ public class MapVersionsPhase
                     logInfo( result, "()" + projectId + " next version will be " + nextVersion );
                     releaseDescriptor.mapReleaseVersion( subProjectId, nextVersion );
                 }*/
-                String v;
-                if ( ArtifactUtils.isSnapshot( subProject.getVersion() ) )
-                {
-                    v = nextVersion;
-                }
-                else
+                String v = nextVersion;
+                if ( !ArtifactUtils.isSnapshot( subProject.getVersion() ) )
+                // Todo : other reasons for subProjectId version to (not) be updated ?
                 {
                     v = subProject.getVersion();
                 }
-                if (mode == Mode.dev )
+                if ( mode == Mode.dev )
                 {
-                    logInfo( result, projectId + " next development version will be " + nextVersion );
-                    releaseDescriptor.mapDevelopmentVersion( projectId, v );
+                    logInfo( result, subProjectId + " next development version will be " + v );
+                    releaseDescriptor.mapDevelopmentVersion( subProjectId, v );
                 }
-                else if (mode == Mode.branch )
+                else 
                 {
-                    logInfo( result, projectId + " next development version will be " + nextVersion );
-                    releaseDescriptor.mapReleaseVersion( projectId, v );
-                }
-                else
-                {
-                    logInfo( result, "()" + projectId + " next version will be " + nextVersion );
-                    releaseDescriptor.mapReleaseVersion( subProjectId, nextVersion );
+                    logInfo( result, subProjectId + " next branch version will be " + v );
+                    releaseDescriptor.mapReleaseVersion( subProjectId, v );
                 }
             }
         }
@@ -240,7 +236,7 @@ public class MapVersionsPhase
                     logInfo( result, projectId + " next version will be " + nextVersion );
                     releaseDescriptor.mapReleaseVersion( projectId, nextVersion );
                 }*/
-                if (mode == Mode.dev)
+                if ( mode == Mode.dev )
                 {
                     logInfo( result, projectId + " next development version will be " + nextVersion );
                     releaseDescriptor.mapDevelopmentVersion( projectId, nextVersion );
@@ -264,76 +260,103 @@ public class MapVersionsPhase
                                    ReleaseResult result )
         throws MojoExecutionException
     {
-        String defaultVersion;
-        if ( mode == Mode.branch ) //( convertToBranch )
+        String nextVersion;
+        
+        /* flags to take care of are
+        * in release Mode :
+        *    none
+        * 
+        * in branch Mode :
+        *   P1 :updateBranchVersions
+        *   P2 :updateVersionsToSnapshot
+        * 
+        * in dev mode :
+        *   P1 : updateWorkingCopyVersions
+        *   P2 : snapshotDevelopmentVersion
+        *   P3 : branchCreation
+        *
+        * Not at this level : autoVersionSubmodules
+        */
+        
+        boolean snapshotNeeded = false;
+        boolean snapShotOfCurrentVersion = false;
+        if ( mode == Mode.release )
         {
-            // no branch modification
-            //if ( !( releaseDescriptor.isUpdateBranchVersions()
-            //                && ( ArtifactUtils.isSnapshot( project.getVersion() )
-            //                                || releaseDescriptor.isUpdateVersionsToSnapshot() ) ) )
+            logInfo( result, "search for a previously provided release version for " + projectId );
+            nextVersion = getReleaseVersion( projectId, releaseDescriptor );
+        }
+        else if ( mode == Mode.branch )
+        {
+            // no branch version modification
             if ( !releaseDescriptor.isUpdateBranchVersions() )
             {
-                logInfo( result, "next branch version found for " + projectId + " : " + project.getVersion() );
+                logInfo( result, "next branch version for " + projectId + " shall stay current version : " + project.getVersion() );
                 return project.getVersion();
             }
+            logInfo( result, "UpdateBranchVersion flag set, search for a previously provided branch version for " + projectId );
+            
+            snapshotNeeded = releaseDescriptor.isUpdateVersionsToSnapshot();
 
-            defaultVersion = getReleaseVersion( projectId, releaseDescriptor );
+            nextVersion = getReleaseVersion( projectId, releaseDescriptor );
+            
+            snapShotOfCurrentVersion = nextVersion != null && releaseDescriptor.isUpdateVersionsToSnapshot();
         }
-        else if ( mode == Mode.release ) //( !convertToSnapshot ) // map-release-version
-        {
-            defaultVersion = getReleaseVersion( projectId, releaseDescriptor );
-        }
-        /*else if ( releaseDescriptor.isBranchCreation() ) // mode ==  Mode.dev
-        {
-            // no working copy modification
-            if ( !( ArtifactUtils.isSnapshot( project.getVersion() )
-                          && releaseDescriptor.isUpdateWorkingCopyVersions() ) )
-            {
-                logInfo( result, "next dev version (branch cycle) found for " + projectId + " : " + project.getVersion() );
-                return project.getVersion();
-            }
-
-            defaultVersion = getDevelopmentVersion( projectId, releaseDescriptor );
-        }*/
-        else // mode ==  Mode.dev
+        else // if mode == Mode.dev
         {
             // no working copy modification
-            if ( !( releaseDescriptor.isUpdateWorkingCopyVersions() ) )
+            if ( !releaseDescriptor.isUpdateWorkingCopyVersions() )
             {
-                logInfo( result, "next dev version found for " + projectId + " : " + project.getVersion() );
+                logInfo( result, "next dev version for " + projectId + " shall stay current version : " + project.getVersion() );
                 return project.getVersion();
             }
-
-            defaultVersion = getDevelopmentVersion( projectId, releaseDescriptor );
+            logInfo( result, "UpdateWorkingCopyVersions flag set, search for a previously provided dev version for " + projectId );
+            
+            snapshotNeeded = releaseDescriptor.isSnapshotDevelopmentVersion();
+            
+            nextVersion = getDevelopmentVersion( projectId, releaseDescriptor );
+            
+            snapShotOfCurrentVersion = nextVersion != null && snapshotNeeded;
+            
+            // no working copy modification special case
+            if ( releaseDescriptor.isBranchCreation() && nextVersion != null
+                 && ArtifactUtils.isSnapshot( nextVersion ) == snapshotNeeded )
+            {
+                logInfo( result, "next dev version for " + projectId + " is correctly provided : " + nextVersion );
+                return nextVersion;
+            }
         }
-        //@todo validate default version, maybe with DefaultArtifactVersion
-
         
+        String defaultNextVersion = nextVersion;
         String suggestedVersion = null;
-        String nextVersion = defaultVersion;
         String messageKey = null;
-        logInfo( result, "next version candidate for " + projectId + " : " + nextVersion );
+        logInfo( result, "next version candidate found for " + projectId + " : " + nextVersion );
         
-        boolean nextSnapShot = nextVersion != null && mode == Mode.branch && releaseDescriptor.isUpdateVersionsToSnapshot();
+        // shall suggestedVersion be just snapshot of current version ? (and not next version snapshot)
+        logInfo( result, "snapShotOfCurrentVersion ? " + snapShotOfCurrentVersion );
+        logInfo( result, "snapshotNeeded ? " + snapshotNeeded );
         try
         {
-            boolean snapshotNeeded = ( mode == Mode.dev && releaseDescriptor.isSnapshotDevelopmentVersion() )
-                || ( mode == Mode.branch && releaseDescriptor.isUpdateVersionsToSnapshot() );
             //while ( nextVersion == null || ArtifactUtils.isSnapshot( nextVersion ) != convertToSnapshot )
             while ( nextVersion == null || ( ArtifactUtils.isSnapshot( nextVersion ) != snapshotNeeded ) )
             {
+                logInfo( result, "suggested nextVersion is : " + nextVersion );
+                logInfo( result, "nextVersion is snapShot ? " + ArtifactUtils.isSnapshot( nextVersion ) );
                 if ( suggestedVersion == null )
                 {
-                    String baseVersion = null;
+                    //String baseVersion = null;
+                    String baseVersion = defaultNextVersion;
+                    /*
                     //if ( convertToSnapshot )
                     if ( mode != Mode.release )
                     {
                         baseVersion = getReleaseVersion( projectId, releaseDescriptor );
                     }
+                    */
                     // unspecified and unmapped version, so use project version
                     if ( baseVersion == null )
                     {
                         baseVersion = project.getVersion();
+                        logInfo( result, "unspecified and unmapped version, so use project version as base for suggestion : " + baseVersion );
                     }
 
                     try
@@ -341,7 +364,7 @@ public class MapVersionsPhase
                         try
                         {
                             suggestedVersion =
-                                resolveSuggestedVersion( snapshotNeeded, nextSnapShot,
+                                resolveSuggestedVersion( snapshotNeeded, snapShotOfCurrentVersion,
                                     baseVersion, releaseDescriptor.getProjectVersionPolicyId() );
                         }
                         catch ( VersionParseException e )
@@ -349,7 +372,7 @@ public class MapVersionsPhase
                             if ( releaseDescriptor.isInteractive() )
                             {
                                 suggestedVersion =
-                                    resolveSuggestedVersion( snapshotNeeded, nextSnapShot,
+                                    resolveSuggestedVersion( snapshotNeeded, snapShotOfCurrentVersion,
                                         "1.0", releaseDescriptor.getProjectVersionPolicyId() );
                             }
                             else
@@ -367,7 +390,7 @@ public class MapVersionsPhase
                     {
                         throw new MojoExecutionException( e.getMessage(), e );
                     }
-               }
+                }
 
                 if ( releaseDescriptor.isInteractive() )
                 {
@@ -394,7 +417,7 @@ public class MapVersionsPhase
         return nextVersion;
     }
 
-    private String resolveSuggestedVersion(boolean convertToSnapshot, boolean nextSnapShot, String baseVersion, String policyId )
+    private String resolveSuggestedVersion( boolean convertToSnapshot, boolean nextSnapShot, String baseVersion, String policyId )
         throws PolicyException, VersionParseException
     {
         CxxVersionPolicy policy = versionPolicies.get( policyId );
@@ -428,7 +451,6 @@ public class MapVersionsPhase
         }
         return nextVersion;
     }
-
 
     private String getMapversionPromptKey( ReleaseDescriptor releaseDescriptor )
     {
