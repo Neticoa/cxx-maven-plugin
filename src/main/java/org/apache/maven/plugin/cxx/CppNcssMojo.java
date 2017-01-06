@@ -58,7 +58,7 @@ public class CppNcssMojo extends AbstractLaunchMojo
      * 
      * @since 0.0.4
      */
-    @Parameter( property = "cppncss.reportsfilePath", defaultValue = "cppncss-reports" )
+    @Parameter( property = "cppncss.reportsfilePath", defaultValue = "${project.build.directory}/cppncss-reports" )
     private File reportsfileDir;
 
     /**

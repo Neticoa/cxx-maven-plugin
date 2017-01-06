@@ -56,7 +56,7 @@ public class CoverageMojo extends LaunchMojo
      * 
      * @since 0.0.4
      */
-    @Parameter( property = "coverage.reportsfilePath", defaultValue = "gcovr-reports" )
+    @Parameter( property = "coverage.reportsfilePath", defaultValue = "${project.build.directory}/gcovr-reports" )
     private File reportsfileDir;
     
     /**

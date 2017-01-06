@@ -118,7 +118,7 @@ limitations under the License.
             <artifactId>doxygen-maven-plugin</artifactId>
             <version>1.0.1</version>
             <configuration>
-              <outputDirectory>${basedir}/doxygen-reports</outputDirectory>
+              <outputDirectory>${project.build.directory}/doxygen-reports</outputDirectory>
               <projectName>${project.name}</projectName>
               <input>${project.name}</input>
               <exclude>${general.excludes}</exclude>
@@ -233,8 +233,8 @@ limitations under the License.
                 </goals>
                 <configuration>
                   <executable>sh</executable>
-                  <workingDir>${basedir}/xunit-reports</workingDir>
-                  <commandArgs>"${basedir}/scripts/exec-unit-tests.sh" "${project.build.directory}/${targetPlatform}/${buildConfig}/TESTU.exe" "${basedir}/xunit-reports/xunit-result-${project.name}.xml"</commandArgs>
+                  <workingDir>${project.build.directory}/xunit-reports</workingDir>
+                  <commandArgs>"${basedir}/scripts/exec-unit-tests.sh" "${project.build.directory}/${targetPlatform}/${buildConfig}/TESTU.exe" "${project.build.directory}/xunit-reports/xunit-result-${project.name}.xml"</commandArgs>
                 </configuration>
               </execution>
               -->
@@ -249,8 +249,8 @@ limitations under the License.
                 </goals>
                 <configuration>
                   <executable>"${basedir}/scripts/exec-unit-tests.bat"</executable>
-                  <workingDir>${basedir}/xunit-reports</workingDir>
-                  <commandArgs>"${project.build.directory}/${targetPlatform}/${buildConfig}/TESTU.exe" "${basedir}/xunit-reports/xunit-result-${project.name}.xml"</commandArgs>
+                  <workingDir>${project.build.directory}/xunit-reports</workingDir>
+                  <commandArgs>"${project.build.directory}/${targetPlatform}/${buildConfig}/TESTU.exe" "${project.build.directory}/xunit-reports/xunit-result-${project.name}.xml"</commandArgs>
                 </configuration>
               </execution>
               -->

@@ -157,7 +157,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
      * 
      * @since 0.0.4
      */
-    @Parameter( property = "veraxx.reportsfilePath", defaultValue = "vera++-reports" )
+    @Parameter( property = "veraxx.reportsfilePath", defaultValue = "${project.build.directory}/vera++-reports" )
     private File reportsfileDir;
 
     /**

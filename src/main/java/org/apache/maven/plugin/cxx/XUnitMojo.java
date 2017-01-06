@@ -46,7 +46,7 @@ public class XUnitMojo extends LaunchMojo
      * 
      * @since 0.0.4
      */
-    @Parameter( property = "xunit.reportsfilePath", defaultValue = "xunit-reports" )
+    @Parameter( property = "xunit.reportsfilePath", defaultValue = "${project.build.directory}/xunit-reports" )
     private File reportsfileDir;
     
     @Override

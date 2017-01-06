@@ -46,7 +46,7 @@ public class ValgrindMojo extends AbstractLaunchMojo
      * 
      * @since 0.0.4
      */
-    @Parameter( property = "valgrind.reportsfilePath", defaultValue = "valgrind-reports" )
+    @Parameter( property = "valgrind.reportsfilePath", defaultValue = "${project.build.directory}/valgrind-reports" )
     private File reportsfileDir;
 
     /**

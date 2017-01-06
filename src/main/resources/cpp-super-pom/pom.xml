@@ -54,12 +54,12 @@ limitations under the License.
     <sonar.language>c++</sonar.language>
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
     <!-- since sonar cxx plugin v0.3 -->
-    <sonar.cxx.coverage.reportPath>gcovr-reports/gcovr-result-*.xml</sonar.cxx.coverage.reportPath>
-    <sonar.cxx.cppcheck.reportPath>cppcheck-reports/cppcheck-result-*.xml</sonar.cxx.cppcheck.reportPath>
-    <sonar.cxx.valgrind.reportPath>valgrind-reports/valgrind-result-*.xml</sonar.cxx.valgrind.reportPath>
-    <sonar.cxx.vera.reportPath>vera++-reports/vera++-result-*.xml</sonar.cxx.vera.reportPath>
-    <sonar.cxx.pclint.reportPath>pclint-reports/pclint-result-*.xml</sonar.cxx.pclint.reportPath>
-    <sonar.cxx.xunit.reportPath>xunit-reports/xunit-result-*.xml</sonar.cxx.xunit.reportPath>
+    <sonar.cxx.coverage.reportPath>${project.build.directory}/gcovr-reports/gcovr-result-*.xml</sonar.cxx.coverage.reportPath>
+    <sonar.cxx.cppcheck.reportPath>${project.build.directory}/cppcheck-reports/cppcheck-result-*.xml</sonar.cxx.cppcheck.reportPath>
+    <sonar.cxx.valgrind.reportPath>${project.build.directory}/valgrind-reports/valgrind-result-*.xml</sonar.cxx.valgrind.reportPath>
+    <sonar.cxx.vera.reportPath>${project.build.directory}/vera++-reports/vera++-result-*.xml</sonar.cxx.vera.reportPath>
+    <sonar.cxx.pclint.reportPath>${project.build.directory}/pclint-reports/pclint-result-*.xml</sonar.cxx.pclint.reportPath>
+    <sonar.cxx.xunit.reportPath>${project.build.directory}/xunit-reports/xunit-result-*.xml</sonar.cxx.xunit.reportPath>
     <sonar.cxx.xunit.provideDetails>true</sonar.cxx.xunit.provideDetails>
     <!-- you may override project.build.testSourceDirectory in child pom -->
     <!-- <project.build.testSourceDirectory>TESTU</project.build.testSourceDirectory> -->

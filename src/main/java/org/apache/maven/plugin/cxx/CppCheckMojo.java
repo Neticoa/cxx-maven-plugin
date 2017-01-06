@@ -83,7 +83,7 @@ public class CppCheckMojo extends AbstractLaunchMojo
      * 
      * @since 0.0.4
      */
-    @Parameter( property = "cppcheck.reportsfilePath", defaultValue = "cppcheck-reports" )
+    @Parameter( property = "cppcheck.reportsfilePath", defaultValue = "${project.build.directory}/cppcheck-reports" )
     private File reportsfileDir;
     
     /**
