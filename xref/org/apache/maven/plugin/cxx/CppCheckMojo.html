@@ -38,7 +38,7 @@
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <strong class="jxr_keyword">import</strong> java.util.HashSet;
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.lang.StringUtils;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <strong class="jxr_keyword">import</strong> org.codehaus.plexus.util.StringUtils;
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_comment">/* Use enhanced FileSet and FileManager (not the one provided in this project)*/</em>
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> org.apache.maven.shared.model.fileset.FileSet;
@@ -91,7 +91,7 @@
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  <em class="jxr_javadoccomment">     * @since 0.0.4</em>
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>      @Parameter( property = <span class="jxr_string">"cppcheck.reportsfilePath"</span>, defaultValue = <span class="jxr_string">"cppcheck-reports"</span> )
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>      @Parameter( property = <span class="jxr_string">"cppcheck.reportsfilePath"</span>, defaultValue = <span class="jxr_string">"${project.build.directory}/cppcheck-reports"</span> )
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>      <strong class="jxr_keyword">private</strong> File reportsfileDir;
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>      
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>      <em class="jxr_javadoccomment">/**</em>
@@ -285,6 +285,6 @@
 <a class="jxr_linenumber" name="L277" href="#L277">277</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2010&#x2013;2016 <a href="http://www.neticoa.fr">Neticoa SAS</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2010&#x2013;2017 <a href="http://www.neticoa.fr">Neticoa SAS</a>. All rights reserved.</div>
 </body>
 </html>

@@ -1,2 +1,3 @@
 org.apache.maven.plugin.cxx
 org.apache.maven.plugin.cxx.utils
+org.apache.maven.plugin.cxx.utils.release

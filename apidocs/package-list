@@ -1,5 +1,6 @@
 org.apache.maven.plugin.cxx
 org.apache.maven.plugin.cxx.utils
+org.apache.maven.plugin.cxx.utils.release
 org.apache.maven.plugin.cxx.utils.svn
 org.codehaus.plexus.archiver
 org.codehaus.plexus.archiver.bzip2
