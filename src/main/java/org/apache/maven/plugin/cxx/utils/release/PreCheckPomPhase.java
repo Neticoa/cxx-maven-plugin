@@ -129,7 +129,7 @@ public class PreCheckPomPhase
             if ( !rootBasedirSvnInfo.isValide() )
             {
                 throw new MojoFailureException( "Main project \"" + rootProjectId + "\" local directory ("
-                    + rootBasedir + ") is not under scm control, while scm (" + rootScmProvider + ") claimed to be " );
+                    + rootBasedir + ") is not under scm control, while scm (" + rootScmProvider + ") claimed to be." );
             }
             else
             {
@@ -142,6 +142,21 @@ public class PreCheckPomPhase
                 }
                 logInfo( result, "Main project \"" + rootProjectId + "\" local directory (" + rootBasedir 
                     + ") is under SCM configuration" );
+                    
+                String pomSCMUrl = ScmUrlUtils.getProviderSpecificPart( releaseDescriptor.getScmSourceUrl() );
+                if ( !StringUtils.equalsIgnoreCase( trimTrailingFileSepartorChar( pomSCMUrl ),
+                    trimTrailingFileSepartorChar( rootBasedirSvnInfo.getSvnUrl() ) ) )
+                {
+                    throw new MojoFailureException( "Main project \"" + rootProjectId + "\" local directory ("
+                        + rootBasedir + ") SCM info (" + rootBasedirSvnInfo.getSvnUrl() 
+                        + "), doesnt match project SCM info (" + pomSCMUrl + "). Please fix this prior to continue" );
+                }
+                else
+                {
+                    logInfo( result, "Main project \"" + rootProjectId + "\" local directory ("
+                        + rootBasedir + ") SCM info (" + rootBasedirSvnInfo.getSvnUrl() 
+                        + "), match project SCM info" );
+                }
             }
         }
         else
@@ -206,13 +221,43 @@ public class PreCheckPomPhase
                 {
                     logInfo( result, "Sub project \"" + subProjectId + "\" local directory (" 
                         + basedir + ") is under SCM control" );
+
+                    if ( subProject.getScm() != null )
+                    {
+                        String pomSCMUrl = null;
+                        if ( subProject.getScm().getDeveloperConnection() != null )
+                        {
+                            pomSCMUrl = ScmUrlUtils.getProviderSpecificPart( subProject.getScm().getDeveloperConnection() );
+                        }
+                        else if ( subProject.getScm().getConnection() != null )
+                        {
+                            pomSCMUrl = ScmUrlUtils.getProviderSpecificPart( subProject.getScm().getConnection() );
+                        }
+
+                        if ( !StringUtils.equalsIgnoreCase( trimTrailingFileSepartorChar( pomSCMUrl ),
+                            trimTrailingFileSepartorChar( basedirSvnInfo.getSvnUrl() ) ) )
+                        {
+                          throw new MojoFailureException( "Sub project \"" + subProjectId + "\" local directory ("
+                              + basedir + ") SCM info (" + basedirSvnInfo.getSvnUrl() 
+                              + "), doesnt match project SCM info (" + pomSCMUrl + "). Please fix this prior to continue" );
+                        }
+                        else
+                        {
+                          logInfo( result, "Sub project \"" + subProjectId + "\" local directory ("
+                              + basedir + ") SCM info (" + basedirSvnInfo.getSvnUrl() 
+                              + "), match project SCM info" );
+                        }
+                        
+                    }
+                        
                     if ( rootBasedirSvnInfo.isValide() )
                     {
                         if ( !StringUtils.equalsIgnoreCase( rootBasedirSvnInfo.getSvnRoot(),
                             basedirSvnInfo.getSvnRoot() ) )
                         {
                             logInfo( result, "Sub project \"" + subProjectId
-                                + "\" excluded since its svn root differs from root project's one (" 
+                                + "\" excluded since its svn root (" + basedirSvnInfo.getSvnRoot()
+                                + ") differs from root project's one (" 
                                 + rootBasedirSvnInfo.getSvnRoot() + ")" );
                             projectToExclude.add( subProject );
                         }
@@ -258,5 +303,14 @@ public class PreCheckPomPhase
         } 
         
         return result;
+    }
+    
+    private String trimTrailingFileSepartorChar( String path )
+    {
+        if (null != path)
+        {
+            return path.replaceAll( "[\\/]+$", "" );
+        }
+        return null;
     }
 }
