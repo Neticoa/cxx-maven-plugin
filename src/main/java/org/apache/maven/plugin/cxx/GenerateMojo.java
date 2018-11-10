@@ -180,7 +180,7 @@ public class GenerateMojo
                     final String name = entries.nextElement().getName();
                     if ( name.startsWith( path ) )
                     { 
-                        String resourceFile = File.separator + name;
+                        String resourceFile = /*File.separator*/"/" + name;
                         if ( !( resourceFile.endsWith( "/" ) || resourceFile.endsWith( "\\" ) ) )
                         {
                             getLog().debug( "resource entry = " + resourceFile );
