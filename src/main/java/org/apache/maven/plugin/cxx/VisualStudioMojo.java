@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 
 import org.codehaus.plexus.util.StringUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.text.StrSubstitutor;
 
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -112,6 +113,16 @@ public class VisualStudioMojo extends AbstractLaunchMojo
      */
     @Parameter( property = "visualstudio.buildVersion", defaultValue = "0.0.0.1" )
     private String buildVersion;
+    
+    /**
+     * Visual verion in visual studio format [ x.y ]
+     * 9.0 = VS2008
+     * 10.0 = VS2010
+     * 
+     * @since 0.0.6
+     */
+    @Parameter( property = "visualstudio.visualstudioVersion", defaultValue = "9.0" )
+    private String visualstudioVersion;
     
     protected String visualStudioBuildVersion()
     {
@@ -192,14 +203,22 @@ public class VisualStudioMojo extends AbstractLaunchMojo
     @Override
     protected String getExecutable()
     {
+        HashMap<String, String> valuesMap = new HashMap<String, String>();
+        valuesMap.put( "visualstudioVersion", visualstudioVersion );
+        StrSubstitutor substitutor = new StrSubstitutor( valuesMap, "$(", ")" );
+        
         InputStream batchScriptStream = getClass().getResourceAsStream( "/build.bat" );
         try
         {    
+            String content = IOUtils.toString( batchScriptStream, "UTF8" );
+            content = substitutor.replace( content );
+         
             File batchFile = File.createTempFile( "build", ".bat" );
             batchFile.deleteOnExit();
             OutputStream outStream = new FileOutputStream( batchFile );
             
-            IOUtils.copy( batchScriptStream, outStream );
+            //IOUtils.copy( batchScriptStream, outStream );
+            IOUtils.write( content, outStream, "UTF8" );
             
             getLog().debug( "msbuild batch script is located at :" + batchFile.getAbsolutePath() );
                 

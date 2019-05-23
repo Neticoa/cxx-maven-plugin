@@ -96,13 +96,13 @@ FOR /F "skip=1 tokens=1-6" %%A IN ('WMIC Path Win32_LocalTime Get Day^,Hour^,Min
     )
 )
 
-IF EXIST "%PROGRAMFILES(X86)%\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" (
-    call "%PROGRAMFILES(X86)%\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" %6
+IF EXIST "%PROGRAMFILES(X86)%\Microsoft Visual Studio $(visualstudioVersion)\VC\vcvarsall.bat" (
+    call "%PROGRAMFILES(X86)%\Microsoft Visual Studio $(visualstudioVersion)\VC\vcvarsall.bat" %6
 ) ELSE (
-    IF EXIST "%PROGRAMFILES%\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" (
-        call "%PROGRAMFILES%\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" %6
+    IF EXIST "%PROGRAMFILES%\Microsoft Visual Studio $(visualstudioVersion)\VC\vcvarsall.bat" (
+        call "%PROGRAMFILES%\Microsoft Visual Studio $(visualstudioVersion)\VC\vcvarsall.bat" %6
     ) ELSE (
-        echo "Microsoft Visual Studio 9.0 not found in [%PROGRAMFILES%] or [%PROGRAMFILES(X86)%]"
+        echo "Microsoft Visual Studio $(visualstudioVersion) not found in [%PROGRAMFILES%] or [%PROGRAMFILES(X86)%]"
         exit /B 1
     )
 )
@@ -134,6 +134,7 @@ set EXTERNAL_RCC_OPTIONS=%EXTERNAL_COMPILER_OPTIONS: /D= /d%
 echo EXTERNAL_RCC_OPTIONS is [%EXTERNAL_RCC_OPTIONS%]
 ::msbuild /help 
 ::/verbosity:q|m|n|d|diag|
+echo msbuild %2 /p:Configuration=%4;Platform=%5 /t:%3 /verbosity:d
 msbuild %2 /p:Configuration=%4;Platform=%5 /t:%3 /verbosity:d
 popd
 
