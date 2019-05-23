@@ -54,6 +54,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectSorter;
+import org.apache.maven.settings.crypto.SettingsDecrypter;
 import org.apache.maven.shared.release.util.ReleaseUtil;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.context.ContextException;
@@ -76,8 +77,7 @@ import org.xml.sax.SAXException;
  *
  * @author <a href="mailto:brett@apache.org">Brett Porter</a>
  */
-public abstract class AbstractReleaseTestCase
-    extends PlexusTestCase
+public abstract class AbstractReleaseTestCase extends PlexusTestCase
 {
     protected MavenProjectBuilder projectBuilder;
 
@@ -87,43 +87,40 @@ public abstract class AbstractReleaseTestCase
 
     private static final DefaultContext EMPTY_CONTEXT = new DefaultContext()
     {
-        public Object get( Object key )
-            throws ContextException
+        public Object get( Object key ) throws ContextException
         {
             return null;
         }
     };
 
-    protected void setUp()
-        throws Exception
+    protected void setUp() throws Exception
     {
         super.setUp();
 
-        projectBuilder = (MavenProjectBuilder) lookup( MavenProjectBuilder.ROLE );
+        projectBuilder = (MavenProjectBuilder) lookup( /* MavenProjectBuilder.ROLE */MavenProjectBuilder.class );
 
         ArtifactRepositoryLayout layout = (ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
         String localRepoPath = getTestFile( "target/local-repository" ).getAbsolutePath().replace( '\\', '/' );
         localRepository = new DefaultArtifactRepository( "local", "file://" + localRepoPath, layout );
     }
 
-    protected void tearDown()
-        throws Exception
+    protected void tearDown() throws Exception
     {
-        // unhook circular references to the container that would avoid memory being cleaned up
+        // unhook circular references to the container that would avoid memory being
+        // cleaned up
         ( (Contextualizable) projectBuilder ).contextualize( EMPTY_CONTEXT );
-        ( (Contextualizable) lookup( WagonManager.ROLE ) ).contextualize( EMPTY_CONTEXT );
+        ( (Contextualizable) lookup( WagonManager.class/* WagonManager.ROLE */ ) ).contextualize( EMPTY_CONTEXT );
 
         super.tearDown();
     }
 
-    private Map<String,Artifact> createManagedVersionMap( String projectId, DependencyManagement dependencyManagement,
-                                         ArtifactFactory artifactFactory )
-        throws ProjectBuildingException
+    private Map<String, Artifact> createManagedVersionMap( String projectId, DependencyManagement dependencyManagement,
+        ArtifactFactory artifactFactory ) throws ProjectBuildingException
     {
-        Map<String,Artifact> map;
+        Map<String, Artifact> map;
         if ( dependencyManagement != null && dependencyManagement.getDependencies() != null )
         {
-            map = new HashMap<String,Artifact>();
+            map = new HashMap<String, Artifact>();
             for ( Iterator i = dependencyManagement.getDependencies().iterator(); i.hasNext(); )
             {
                 Dependency d = (Dependency) i.next();
@@ -132,14 +129,13 @@ public abstract class AbstractReleaseTestCase
                 {
                     VersionRange versionRange = VersionRange.createFromVersionSpec( d.getVersion() );
                     Artifact artifact = artifactFactory.createDependencyArtifact( d.getGroupId(), d.getArtifactId(),
-                                                                                  versionRange, d.getType(),
-                                                                                  d.getClassifier(), d.getScope() );
+                        versionRange, d.getType(), d.getClassifier(), d.getScope() );
                     map.put( d.getManagementKey(), artifact );
                 }
                 catch ( InvalidVersionSpecificationException e )
                 {
-                    throw new ProjectBuildingException( projectId, "Unable to parse version '" + d.getVersion() +
-                        "' for dependency '" + d.getManagementKey() + "': " + e.getMessage(), e );
+                    throw new ProjectBuildingException( projectId, "Unable to parse version '" + d.getVersion()
+                        + "' for dependency '" + d.getManagementKey() + "': " + e.getMessage(), e );
                 }
             }
         }
@@ -150,8 +146,7 @@ public abstract class AbstractReleaseTestCase
         return map;
     }
 
-    protected List<MavenProject> createReactorProjects( String path, String subpath )
-        throws Exception
+    protected List<MavenProject> createReactorProjects( String path, String subpath ) throws Exception
     {
         return createReactorProjects( path, path, subpath );
     }
@@ -163,8 +158,14 @@ public abstract class AbstractReleaseTestCase
         Stack<File> projectFiles = new Stack<File>();
         projectFiles.push( testFile );
 
-        List<DefaultArtifactRepository> repos =
-            Collections.singletonList( new DefaultArtifactRepository( "central", getRemoteRepositoryURL(), new DefaultRepositoryLayout() ) );
+        /*
+         * List<DefaultArtifactRepository> repos = Collections.singletonList( new
+         * DefaultArtifactRepository( "central", getRemoteRepositoryURL(), new
+         * DefaultRepositoryLayout() ) );
+         */
+        List<ArtifactRepository> repos = new ArrayList<ArtifactRepository>();
+        repos
+            .add( new DefaultArtifactRepository( "central", getRemoteRepositoryURL(), new DefaultRepositoryLayout() ) );
 
         Repository repository = new Repository();
         repository.setId( "central" );
@@ -175,7 +176,8 @@ public abstract class AbstractReleaseTestCase
         profile.setId( "profile" );
         profile.addRepository( repository );
         profileManager.addProfile( profile );
-        profileManager.activateAsDefault( profile.getId() );
+        // profileManager.activateAsDefault( profile.getId() );
+        profileManager.explicitlyActivate( profile.getId() );
 
         List<MavenProject> reactorProjects = new ArrayList<MavenProject>();
         while ( !projectFiles.isEmpty() )
@@ -208,9 +210,11 @@ public abstract class AbstractReleaseTestCase
 
         ArtifactFactory artifactFactory = (ArtifactFactory) lookup( ArtifactFactory.ROLE );
         ArtifactCollector artifactCollector = (ArtifactCollector) lookup( ArtifactCollector.class.getName() );
-        ArtifactMetadataSource artifactMetadataSource = (ArtifactMetadataSource) lookup( ArtifactMetadataSource.ROLE );
+        ArtifactMetadataSource artifactMetadataSource = (ArtifactMetadataSource) lookup(
+            ArtifactMetadataSource.class/* ArtifactMetadataSource.ROLE */ );
 
-        // pass back over and resolve dependencies - can't be done earlier as the order may not be correct
+        // pass back over and resolve dependencies - can't be done earlier as the order
+        // may not be correct
         for ( Iterator i = reactorProjects.iterator(); i.hasNext(); )
         {
             MavenProject project = (MavenProject) i.next();
@@ -227,9 +231,8 @@ public abstract class AbstractReleaseTestCase
             project.setDependencyArtifacts( project.createArtifacts( artifactFactory, null, null ) );
 
             ArtifactResolutionResult result = artifactCollector.collect( project.getDependencyArtifacts(),
-                                                                         projectArtifact, managedVersions,
-                                                                         localRepository, repos, artifactMetadataSource,
-                                                                         null, Collections.EMPTY_LIST );
+                projectArtifact, managedVersions, localRepository, repos, artifactMetadataSource, null,
+                Collections.EMPTY_LIST );
 
             project.setArtifacts( result.getArtifacts() );
         }
@@ -237,9 +240,9 @@ public abstract class AbstractReleaseTestCase
         return reactorProjects;
     }
 
-    protected static Map<String,MavenProject> getProjectsAsMap( List<MavenProject> reactorProjects )
+    protected static Map<String, MavenProject> getProjectsAsMap( List<MavenProject> reactorProjects )
     {
-        Map<String,MavenProject> map = new HashMap<String,MavenProject>();
+        Map<String, MavenProject> map = new HashMap<String, MavenProject>();
         for ( Iterator<MavenProject> i = reactorProjects.iterator(); i.hasNext(); )
         {
             MavenProject project = (MavenProject) i.next();
@@ -249,8 +252,7 @@ public abstract class AbstractReleaseTestCase
         return map;
     }
 
-    protected boolean comparePomFiles( List<MavenProject> reactorProjects )
-        throws IOException
+    protected boolean comparePomFiles( List<MavenProject> reactorProjects ) throws IOException
     {
         return comparePomFiles( reactorProjects, true );
     }
@@ -264,14 +266,13 @@ public abstract class AbstractReleaseTestCase
         return true;
     }
 
-    protected void comparePomFiles( List<MavenProject> reactorProjects, String expectedFileSuffix )
-        throws IOException
+    protected void comparePomFiles( List<MavenProject> reactorProjects, String expectedFileSuffix ) throws IOException
     {
         comparePomFiles( reactorProjects, expectedFileSuffix, true );
     }
 
-    protected void comparePomFiles( List<MavenProject> reactorProjects, String expectedFileSuffix, boolean normalizeLineEndings )
-        throws IOException
+    protected void comparePomFiles( List<MavenProject> reactorProjects, String expectedFileSuffix,
+        boolean normalizeLineEndings ) throws IOException
     {
         for ( Iterator<MavenProject> i = reactorProjects.iterator(); i.hasNext(); )
         {
@@ -281,8 +282,7 @@ public abstract class AbstractReleaseTestCase
         }
     }
 
-    protected void comparePomFiles( MavenProject project, String expectedFileSuffix )
-        throws IOException
+    protected void comparePomFiles( MavenProject project, String expectedFileSuffix ) throws IOException
     {
         comparePomFiles( project, expectedFileSuffix, true );
     }
@@ -296,8 +296,7 @@ public abstract class AbstractReleaseTestCase
         comparePomFiles( expectedFile, actualFile, normalizeLineEndings );
     }
 
-    protected void comparePomFiles( File expectedFile, File actualFile )
-        throws IOException
+    protected void comparePomFiles( File expectedFile, File actualFile ) throws IOException
     {
         comparePomFiles( expectedFile, actualFile, true );
     }
@@ -311,66 +310,64 @@ public abstract class AbstractReleaseTestCase
         {
             expected = ReaderFactory.newXmlReader( expectedFile );
             actual = ReaderFactory.newXmlReader( actualFile );
-            
+
             StringBuffer sb = new StringBuffer( "Check the transformed POM " + actualFile );
             sb.append( SystemUtils.LINE_SEPARATOR );
-            
+
             final String remoteRepositoryURL = getRemoteRepositoryURL();
 
             XMLUnit.setNormalizeWhitespace( true );
-            
+
             Diff diff = XMLUnit.compareXML( expected, actual );
-            
+
             diff.overrideDifferenceListener( new DifferenceListener()
             {
-                
+
                 public void skippedComparison( Node arg0, Node arg1 )
                 {
-                    //do nothing
+                    // do nothing
                 }
-                
+
                 public int differenceFound( Difference difference )
                 {
-                    if ( "${remoterepo}".equals( difference.getControlNodeDetail().getValue() ) &&
-                                    remoteRepositoryURL.equals( difference.getTestNodeDetail().getValue() ) )
+                    if ( "${remoterepo}".equals( difference.getControlNodeDetail().getValue() )
+                        && remoteRepositoryURL.equals( difference.getTestNodeDetail().getValue() ) )
                     {
                         return DifferenceListener.RETURN_IGNORE_DIFFERENCE_NODES_IDENTICAL;
                     }
-                    else 
+                    else
                     {
                         return DifferenceListener.RETURN_ACCEPT_DIFFERENCE;
                     }
                 }
-            });
+            } );
             diff.appendMessage( sb );
-            
+
             XMLAssert.assertXMLIdentical( diff, true );
         }
         catch ( SAXException e )
         {
             fail( e.getMessage() );
         }
-        finally 
+        finally
         {
             IOUtil.close( expected );
             IOUtil.close( actual );
         }
     }
 
-    private String getRemoteRepositoryURL()
-      throws IOException
+    private String getRemoteRepositoryURL() throws IOException
     {
         File testFile = getTestFile( "src/test/remote-repository" );
-        if (testFile.getAbsolutePath().equals( testFile.getCanonicalPath() ) )
+        if ( testFile.getAbsolutePath().equals( testFile.getCanonicalPath() ) )
         {
             return "file://" + getTestFile( "src/test/remote-repository" ).getAbsolutePath().replace( '\\', '/' );
         }
         return "file://" + getTestFile( "src/test/remote-repository" ).getCanonicalPath().replace( '\\', '/' );
     }
-    
-    public static String getPath( File file )
-        throws IOException
+
+    public static String getPath( File file ) throws IOException
     {
         return ReleaseUtil.isSymlink( file ) ? file.getCanonicalPath() : file.getAbsolutePath();
-    }    
+    }
 }

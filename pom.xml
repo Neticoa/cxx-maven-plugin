@@ -162,8 +162,13 @@ limitations under the License.
   </profiles>
   
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.6</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
+    <maven.version>3.2.5</maven.version>
+    <!--<maven.version>${mavenPluginToolsVersion}</maven.version>-->
+  
     <scmVersion>1.9.4</scmVersion>
-    <mavenVersion>2.2.1</mavenVersion>
     <doxiaVersion>1.4</doxiaVersion>
     <pluginTestingVersion>2.1</pluginTestingVersion>
     <mavenPluginPluginVersion>3.2</mavenPluginPluginVersion>
@@ -173,7 +178,7 @@ limitations under the License.
   </properties>
   
   <prerequisites>
-    <maven>${mavenVersion}</maven>
+    <maven>${maven.version}</maven>
   </prerequisites>
 
   <reporting>
@@ -304,8 +309,8 @@ limitations under the License.
           <compilerArgs>
             <arg>-Xlint</arg>
           </compilerArgs>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
         </configuration>
       </plugin>
 
@@ -341,22 +346,41 @@ limitations under the License.
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
-      <version>${mavenVersion}</version>
+      <version>${maven.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+      <version>${maven.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-artifact</artifactId>
-      <version>${mavenVersion}</version>
-    </dependency>
-    <dependency>
-    	<groupId>org.apache.maven</groupId>
-    	<artifactId>maven-toolchain</artifactId>
-    	<version>${mavenVersion}</version>
+      <version>${maven.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
+      <artifactId>maven-compat</artifactId>
+      <version>${maven.version}</version>
+    </dependency>
+  <!--   <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-artifact-resolver</artifactId>
+      <version>${maven.version}</version>
+    </dependency>    -->
+
+    <!-- <dependency>
+    	<groupId>org.apache.maven</groupId>
+    	<artifactId>maven-toolchain</artifactId>
+    	<version>${maven.version}</version>
+    </dependency>-->
+    <dependency>
+      <groupId>org.apache.maven</groupId>
       <artifactId>maven-settings</artifactId>
-      <version>${mavenVersion}</version>
+      <version>${maven.version}</version>
     </dependency>
     
     <dependency>
