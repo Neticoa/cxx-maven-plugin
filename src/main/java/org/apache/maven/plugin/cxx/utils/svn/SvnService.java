@@ -114,14 +114,9 @@ public class SvnService
         Log log, boolean noParsingFailure ) throws MojoExecutionException
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try
-        {
-            execSvnCommand( basedir, cred, new String[] {"info", uri, "--xml"}, out, log );
-        }
-        catch ( Exception e )
-        {
-            return new SvnInfo();
-        }
+        
+        execSvnCommand( basedir, cred, new String[] {"info", uri, "--xml"}, out, log );
+        
         SvnInfo svnInfo = new SvnInfo();
         try
         {
