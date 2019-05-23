@@ -25,7 +25,7 @@ import org.xml.sax.Attributes;
 import java.util.regex.Pattern;
 
 /**
- * svn info <uri> request result
+ * svn info &gt;uri&lt; request result
  * 
  */
 public class SvnInfo extends DefaultHandler
@@ -34,7 +34,7 @@ public class SvnInfo extends DefaultHandler
     private String root = null;
     private String relativeUrl = null;
     private long revision = -1;
-    
+
     public void reset()
     {
         url = null;
@@ -42,44 +42,43 @@ public class SvnInfo extends DefaultHandler
         relativeUrl = null;
         revision = -1;
     }
-    
+
     public boolean isValide()
     {
         return url != null && root != null && relativeUrl != null && revision != -1;
     }
-    
+
     public String getSvnUrl()
     {
         return url;
     }
-    
+
     public String getSvnRoot()
     {
         return root;
     }
-    
+
     public String getSvnRelativeUrl()
     {
         return relativeUrl;
     }
-     
+
     public long getRevision()
     {
         return revision;
     }
-    
+
     public String toString()
     {
-       return "r" + revision + " " + root + " " + relativeUrl;
+        return "r" + revision + " " + root + " " + relativeUrl;
     }
-    
+
     private boolean bUrl = false;
     private boolean bRoot = false;
     private boolean bRelativeUrl = false;
-    
+
     @Override
-    public void startElement( String uri, String localName, String qName, Attributes attributes )
-        throws SAXException
+    public void startElement( String uri, String localName, String qName, Attributes attributes ) throws SAXException
     {
         if ( qName.equalsIgnoreCase( "entry" ) )
         {
@@ -91,7 +90,7 @@ public class SvnInfo extends DefaultHandler
             catch ( Exception e )
             {
                 throw new SAXException( "URI or folder svn revision not found", e );
-            } 
+            }
         }
         else if ( qName.equalsIgnoreCase( "url" ) )
         {
@@ -106,9 +105,9 @@ public class SvnInfo extends DefaultHandler
             bRelativeUrl = true;
         }
     }
-    
+
     @Override
-    public void characters( char ch[], int start, int length ) throws SAXException
+    public void characters( char[] ch, int start, int length ) throws SAXException
     {
         if ( bUrl )
         {
@@ -126,7 +125,7 @@ public class SvnInfo extends DefaultHandler
             bRelativeUrl = false;
         }
     }
-    
+
     @Override
     public void endDocument() throws SAXException
     {

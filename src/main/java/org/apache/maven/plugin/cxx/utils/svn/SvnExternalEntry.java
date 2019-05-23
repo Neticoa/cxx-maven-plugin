@@ -17,33 +17,34 @@ package org.apache.maven.plugin.cxx.utils.svn;
  * limitations under the License.
  *
  */
- 
+
 import org.codehaus.plexus.util.StringUtils;
 
 /**
- * svn 
+ * svn
  * 
  */
 public class SvnExternalEntry
 {
-    public String revision = null;
-    public String origin = null;
-    public String targetDir = null;
-    public String comment = null;
-    
+    private String revision = null;
+    private String origin = null;
+    private String targetDir = null;
+    private String comment = null;
+
     public boolean isValide()
     {
-        return ! StringUtils.isEmpty( comment )
-            || ( ! StringUtils.isEmpty( origin ) && ! StringUtils.isEmpty( targetDir ) );
+        return !StringUtils.isEmpty( getComment() )
+            || ( !StringUtils.isEmpty( getOrigin() ) && !StringUtils.isEmpty( getTargetDir() ) );
     }
-    
+
     public String toString()
     {
-        return "" + ( ( null != comment ) ? comment
-            : ( ( ( null != revision ) ? revision + " " : "" ) + ( ( null != origin ) ? origin : "" )
-            + " " + ( ( null != targetDir ) ? targetDir : "" ) ) );
+        return "" + ( ( null != getComment() ) ? getComment()
+            : ( ( ( null != getRevision() ) ? getRevision() + " " : "" )
+                + ( ( null != getOrigin() ) ? getOrigin() : "" ) + " "
+                + ( ( null != getTargetDir() ) ? getTargetDir() : "" ) ) );
     }
-    
+
     @Override
     public boolean equals( Object other )
     {
@@ -61,21 +62,61 @@ public class SvnExternalEntry
         }
         SvnExternalEntry otherExternalEntry = (SvnExternalEntry) other;
         // comments are unique, equals shall return false on them
-        if ( null != comment || null != otherExternalEntry.comment )
+        if ( null != getComment() || null != otherExternalEntry.getComment() )
         {
             return false;
         }
         // otherwise, entries are equals if their origin or tagetDir are equals
-        return StringUtils.equals( origin, otherExternalEntry.origin )
-            || StringUtils.equals( targetDir, otherExternalEntry.targetDir );
+        return StringUtils.equals( getOrigin(), otherExternalEntry.getOrigin() )
+            || StringUtils.equals( getTargetDir(), otherExternalEntry.getTargetDir() );
     }
-    
-    @Override        
+
+    @Override
     public int hashCode()
     {
-        return null != comment ? super.hashCode() // comments are unique, hashCode shall be different for them
-            : null != targetDir ? null != origin 
-                ? ( origin + targetDir ).hashCode() : targetDir.hashCode()
-            : null != origin ? origin.hashCode() : 0;
+        return null != getComment() ? super.hashCode() // comments are unique, hashCode shall be different for them
+            : null != getTargetDir()
+                ? null != getOrigin() ? ( getOrigin() + getTargetDir() ).hashCode() : getTargetDir().hashCode()
+                : null != getOrigin() ? getOrigin().hashCode() : 0;
+    }
+
+    public String getComment()
+    {
+        return comment;
+    }
+
+    public void setComment( String comment )
+    {
+        this.comment = comment;
+    }
+
+    public String getTargetDir()
+    {
+        return targetDir;
+    }
+
+    public void setTargetDir( String targetDir )
+    {
+        this.targetDir = targetDir;
+    }
+
+    public String getOrigin()
+    {
+        return origin;
+    }
+
+    public void setOrigin( String origin )
+    {
+        this.origin = origin;
+    }
+
+    public String getRevision()
+    {
+        return revision;
+    }
+
+    public void setRevision( String revision )
+    {
+        this.revision = revision;
     }
 }

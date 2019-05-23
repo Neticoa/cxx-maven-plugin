@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.Properties;
+import java.util.Map;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -46,11 +46,11 @@ import org.apache.maven.plugin.cxx.utils.FileSetManager;
 /**
  * Goal which gcovr execution.
  *
- * @author Franck Bonin 
+ * @author Franck Bonin
  */
 @Mojo( name = "coverage", defaultPhase = LifecyclePhase.TEST )
 public class CoverageMojo extends LaunchMojo
-{  
+{
     /**
      * The Report OutputFile Location.
      * 
@@ -58,7 +58,7 @@ public class CoverageMojo extends LaunchMojo
      */
     @Parameter( property = "coverage.reportsfilePath", defaultValue = "${project.build.directory}/gcovr-reports" )
     private File reportsfileDir;
-    
+
     /**
      * The Report OutputFile name identifier.
      * 
@@ -66,12 +66,12 @@ public class CoverageMojo extends LaunchMojo
      */
     @Parameter( property = "coverage.reportIdentifier", defaultValue = "" )
     private String reportIdentifier;
-    
+
     private String getReportFileName()
     {
         return "gcovr-result-" + reportIdentifier + ".xml";
     }
-    
+
     /**
      * Arguments to clean preexisting gcda report under workingDir
      * 
@@ -79,19 +79,20 @@ public class CoverageMojo extends LaunchMojo
      */
     @Parameter( property = "coverage.preclean", defaultValue = "true" )
     private boolean preclean;
-    
+
     @Override
-    protected void preExecute( Executor exec, CommandLine commandLine, Properties enviro ) throws MojoExecutionException
+    protected void preExecute( Executor exec, CommandLine commandLine, Map<String, String> enviro )
+        throws MojoExecutionException
     {
         if ( preclean )
         {
             FileSet afileSet = new FileSet();
             afileSet.setDirectory( getWorkingDir().getAbsolutePath() );
-            
+
             getLog().debug( "Search for **/*.gcda from " + afileSet.getDirectory() );
-            afileSet.setIncludes( Arrays.asList( new String[]{"**/*.gcda"} ) );
-            //afileSet.setExcludes( Arrays.asList(excludes) );
-            
+            afileSet.setIncludes( Arrays.asList( new String[] { "**/*.gcda" } ) );
+            // afileSet.setExcludes( Arrays.asList(excludes) );
+
             FileSetManager aFileSetManager = new FileSetManager();
             String[] found = aFileSetManager.getIncludedFiles( afileSet );
 
@@ -115,7 +116,7 @@ public class CoverageMojo extends LaunchMojo
                     catch ( SecurityException e )
                     {
                         getLog().warn( "SecurityException, unable to delete " + target.getAbsolutePath() );
-                    } 
+                    }
                 }
                 else
                 {
@@ -124,15 +125,15 @@ public class CoverageMojo extends LaunchMojo
             }
         }
     }
-    
+
     /**
-     * Arguments for the gcovr program. Shall be -x -d
-     * ex: -x -d to produce Xml reports and clean gcda execution reports after reading
+     * Arguments for the gcovr program. Shall be -x -d ex: -x -d to produce Xml
+     * reports and clean gcda execution reports after reading
      * 
      */
     @Parameter( property = "coverage.args", defaultValue = "-x -d" )
     private String gcovrArgs;
-    
+
     @Override
     protected void postExecute( int resultCode ) throws MojoExecutionException
     {
@@ -146,7 +147,7 @@ public class CoverageMojo extends LaunchMojo
             outputReportName = basedir.getAbsolutePath() + "/" + reportsfileDir.getPath() + "/" + getReportFileName();
         }
         getLog().info( "Coverage report location " + outputReportName );
-         
+
         OutputStream outStream = System.out;
         File file = new File( outputReportName );
         try
@@ -159,9 +160,9 @@ public class CoverageMojo extends LaunchMojo
         {
             getLog().error( "Coverage report redirected to stdout since " + outputReportName + " can't be opened" );
         }
-        
+
         InputStream pyScript = getClass().getResourceAsStream( "/gcovr.py" );
-        
+
         CommandLine commandLine = new CommandLine( "python" );
         Executor exec = new DefaultExecutor();
         String[] args = parseCommandlineArgs( "-" );
@@ -174,20 +175,22 @@ public class CoverageMojo extends LaunchMojo
             getLog().info( "Executing command line: " + commandLine );
 
             int res = ExecutorService.executeCommandLine( exec, commandLine, getEnvs(),
-                outStream/*getOutputStreamOut()*/, getOutputStreamErr(), pyScript/*getInputStream()*/ );
-            // this is a hugly workaround against a random bugs from hudson cobertura plugin.
-            // hudson cobertura plugin randomly truncat coverage reports file to a 1024 size multiple
+                outStream/* getOutputStreamOut() */, getOutputStreamErr(), pyScript/* getInputStream() */ );
+            // this is a hugly workaround against a random bugs from hudson cobertura
+            // plugin.
+            // hudson cobertura plugin randomly truncat coverage reports file to a 1024 size
+            // multiple
             // while it copy reports from slave to master node
-            for ( int j = 0 ; j < 200 ; j++ )
+            for ( int j = 0; j < 200; j++ )
             {
-                for ( int i = 0 ; i < 80 ; i++ )
+                for ( int i = 0; i < 80; i++ )
                 {
                     outStream.write( ' ' );
                 }
                 outStream.write( '\n' );
             }
             outStream.flush();
-            
+
             if ( isResultCodeAFailure( res ) )
             {
                 throw new MojoExecutionException( "Result of command line execution is: '" + res + "'." );
@@ -202,26 +205,27 @@ public class CoverageMojo extends LaunchMojo
             throw new MojoExecutionException( "Command execution failed.", e );
         }
     }
-    
+
     /**
-     * Set this to "true" to skip running tests, but still compile them. Its use is NOT RECOMMENDED, but quite
-     * convenient on occasion.
+     * Set this to "true" to skip running tests, but still compile them. Its use is
+     * NOT RECOMMENDED, but quite convenient on occasion.
      *
      * @since 0.0.5
      */
     @Parameter( property = "skipTests", defaultValue = "false" )
     protected boolean skipTests;
-    
+
     /**
-     * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable
-     * it using the "maven.test.skip" property, because maven.test.skip shall disables both running the tests
-     * and compiling the tests. Consider using the <code>skipTests</code> parameter instead.
+     * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED,
+     * especially if you enable it using the "maven.test.skip" property, because
+     * maven.test.skip shall disables both running the tests and compiling the
+     * tests. Consider using the <code>skipTests</code> parameter instead.
      *
      * @since 0.0.5
      */
     @Parameter( property = "maven.test.skip", defaultValue = "false" )
     protected boolean skip;
-    
+
     @Override
     protected boolean isSkip()
     {

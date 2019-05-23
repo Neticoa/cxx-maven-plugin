@@ -17,7 +17,7 @@ package org.apache.maven.plugin.cxx;
  * limitations under the License.
  *
  */
- 
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
@@ -50,7 +50,7 @@ import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
 import org.apache.maven.shared.artifact.filter.collection.GroupIdFilter;
 import org.apache.maven.shared.artifact.filter.collection.ProjectTransitivityFilter;
 import org.apache.maven.shared.artifact.filter.collection.ScopeFilter;
-import org.apache.maven.shared.artifact.filter.collection.TypeFilter;  
+import org.apache.maven.shared.artifact.filter.collection.TypeFilter;
 
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
@@ -78,10 +78,9 @@ import org.sonatype.plexus.components.sec.dispatcher.SecDispatcher;
  * @author Franck Bonin
  * @since 0.0.6
  */
-@Mojo( name = "scm-dependencies", requiresDependencyResolution = ResolutionScope.TEST,
-       defaultPhase = LifecyclePhase.VALIDATE, threadSafe = true )
+@Mojo( name = "scm-dependencies", requiresDependencyResolution = ResolutionScope.TEST, defaultPhase = LifecyclePhase.VALIDATE, threadSafe = true )
 public class ScmDependenciesMojo
-        extends org.apache.maven.plugin.dependency.fromDependencies.AbstractDependencyFilterMojo
+    extends org.apache.maven.plugin.dependency.fromDependencies.AbstractDependencyFilterMojo
 {
     /**
      * Pom directory location
@@ -90,7 +89,7 @@ public class ScmDependenciesMojo
      */
     @Parameter( property = "basedir", readonly = true, required = true )
     protected File basedir;
-    
+
     /**
      * Optional source dependencies sub-directory holder
      * 
@@ -98,15 +97,16 @@ public class ScmDependenciesMojo
      */
     @Parameter( property = "sourceSubdir", defaultValue = "." )
     protected String sourceSubdir;
-    
+
     /**
-     * svn:externals shall use precise svn revisions retrieved from scm info at execution time
+     * svn:externals shall use precise svn revisions retrieved from scm info at
+     * execution time
      * 
      * @since 0.0.6
      */
-    @Parameter( property = "sourceFreezeRevision", defaultValue = "false" )    
+    @Parameter( property = "sourceFreezeRevision", defaultValue = "false" )
     protected boolean sourceFreezeRevision;
-    
+
     // @formatter:off
     /**
      * List of String prefix to remove when creating dependencies target dirs
@@ -120,9 +120,9 @@ public class ScmDependenciesMojo
      * @since 0.0.6
      */
     // @formatter:on
-    @Parameter( )       
+    @Parameter( )
     protected String[] sourceTargetDirRemovePrefixes = null;
-    
+
     // @formatter:off
     /**
      * Provide explicit target path for each source dependency
@@ -143,7 +143,7 @@ public class ScmDependenciesMojo
     // @formatter:on
     @Parameter( )
     private SourceTarget[] sourceTargets = null;
-    
+
     /**
      * Comma Separated list of Classifiers to include. Empty String indicates
      * include everything (default).
@@ -154,14 +154,14 @@ public class ScmDependenciesMojo
     protected String includeRegexClassifiers;
 
     /**
-     * Comma Separated list of Classifiers to exclude. Empty String indicates
-     * don't exclude anything (default).
+     * Comma Separated list of Classifiers to exclude. Empty String indicates don't
+     * exclude anything (default).
      *
      * @since 0.0.6
      */
     @Parameter( property = "excludeRegexClassifiers", defaultValue = "" )
     protected String excludeRegexClassifiers;
-    
+
     /**
      * SCM connection information to use
      * 
@@ -169,12 +169,12 @@ public class ScmDependenciesMojo
      */
     @Parameter( property = "connectionType", defaultValue = "connection" )
     protected String connectionType;
-    
+
     /**
      * The user name (used by svn).
      * 
-     * You may use maven setting to store username. 
-     * See http://maven.apache.org/guides/mini/guide-encryption.html
+     * You may use maven setting to store username. See
+     * http://maven.apache.org/guides/mini/guide-encryption.html
      *
      * @since 0.0.6
      */
@@ -184,18 +184,18 @@ public class ScmDependenciesMojo
     /**
      * The user password (used by svn).
      * 
-     * You may use maven setting to store encrypted password. 
-     * See http://maven.apache.org/guides/mini/guide-encryption.html
+     * You may use maven setting to store encrypted password. See
+     * http://maven.apache.org/guides/mini/guide-encryption.html
      *
      * @since 0.0.6
      */
     @Parameter( property = "password" )
     private String password = null;
-    
+
     /**
-     * The server id to use in maven settings to retrieve credential.
-     * Optionnal, by defaut each scm url "hostname[:port]" is taken as server id to search potential
-     * credentials in maven settings
+     * The server id to use in maven settings to retrieve credential. Optionnal, by
+     * defaut each scm url "hostname[:port]" is taken as server id to search
+     * potential credentials in maven settings
      * 
      * See http://maven.apache.org/guides/mini/guide-encryption.html
      *
@@ -203,7 +203,7 @@ public class ScmDependenciesMojo
      */
     @Parameter( property = "settingsServerId" )
     private String settingsServerId = null;
-    
+
     /**
      * Maven settings.
      *
@@ -211,43 +211,45 @@ public class ScmDependenciesMojo
      */
     @Parameter( defaultValue = "${settings}", readonly = true )
     private Settings settings;
-    //@Component
-    //private Settings settings;
-        
+    // @Component
+    // private Settings settings;
+
     /**
      * The decrypter for passwords.
      * 
-     * When this plugin requires Maven 3.0 as minimum, this component can be removed and o.a.m.s.c.SettingsDecrypter be
-     * used instead.
+     * When this plugin requires Maven 3.0 as minimum, this component can be removed
+     * and o.a.m.s.c.SettingsDecrypter be used instead.
      */
     @Component( hint = "mng-4384" )
     private SecDispatcher secDispatcher;
-    //@Component
-    //private SettingsDecrypter settingsDecrypter;
-    
+    // @Component
+    // private SettingsDecrypter settingsDecrypter;
+
     /**
-     * origin : derived from org.apache.maven.plugin.dependency.fromDependencies.UnpackDependenciesMojo
+     * origin : derived from
+     * org.apache.maven.plugin.dependency.fromDependencies.UnpackDependenciesMojo
      * $FB duplicate with UnPackDependenciesMojo
      */
     protected ArtifactsFilter getMarkedArtifactFilter()
     {
         return new MarkerFileFilter( this.overWriteReleases, this.overWriteSnapshots, this.overWriteIfNewer,
-                                     new DefaultFileMarkerHandler( this.markersDirectory ) );
+            new DefaultFileMarkerHandler( this.markersDirectory ) );
     }
-  
+
     /**
-     * origin : org.apache.maven.plugin.dependency.fromDependencies.AbstractDependencyFilterMojo
+     * origin :
+     * org.apache.maven.plugin.dependency.fromDependencies.AbstractDependencyFilterMojo
      * $FB duplicate with UnPackDependenciesMojo
      */
     @Component
     MavenProjectBuilder myProjectBuilder;
-    
+
     /**
-     * origin : org.apache.maven.plugin.dependency.fromDependencies.AbstractDependencyFilterMojo
+     * origin :
+     * org.apache.maven.plugin.dependency.fromDependencies.AbstractDependencyFilterMojo
      * $FB duplicate with UnPackDependenciesMojo
      */
-    private MavenProject buildProjectFromArtifact( Artifact artifact )
-        throws MojoExecutionException
+    private MavenProject buildProjectFromArtifact( Artifact artifact ) throws MojoExecutionException
     {
         try
         {
@@ -258,13 +260,13 @@ public class ScmDependenciesMojo
             throw new MojoExecutionException( e.getMessage(), e );
         }
     }
-  
+
     /**
-     * origin : org.apache.maven.plugin.dependency.fromDependencies.AbstractDependencyFilterMojo
+     * origin :
+     * org.apache.maven.plugin.dependency.fromDependencies.AbstractDependencyFilterMojo
      * $FB duplicate with UnPackDependenciesMojo
      */
-    private void addParentArtifacts( MavenProject project, Set<Artifact> artifacts )
-        throws MojoExecutionException
+    private void addParentArtifacts( MavenProject project, Set<Artifact> artifacts ) throws MojoExecutionException
     {
         while ( project.hasParent() )
         {
@@ -273,9 +275,8 @@ public class ScmDependenciesMojo
             if ( project.getArtifact() == null )
             {
                 // Maven 2.x bug
-                Artifact artifact =
-                    factory.createBuildArtifact( project.getGroupId(), project.getArtifactId(), project.getVersion(),
-                                                 project.getPackaging() );
+                Artifact artifact = factory.createBuildArtifact( project.getGroupId(), project.getArtifactId(),
+                    project.getVersion(), project.getPackaging() );
                 project.setArtifact( artifact );
             }
 
@@ -298,17 +299,18 @@ public class ScmDependenciesMojo
             }
         }
     }
-    
+
     /**
      * Method creates filters and filters the projects dependencies. This method
-     * also transforms the dependencies if classifier is set. The dependencies
-     * are filtered in least specific to most specific order
+     * also transforms the dependencies if classifier is set. The dependencies are
+     * filtered in least specific to most specific order
      * 
-     * origin : derived from org.apache.maven.plugin.dependency.fromDependencies.AbstractDependencyFilterMojo
+     * origin : derived from
+     * org.apache.maven.plugin.dependency.fromDependencies.AbstractDependencyFilterMojo
      *
      * @param stopOnFailure
-     * @return DependencyStatusSets - Bean of TreeSets that contains information
-     *         on the projects dependencies
+     * @return DependencyStatusSets - Bean of TreeSets that contains information on
+     *         the projects dependencies
      * @throws MojoExecutionException
      */
     protected DependencyStatusSets getDependencySets( boolean stopOnFailure, boolean includeParents )
@@ -320,29 +322,32 @@ public class ScmDependenciesMojo
         filter.addFilter( new ProjectTransitivityFilter( project.getDependencyArtifacts(), this.excludeTransitive ) );
 
         filter.addFilter( new ScopeFilter( DependencyUtil.cleanToBeTokenizedString( this.includeScope ),
-                                           DependencyUtil.cleanToBeTokenizedString( this.excludeScope ) ) );
+            DependencyUtil.cleanToBeTokenizedString( this.excludeScope ) ) );
 
-        /*filter.addFilter( new TypeFilter( DependencyUtil.cleanToBeTokenizedString( this.includeTypes ),
-                                          DependencyUtil.cleanToBeTokenizedString( this.excludeTypes ) ) );*/
+        /*
+         * filter.addFilter( new TypeFilter( DependencyUtil.cleanToBeTokenizedString(
+         * this.includeTypes ), DependencyUtil.cleanToBeTokenizedString(
+         * this.excludeTypes ) ) );
+         */
         filter.addFilter( new TypeFilter( DependencyUtil.cleanToBeTokenizedString( "pom" ),
-                                          DependencyUtil.cleanToBeTokenizedString( null ) ) );
+            DependencyUtil.cleanToBeTokenizedString( null ) ) );
 
         filter.addFilter( new ClassifierFilter( DependencyUtil.cleanToBeTokenizedString( this.includeClassifiers ),
-                                                DependencyUtil.cleanToBeTokenizedString( this.excludeClassifiers ) ) );
-                                                
-        filter.addFilter( new ClassifierRegexFilter (
-            DependencyUtil.cleanToBeTokenizedString( this.includeRegexClassifiers ),
-            DependencyUtil.cleanToBeTokenizedString( this.excludeRegexClassifiers ) ) );  
+            DependencyUtil.cleanToBeTokenizedString( this.excludeClassifiers ) ) );
+
+        filter.addFilter(
+            new ClassifierRegexFilter( DependencyUtil.cleanToBeTokenizedString( this.includeRegexClassifiers ),
+                DependencyUtil.cleanToBeTokenizedString( this.excludeRegexClassifiers ) ) );
 
         filter.addFilter( new GroupIdFilter( DependencyUtil.cleanToBeTokenizedString( this.includeGroupIds ),
-                                             DependencyUtil.cleanToBeTokenizedString( this.excludeGroupIds ) ) );
+            DependencyUtil.cleanToBeTokenizedString( this.excludeGroupIds ) ) );
 
         filter.addFilter( new ArtifactIdFilter( DependencyUtil.cleanToBeTokenizedString( this.includeArtifactIds ),
-                                                DependencyUtil.cleanToBeTokenizedString( this.excludeArtifactIds ) ) );
-                                                                               
+            DependencyUtil.cleanToBeTokenizedString( this.excludeArtifactIds ) ) );
 
         // start with all artifacts.
-        @SuppressWarnings( "unchecked" ) Set<Artifact> artifacts = project.getArtifacts();
+        @SuppressWarnings( "unchecked" )
+        Set<Artifact> artifacts = project.getArtifacts();
 
         if ( includeParents )
         {
@@ -385,13 +390,13 @@ public class ScmDependenciesMojo
      *
      * @return list of servers with decrypted passwords.
      */
-    /*List<Server> getDecryptedServers()
-    {
-        final SettingsDecryptionRequest settingsDecryptionRequest = new DefaultSettingsDecryptionRequest();
-        settingsDecryptionRequest.setServers( settings.getServers() );
-        final SettingsDecryptionResult decrypt = settingsDecrypter.decrypt( settingsDecryptionRequest );
-        return decrypt.getServers();
-    }*/
+    /*
+     * List<Server> getDecryptedServers() { final SettingsDecryptionRequest
+     * settingsDecryptionRequest = new DefaultSettingsDecryptionRequest();
+     * settingsDecryptionRequest.setServers( settings.getServers() ); final
+     * SettingsDecryptionResult decrypt = settingsDecrypter.decrypt(
+     * settingsDecryptionRequest ); return decrypt.getServers(); }
+     */
 
     SvnExternalEntry buildExternalEntryFromProvidedInfos( String targetDir, Artifact artifact,
         MavenProject dependencyProject, SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
@@ -404,7 +409,7 @@ public class ScmDependenciesMojo
             }
         }
         targetDir = targetDir.replaceFirst( "^/", "" );
-      
+
         SvnExternalEntry external = null;
         File f = new File( targetDir );
         try
@@ -413,26 +418,25 @@ public class ScmDependenciesMojo
         }
         catch ( IOException e )
         {
-            getLog().warn( "targetPath for external " + artifactToString( artifact ) + " is not a path : "
-                + targetDir );
+            getLog()
+                .warn( "targetPath for external " + artifactToString( artifact ) + " is not a path : " + targetDir );
             return external;
         }
         external = new SvnExternalEntry();
-                
-        external.targetDir = targetDir;
-        
-        external.origin = StringUtils.equals( rootSvnInfo.getSvnRoot(), dependencySvnInfo.getSvnRoot() )
-            ? dependencySvnInfo.getSvnRelativeUrl() : dependencySvnInfo.getSvnUrl();
-    
-        external.revision = sourceFreezeRevision
-            ? "-r" + String.valueOf( dependencySvnInfo.getRevision() ) : null;
+
+        external.setTargetDir( targetDir );
+
+        external.setOrigin( StringUtils.equals( rootSvnInfo.getSvnRoot(), dependencySvnInfo.getSvnRoot() )
+            ? dependencySvnInfo.getSvnRelativeUrl()
+            : dependencySvnInfo.getSvnUrl() );
+
+        external.setRevision( sourceFreezeRevision ? "-r" + String.valueOf( dependencySvnInfo.getRevision() ) : null );
 
         return external;
     }
-    
 
     SvnExternalEntry buildCurrentDependencyExternalFromPluginsConfig( Artifact artifact, MavenProject dependencyProject,
-       SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
+        SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
     {
         SvnExternalEntry external = null;
         // Option 3 : if this.externals contains dependencyProject
@@ -442,9 +446,9 @@ public class ScmDependenciesMojo
             {
                 if ( curExt.dependencyMatch( artifact ) )
                 {
-                    getLog().debug( "Dependency " +  curExt.dependency + " match " + artifactToString( artifact ) );
-                    external = buildExternalEntryFromProvidedInfos( curExt.targetDir, artifact,
-                        dependencyProject, dependencySvnInfo, rootSvnInfo );
+                    getLog().debug( "Dependency " + curExt.dependency + " match " + artifactToString( artifact ) );
+                    external = buildExternalEntryFromProvidedInfos( curExt.targetDir, artifact, dependencyProject,
+                        dependencySvnInfo, rootSvnInfo );
                     if ( null != external )
                     {
                         getLog().info( "Dependency " + artifactToString( artifact )
@@ -456,20 +460,21 @@ public class ScmDependenciesMojo
         }
         return external;
     }
-    
+
     SvnExternalEntry buildCurrentDependencyFromDependencyConfig( Artifact artifact, MavenProject dependencyProject,
-       SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
+        SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
     {
         SvnExternalEntry external = null;
-        // Option 2 : if dependencyProject.getProperties() contains 'scm.dependencies.source.targetDir'
+        // Option 2 : if dependencyProject.getProperties() contains
+        // 'scm.dependencies.source.targetDir'
         Properties ps = dependencyProject.getProperties();
         if ( null != ps )
         {
             String targetDir = ps.getProperty( "scm.dependencies.source.targetDir" );
-            if ( ! StringUtils.isEmpty( targetDir ) )
+            if ( !StringUtils.isEmpty( targetDir ) )
             {
-                external = buildExternalEntryFromProvidedInfos( targetDir, artifact,
-                    dependencyProject, dependencySvnInfo, rootSvnInfo );
+                external = buildExternalEntryFromProvidedInfos( targetDir, artifact, dependencyProject,
+                    dependencySvnInfo, rootSvnInfo );
                 if ( null != external )
                 {
                     getLog().info( "Dependency " + artifactToString( artifact )
@@ -489,9 +494,9 @@ public class ScmDependenciesMojo
         }
         return external;
     }
-    
+
     SvnExternalEntry buildCurrentDependencyExternalDefault( Artifact artifact, MavenProject dependencyProject,
-       SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
+        SvnInfo dependencySvnInfo, SvnInfo rootSvnInfo )
     {
         SvnExternalEntry external = null;
         // Option 1 : use artifact.getGroupId().artifact.getArtifactId()
@@ -505,9 +510,9 @@ public class ScmDependenciesMojo
             }
         }
         targetDir = targetDir.replaceAll( Pattern.quote( "." ), "/" );
-        
-        external = buildExternalEntryFromProvidedInfos( targetDir, artifact,
-            dependencyProject, dependencySvnInfo, rootSvnInfo );
+
+        external = buildExternalEntryFromProvidedInfos( targetDir, artifact, dependencyProject, dependencySvnInfo,
+            rootSvnInfo );
         if ( null != external )
         {
             getLog().info( "Dependency " + artifactToString( artifact ) + " defaut computed external entry is : "
@@ -515,7 +520,7 @@ public class ScmDependenciesMojo
         }
         return external;
     }
-    
+
     public String artifactToString( Artifact artifact )
     {
         StringBuffer dependencyStr = new StringBuffer();
@@ -528,12 +533,11 @@ public class ScmDependenciesMojo
         dependencyStr.append( artifact.getType() );
         return dependencyStr.toString();
     }
-    
-    protected void doExecute()
-        throws MojoExecutionException
+
+    protected void doExecute() throws MojoExecutionException
     {
         DependencyStatusSets dss = getDependencySets( true );
-        
+
         // if we use svn, we need an externals dir
         SvnInfo externalsSvnInfo = null;
         SvnExternalsEntries externalsEntries = null;
@@ -542,7 +546,7 @@ public class ScmDependenciesMojo
         for ( Artifact artifact : dss.getResolvedDependencies() )
         {
             String dependencyStr = artifactToString( artifact );
-          
+
             MavenProject dependencyProject = buildProjectFromArtifact( artifact );
             Scm scm = dependencyProject.getScm();
 
@@ -556,76 +560,76 @@ public class ScmDependenciesMojo
             {
                 scmUri = scm.getDeveloperConnection();
             }
-            
+
             if ( StringUtils.isEmpty( scmUri ) )
             {
                 throw new MojoExecutionException( "No SCM Uri specified for artifact " + dependencyStr );
             }
-            
+
             String[] scmType = scmUri.split( ":", 3 );
-            
-            if ( scmType.length < 3 || ! StringUtils.equalsIgnoreCase( scmType[0], "scm" ) )
+
+            if ( scmType.length < 3 || !StringUtils.equalsIgnoreCase( scmType[0], "scm" ) )
             {
                 throw new MojoExecutionException( "SCM Uri content invalide : " + scmUri );
             }
-            
+
             if ( StringUtils.equalsIgnoreCase( scmType[1], "svn" ) )
             {
                 String dependencySvnUri = scmType[2];
-                
+
                 // check svn::externals dir only once
                 if ( null == externalsSvnInfo || null == externalsEntries )
                 {
                     targetSourceDir = new File( basedir.toString() + File.separator + sourceSubdir );
-                    if ( ! targetSourceDir.isDirectory() )
+                    if ( !targetSourceDir.isDirectory() )
                     {
-                        throw new MojoExecutionException( "Svn externals dir does not exists or is not a directory : "
-                            + targetSourceDir );
+                        throw new MojoExecutionException(
+                            "Svn externals dir does not exists or is not a directory : " + targetSourceDir );
                     }
-                    
-                    externalsSvnInfo = SvnService.getSvnInfo( basedir,
-                        null, targetSourceDir.getAbsolutePath(), getLog(), false );
-                    
-                    if ( ! externalsSvnInfo.isValide() )
+
+                    externalsSvnInfo = SvnService.getSvnInfo( basedir, null, targetSourceDir.getAbsolutePath(),
+                        getLog(), false );
+
+                    if ( !externalsSvnInfo.isValide() )
                     {
-                        throw new MojoExecutionException( "Svn info not available for externals dir : "
-                            + targetSourceDir );
+                        throw new MojoExecutionException(
+                            "Svn info not available for externals dir : " + targetSourceDir );
                     }
-                                     
+
                     getLog().info( "Svn externals dir is '" + externalsSvnInfo.toString() + "'" );
-                    
-                    externalsEntries = SvnService.loadSvnExternals( basedir,
-                        null, targetSourceDir.getAbsolutePath(), getLog() );
+
+                    externalsEntries = SvnService.loadSvnExternals( basedir, null, targetSourceDir.getAbsolutePath(),
+                        getLog() );
                     // externalsEntries not null here
-                    
+
                     getLog().info( "Svn initial externals are '" + externalsEntries.values().toString() + "'" );
                 }
-                Credential credential = Credential.createCredential(
-                    dependencySvnUri, username, password, settingsServerId, settings, secDispatcher, getLog() );
-                    
-                SvnInfo dependencySvnInfo = SvnService.getSvnInfo( basedir, credential, dependencySvnUri,
-                    getLog(), false );
-                
-                if ( ! dependencySvnInfo.isValide() )
+                Credential credential = Credential.createCredential( dependencySvnUri, username, password,
+                    settingsServerId, settings, secDispatcher, getLog() );
+
+                SvnInfo dependencySvnInfo = SvnService.getSvnInfo( basedir, credential, dependencySvnUri, getLog(),
+                    false );
+
+                if ( !dependencySvnInfo.isValide() )
                 {
-                    throw new MojoExecutionException( "Svn info not available for dependency : "
-                        + dependencyStr + " at " + dependencySvnUri );
+                    throw new MojoExecutionException(
+                        "Svn info not available for dependency : " + dependencyStr + " at " + dependencySvnUri );
                 }
                 getLog().info( "Svn info for dependency : " + dependencyStr + " are " + dependencySvnInfo.toString() );
-                              
+
                 SvnExternalEntry ee = buildCurrentDependencyExternalFromPluginsConfig( artifact, dependencyProject,
-                         dependencySvnInfo, externalsSvnInfo );
+                    dependencySvnInfo, externalsSvnInfo );
                 if ( null == ee )
                 {
-                    ee = buildCurrentDependencyFromDependencyConfig( artifact, dependencyProject,
-                         dependencySvnInfo, externalsSvnInfo );
+                    ee = buildCurrentDependencyFromDependencyConfig( artifact, dependencyProject, dependencySvnInfo,
+                        externalsSvnInfo );
                 }
                 if ( null == ee )
                 {
                     ee = buildCurrentDependencyExternalDefault( artifact, dependencyProject, dependencySvnInfo,
-                          externalsSvnInfo );
+                        externalsSvnInfo );
                 }
-                
+
                 if ( null != ee )
                 {
                     externalsEntries.put( ee );
@@ -634,7 +638,7 @@ public class ScmDependenciesMojo
                 {
                     throw new MojoExecutionException( "Unable to build external for : " + dependencyStr );
                 }
-            } 
+            }
             else
             {
                 throw new MojoExecutionException( "SCM unsupported yet : " + scmType[1] );
@@ -642,8 +646,8 @@ public class ScmDependenciesMojo
         }
         if ( null != externalsEntries && null != targetSourceDir )
         {
-            SvnService.writeSvnExternals( basedir, null, targetSourceDir.getAbsolutePath(),
-                externalsEntries, project.getBuild().getDirectory(), getLog() );
+            SvnService.writeSvnExternals( basedir, null, targetSourceDir.getAbsolutePath(), externalsEntries,
+                project.getBuild().getDirectory(), getLog() );
         }
     }
 }

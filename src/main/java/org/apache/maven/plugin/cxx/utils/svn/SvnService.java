@@ -17,7 +17,7 @@ package org.apache.maven.plugin.cxx.utils.svn;
  * limitations under the License.
  *
  */
- 
+
 import org.apache.maven.plugin.cxx.utils.Credential;
 import org.apache.maven.plugin.cxx.utils.ExecutorService;
 import org.apache.maven.plugin.logging.Log;
@@ -31,17 +31,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.io.FileOutputStream;
-
-import java.util.Properties;
-
+import java.util.Map;
 import java.text.StringCharacterIterator;
- 
+
 import org.apache.commons.exec.CommandLine;
 
 import org.codehaus.plexus.util.StringUtils;
- 
+
 import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.Executor;
 
 import javax.xml.parsers.SAXParserFactory;
@@ -59,10 +56,26 @@ import org.codehaus.plexus.util.IOUtil;
  */
 public class SvnService
 {
-    public static void execSvnCommand( File basedir, Credential cred, String[] specificParams,
-        OutputStream out, Log log ) throws MojoExecutionException
+    private SvnService()
     {
-        Properties enviro = null;
+    }
+
+    public static boolean svnAvailable( File basedir )
+    {
+        try
+        {
+            return null != ExecutorService.findExecutablePath( "svn", ExecutorService.getSystemEnvVars(), basedir );
+        }
+        catch ( IOException e )
+        {
+            return false;
+        }
+    }
+
+    public static void execSvnCommand( File basedir, Credential cred, String[] specificParams, OutputStream out,
+        Log log ) throws MojoExecutionException
+    {
+        Map<String, String> enviro = null;
         try
         {
             enviro = ExecutorService.getSystemEnvVars();
@@ -72,59 +85,79 @@ public class SvnService
         {
             log.error( "Could not assign default system environment variables.", e );
         }
-        
+
         CommandLine commandLine = ExecutorService.getExecutablePath( "svn", enviro, basedir );
-        
-        if ( cred != null && ! StringUtils.isEmpty( cred.getUsername() ) )
+
+        if ( cred != null && !StringUtils.isEmpty( cred.getUsername() ) )
         {
             commandLine.addArguments( new String[] { "--username", cred.getUsername() } );
         }
-        if ( cred != null && ! StringUtils.isEmpty( cred.getPassword() ) )
+        if ( cred != null && !StringUtils.isEmpty( cred.getPassword() ) )
         {
             commandLine.addArguments( new String[] { "--password", cred.getPassword() } );
         }
-        /* TODO later :
-        commandLine.addArguments( new String[] {"--config-dir", "todo" } );
-        commandLine.addArgument( "--no-auth-cache" ); 
-        commandLine.addArgument( "--non-interactive" );
-        commandLine.addArgument( "--trust-server-cert" );
-        */
+        commandLine.addArguments( new String[] { "--non-interactive" } );
+        /* @formatter:off
+         * TODO later :
+         * commandLine.addArguments( new String[] {"--config-dir", "todo" } );
+         * commandLine.addArgument( "--no-auth-cache" );
+         * commandLine.addArgument( "--trust-server-cert" );
+         * @formatter:on
+         */
 
         commandLine.addArguments( specificParams );
-        
+
         Executor exec = new DefaultExecutor();
-        
+
         try
         {
             log.debug( "Execute command '" + commandLine + "'" );
-            int resultCode = ExecutorService.executeCommandLine( exec, commandLine, enviro, out,
-                System.err, System.in );
-        }
-        catch ( ExecuteException e )
-        {
-            throw new MojoExecutionException( "Command '" + commandLine + "' execution failed.", e );
+            int resultCode = ExecutorService.executeCommandLine( exec, commandLine, enviro, out, System.err,
+                System.in );
         }
         catch ( IOException e )
         {
             throw new MojoExecutionException( "Command '" + commandLine + "' execution failed.", e );
         }
     }
-    
-    public static SvnInfo getSvnInfo( File basedir, Credential cred, String uri,
-        Log log, boolean noParsingFailure ) throws MojoExecutionException
+
+    public static SvnInfo getSvnInfo( File basedir, Credential cred, String uri, Log log, boolean noParsingFailure )
+        throws MojoExecutionException
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        
-        execSvnCommand( basedir, cred, new String[] {"info", uri, "--xml"}, out, log );
-        
+
+        execSvnCommand( basedir, cred, new String[] { "info", uri, "--xml" }, out, log );
+
         SvnInfo svnInfo = new SvnInfo();
         try
         {
             SAXParserFactory sfactory = SAXParserFactory.newInstance();
+
+            // To disable external entity processing for SAXParserFactory, XMLReader or
+            // DocumentBuilderFactory configure one of the properties
+            // XMLConstants.FEATURE_SECURE_PROCESSING or
+            // "http://apache.org/xml/features/disallow-doctype-decl" to true.
+
+            // Xerces 1 -
+            // http://xerces.apache.org/xerces-j/features.html#external-general-entities
+            // Xerces 2 -
+            // http://xerces.apache.org/xerces2-j/features.html#external-general-entities
+
+            // Using the SAXParserFactory's setFeature
+            sfactory.setFeature( "http://xml.org/sax/features/external-general-entities", false );
+
+            // Xerces 2 only -
+            // http://xerces.apache.org/xerces-j/features.html#external-general-entities
+            sfactory.setFeature( "http://apache.org/xml/features/disallow-doctype-decl", true );
+
             SAXParser parser = sfactory.newSAXParser();
             XMLReader xmlparser = parser.getXMLReader();
+
+            // Using the XMLReader's setFeature
+            xmlparser.setFeature( "http://xml.org/sax/features/external-general-entities", false );
+
             xmlparser.setContentHandler( svnInfo );
-            xmlparser.parse( new InputSource( new ByteArrayInputStream( out.toByteArray( ) ) ) );
+            xmlparser.parse( new InputSource( new ByteArrayInputStream( out.toByteArray() ) ) );
         }
         catch ( Exception e )
         {
@@ -136,31 +169,35 @@ public class SvnService
             {
                 throw new MojoExecutionException( "svn info xml parsing failed.", e );
             }
-        }        
+        }
         return svnInfo;
     }
-    
+
     public static SvnExternalsEntries loadSvnExternals( File basedir, Credential cred, String uri, Log log )
         throws MojoExecutionException
     {
-        SvnExternalsEntries properties = new SvnExternalsEntries();
-      
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        
-        SvnService.execSvnCommand( basedir, cred,
-            new String[] {"propget", "svn:externals", uri}, out, log );
-        
-        BufferedReader in = new BufferedReader( new StringReader( out.toString( ) ) );
-        
+
+        SvnService.execSvnCommand( basedir, cred, new String[] { "propget", "svn:externals", uri }, out, log );
+
+        return parseSvnExternals( out.toString(), uri, log );
+    }
+
+    public static SvnExternalsEntries parseSvnExternals( String multilineExternals, String uri, Log log )
+        throws MojoExecutionException
+    {
+        BufferedReader in = new BufferedReader( new StringReader( multilineExternals ) );
+
+        SvnExternalsEntries properties = new SvnExternalsEntries();
         String line = null;
-        
         try
         {
+            //@formatter:off
             /* old svn 1.4 :
               third-party/sounds             http://svn.example.com/repos/sounds
               third-party/skins -r148        http://svn.example.com/skinproj
               third-party/skins/toolkit -r21 http://svn.example.com/skin-maker
-            */
+             */
             /* svn 1.5 and above (operative rev):
               http://svn.example.com/repos/sounds third-party/sounds
               -r148 http://svn.example.com/skinproj third-party/skins
@@ -169,8 +206,9 @@ public class SvnService
               http://svn.example.com/repos/sounds third-party/sounds
               http://svn.example.com/skinproj@148 third-party/skins
               http://svn.example.com/skin-maker@21 third-party/skins/toolkit
-            */
-            
+             */
+            //@formatter:on
+
             // this parser only support svn:externals syntaxe 1.5 and above
             // [revision] origin target_dir
             while ( null != ( line = in.readLine() ) )
@@ -180,36 +218,39 @@ public class SvnService
                 SvnExternalEntry external = new SvnExternalEntry();
 
                 SvnExternalsTokenizer.Token tok = m.nextToken();
-                if ( SvnExternalsTokenizer.TokenType.revision == tok.tokenType )
+                if ( SvnExternalsTokenizer.TokenType.revision == tok.getTokenType() )
                 {
-                    external.revision = tok.value.toString();
-                    
+                    external.setRevision( tok.getValue().toString() );
+
                     tok = m.nextToken();
-                    external.origin = SvnExternalsTokenizer.TokenType.libelle == tok.tokenType
-                        ? tok.value.toString() : null; 
-                    
+                    external.setOrigin(
+                        SvnExternalsTokenizer.TokenType.libelle == tok.getTokenType() ? tok.getValue().toString()
+                            : null );
+
                     tok = m.nextToken();
-                    external.targetDir = SvnExternalsTokenizer.TokenType.libelle == tok.tokenType
-                        ? tok.value.toString() : null; 
+                    external.setTargetDir(
+                        SvnExternalsTokenizer.TokenType.libelle == tok.getTokenType() ? tok.getValue().toString()
+                            : null );
                 }
-                else if ( SvnExternalsTokenizer.TokenType.libelle == tok.tokenType )
+                else if ( SvnExternalsTokenizer.TokenType.libelle == tok.getTokenType() )
                 {
-                    external.origin = tok.value.toString();
-                    
+                    external.setOrigin( tok.getValue().toString() );
+
                     tok = m.nextToken();
-                    external.targetDir = SvnExternalsTokenizer.TokenType.libelle == tok.tokenType
-                        ? tok.value.toString() : null; 
+                    external.setTargetDir(
+                        SvnExternalsTokenizer.TokenType.libelle == tok.getTokenType() ? tok.getValue().toString()
+                            : null );
                 }
-                else if ( SvnExternalsTokenizer.TokenType.comment == tok.tokenType )
+                else if ( SvnExternalsTokenizer.TokenType.comment == tok.getTokenType() )
                 {
-                    external.comment = tok.value.toString();
+                    external.setComment( tok.getValue().toString() );
                 }
-                else if ( SvnExternalsTokenizer.TokenType.empty == tok.tokenType )
+                else if ( SvnExternalsTokenizer.TokenType.empty == tok.getTokenType() )
                 {
                     // ignore empty lines
                     continue;
                 }
-                
+
                 if ( external.isValide() )
                 {
                     properties.put( external );
@@ -224,13 +265,13 @@ public class SvnService
         {
             log.warn( "Failed to parse svn:externals of " + uri + " : " + e );
         }
-        
+
         return properties;
     }
-    
-    public static void writeSvnExternals( File basedir, Credential cred, String uri,
-        SvnExternalsEntries properties, String tempDir, Log log ) throws MojoExecutionException
-    {   
+
+    public static void writeSvnExternals( File basedir, Credential cred, String uri, SvnExternalsEntries properties,
+        String tempDir, Log log ) throws MojoExecutionException
+    {
         String targetDirectoryPath = tempDir;
         new File( targetDirectoryPath ).mkdirs();
         File file = new File( targetDirectoryPath, "svn.externals" );
@@ -250,17 +291,17 @@ public class SvnService
         }
         catch ( Exception e )
         {
-            throw new MojoExecutionException( "Error writing intermediate properties file "
-                + file.toString() + " : " + e );
+            throw new MojoExecutionException(
+                "Error writing intermediate properties file " + file.toString() + " : " + e );
         }
         finally
         {
             IOUtil.close( outputStream );
         }
-        
+
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         SvnService.execSvnCommand( basedir, cred,
-            new String[] {"propset", "svn:externals", "--file", file.getPath(), uri}, out, log );
+            new String[] { "propset", "svn:externals", "--file", file.getPath(), uri }, out, log );
     }
-    
+
 }

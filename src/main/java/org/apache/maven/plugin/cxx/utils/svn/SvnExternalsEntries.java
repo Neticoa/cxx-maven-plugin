@@ -22,17 +22,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * svn 
+ * svn
  * 
  */
 public class SvnExternalsEntries
 {
-    //private HashMap<String, ExternalEntry> fromOrigin = new HashMap<String, ExternalEntry>();
-    //private HashMap<String, ExternalEntry> fromTargetDir = new HashMap<String, ExternalEntry>();
+    // private HashMap<String, ExternalEntry> fromOrigin = new HashMap<>();
+    // private HashMap<String, ExternalEntry> fromTargetDir = new HashMap<>();
     private ArrayList<SvnExternalEntry> ordered = new ArrayList<SvnExternalEntry>();
-    
+
     public void put( SvnExternalEntry ee )
     {
+        //@formatter:off
         /*if ( fromOrigin.containsKey( ee.origin ) )
         {
             ExternalEntry eeo = fromOrigin.get( ee.origin );
@@ -45,9 +46,10 @@ public class SvnExternalsEntries
             fromOrigin.remove( eetd.origin );
             ordered.remove( ee );
         }*/
-        
-        //fromOrigin.put( ee.origin, ee );
-        //fromTargetDir.put( ee.targetDir, ee );
+        //@formatter:on
+
+        // fromOrigin.put( ee.origin, ee );
+        // fromTargetDir.put( ee.targetDir, ee );
         int place = ordered.indexOf( ee );
         if ( place != -1 )
         {
@@ -58,7 +60,7 @@ public class SvnExternalsEntries
             ordered.add( ee );
         }
     }
-    
+
     public Collection<SvnExternalEntry> values()
     {
         return ordered;

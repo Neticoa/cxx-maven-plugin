@@ -27,7 +27,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
-import java.util.Properties;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.io.OutputStream;
 
@@ -45,21 +45,21 @@ import org.apache.commons.exec.Executor;
  * @author Franck Bonin
  */
 public abstract class AbstractLaunchMojo extends AbstractCxxMojo
-{    
+{
     protected abstract List<String> getArgsList();
-    
+
     protected abstract String getCommandArgs();
-    
+
     private List<String> getCommandLineArgs() throws MojoExecutionException
     {
         ArrayList<String> commandArguments = new ArrayList<String>();
-        
+
         if ( getCommandArgs() != null )
         {
             String[] args = parseCommandlineArgs( getCommandArgs() );
             for ( String argument : args )
             {
-                 commandArguments.add( argument );
+                commandArguments.add( argument );
             }
         }
         else if ( getArgsList() != null )
@@ -104,14 +104,14 @@ public abstract class AbstractLaunchMojo extends AbstractCxxMojo
             }
         }
     }
-    
+
     protected abstract String getExecutable();
 
     protected abstract Map getMoreEnvironmentVariables();
 
-    protected Properties getEnvs()
+    protected Map<String, String> getEnvs()
     {
-        Properties enviro = new Properties();
+        Map<String, String> enviro = new HashMap<String, String>();
         try
         {
             enviro = ExecutorService.getSystemEnvVars();
@@ -120,7 +120,7 @@ public abstract class AbstractLaunchMojo extends AbstractCxxMojo
         {
             getLog().error( "Could not assign default system enviroment variables.", e );
         }
-    
+
         if ( getMoreEnvironmentVariables() != null )
         {
             Iterator iter = getMoreEnvironmentVariables().keySet().iterator();
@@ -133,10 +133,9 @@ public abstract class AbstractLaunchMojo extends AbstractCxxMojo
         }
         return enviro;
     }
-    
 
     protected abstract File getWorkingDir();
-    
+
     private void ensureExistWorkingDirectory() throws MojoExecutionException
     {
         if ( !getWorkingDir().exists() )
@@ -144,31 +143,31 @@ public abstract class AbstractLaunchMojo extends AbstractCxxMojo
             getLog().info( "Making working directory '" + getWorkingDir().getAbsolutePath() + "'." );
             if ( !getWorkingDir().mkdirs() )
             {
-                throw new MojoExecutionException( "Could not make working directory: '"
-                    + getWorkingDir().getAbsolutePath() + "'" );
+                throw new MojoExecutionException(
+                    "Could not make working directory: '" + getWorkingDir().getAbsolutePath() + "'" );
             }
         }
     }
-    
+
     /**
      * The current build session instance.
      * 
      */
-    //@Parameter( defaultValue = "${session}", readonly = true )
-    //protected MavenSession session;
-    
+    // @Parameter( defaultValue = "${session}", readonly = true )
+    // protected MavenSession session;
+
     protected abstract List<String> getSuccesCode();
-    
+
     protected boolean isResultCodeAFailure( int result )
     {
-        if ( getSuccesCode() == null || getSuccesCode().size() == 0 ) 
+        if ( getSuccesCode() == null || getSuccesCode().size() == 0 )
         {
             return result != 0;
         }
         for ( Iterator it = getSuccesCode().iterator(); it.hasNext(); )
         {
             int code = Integer.parseInt( (String) it.next() );
-            if ( code == result ) 
+            if ( code == result )
             {
                 return false;
             }
@@ -177,34 +176,35 @@ public abstract class AbstractLaunchMojo extends AbstractCxxMojo
     }
 
     protected abstract boolean isSkip();
-    
+
     protected OutputStream getOutputStreamOut()
     {
         return System.out;
     }
-    
+
     protected OutputStream getOutputStreamErr()
     {
         return System.err;
     }
-    
+
     protected InputStream getInputStream()
     {
         return System.in;
     }
-    
-    protected void preExecute( Executor exec, CommandLine commandLine, Properties enviro ) throws MojoExecutionException
+
+    protected void preExecute( Executor exec, CommandLine commandLine, Map<String, String> enviro )
+        throws MojoExecutionException
     {
     }
-    
+
     protected void postExecute( int resultCode ) throws MojoExecutionException
     {
         if ( isResultCodeAFailure( resultCode ) )
         {
-              throw new MojoExecutionException( "Result of command line execution is: '" + resultCode + "'." );
+            throw new MojoExecutionException( "Result of command line execution is: '" + resultCode + "'." );
         }
     }
-    
+
     @Override
     public void execute() throws MojoExecutionException
     {
@@ -220,15 +220,15 @@ public abstract class AbstractLaunchMojo extends AbstractCxxMojo
         }
 
         List<String> commandArguments = getCommandLineArgs();
-        
-        Properties enviro = getEnvs();
-        
+
+        Map<String, String> enviro = getEnvs();
+
         ensureExistWorkingDirectory();
 
         CommandLine commandLine = ExecutorService.getExecutablePath( getExecutable(), enviro, getWorkingDir() );
 
         Executor exec = new DefaultExecutor();
-       
+
         commandLine.addArguments( (String[]) commandArguments.toArray( new String[commandArguments.size()] ), false );
 
         exec.setWorkingDirectory( getWorkingDir() );
@@ -236,12 +236,12 @@ public abstract class AbstractLaunchMojo extends AbstractCxxMojo
         try
         {
             getLog().info( "Executing command line: " + commandLine );
-            
+
             preExecute( exec, commandLine, enviro );
 
             int resultCode = ExecutorService.executeCommandLine( exec, commandLine, enviro, getOutputStreamOut(),
                 getOutputStreamErr(), getInputStream() );
-              
+
             postExecute( resultCode );
         }
         catch ( ExecuteException e )

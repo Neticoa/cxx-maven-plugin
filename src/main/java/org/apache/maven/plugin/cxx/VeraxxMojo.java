@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,7 +59,7 @@ import org.apache.maven.plugin.cxx.utils.FileSetManager;
 /**
  * Goal which vera++ check sources.
  *
- * @author Franck Bonin 
+ * @author Franck Bonin
  */
 @Mojo( name = "veraxx", defaultPhase = LifecyclePhase.TEST )
 public class VeraxxMojo extends AbstractLaunchMojo
@@ -70,13 +69,14 @@ public class VeraxxMojo extends AbstractLaunchMojo
     {
         return null;
     }
-    
+
     private int veraxxVersion = 0;
-    
+
     @Override
-    protected void preExecute( Executor exec, CommandLine commandLine, Properties enviro ) throws MojoExecutionException
+    protected void preExecute( Executor exec, CommandLine commandLine, Map<String, String> enviro )
+        throws MojoExecutionException
     {
-        OutputStream outStream = /*System.out;*/new ByteArrayOutputStream();
+        OutputStream outStream = /* System.out; */new ByteArrayOutputStream();
         OutputStream errStream = new ByteArrayOutputStream();
 
         CommandLine commandLineCheck = new CommandLine( getExecutable() );
@@ -84,46 +84,50 @@ public class VeraxxMojo extends AbstractLaunchMojo
         String[] args = parseCommandlineArgs( "--version" );
         commandLineCheck.addArguments( args, false );
         execCheck.setWorkingDirectory( exec.getWorkingDirectory() );
-        
+
         getLog().info( "Executing command line: " + commandLineCheck );
 
         int res = 0;
         try
         {
             res = ExecutorService.executeCommandLine( execCheck, commandLineCheck, enviro,
-                outStream/*getOutputStreamOut()*/, errStream/*getOutputStreamErr()*/, getInputStream() );
+                outStream/* getOutputStreamOut() */, errStream/* getOutputStreamErr() */, getInputStream() );
         }
         catch ( ExecuteException e )
         {
             getLog().info( "Exec Exception while detecting Vera++ version."
                 + " Assume old Vera++ v1.1.x (and less) output parsing style" );
-            getLog().info( "Vera++ err output is : " + errStream.toString() ) ;
+            getLog().info( "Vera++ err output is : " + errStream.toString() );
             veraxxVersion = 0;
-            /*throw new MojoExecutionException( "preExecute Command execution failed.", e );*/
+            //@formatter:off
+            //throw new MojoExecutionException( "preExecute Command execution failed.", e );
+            //@formatter:on
             return;
         }
         catch ( IOException e )
         {
-            getLog().info( "Vera++ detected version is : " + outStream.toString() ) ;
-            getLog().info( "Vera++ err output is : " + errStream.toString() ) ;
+            getLog().info( "Vera++ detected version is : " + outStream.toString() );
+            getLog().info( "Vera++ err output is : " + errStream.toString() );
             // due to jdk8 bug :: https://bugs.openjdk.java.net/browse/JDK-8054565
             // we use this dirty try/catch ...
-            // because this quick command line call can close the output stream before jvm does
-            getLog().info( "jvm " + System.getProperty( "java.version" )
-                + " (8u11 - 9) workaround, ignoring a " + e.toString() + " during vera++ test command line." );
-            //throw new MojoExecutionException( "preExecute Command execution failed.", e );
+            // because this quick command line call can close the output stream before jvm
+            // does
+            getLog().info( "jvm " + System.getProperty( "java.version" ) + " (8u11 - 9) workaround, ignoring a "
+                + e.toString() + " during vera++ test command line." );
+            // throw new MojoExecutionException( "preExecute Command execution failed.", e
+            // );
         }
-        
+
         if ( isResultCodeAFailure( res ) )
         {
-             getLog().info( "Vera++ returned a failure result code : " + res );
-            //throw new MojoExecutionException( "preExecute Result of " + commandLineCheck 
-            //    + " execution is: '" + res + "'." );
+            getLog().info( "Vera++ returned a failure result code : " + res );
+            // throw new MojoExecutionException( "preExecute Result of " + commandLineCheck
+            // + " execution is: '" + res + "'." );
         }
         DefaultArtifactVersion newFormatMinVersion = new DefaultArtifactVersion( "1.2.0" );
         DefaultArtifactVersion currentVeraVersion = new DefaultArtifactVersion( outStream.toString() );
-        
-        getLog().debug( "Vera++ detected version is : " + outStream.toString() ) ;
+
+        getLog().debug( "Vera++ detected version is : " + outStream.toString() );
         getLog().debug( "Vera++ version as ArtefactVersion is : " + currentVeraVersion.toString() );
 
         if ( currentVeraVersion.compareTo( newFormatMinVersion ) < 0 )
@@ -139,19 +143,19 @@ public class VeraxxMojo extends AbstractLaunchMojo
     }
 
     /**
-     * Arguments for vera++ program. Shall be -nodup -showrules 
+     * Arguments for vera++ program. Shall be -nodup -showrules
      * 
      */
     @Parameter( property = "veraxx.args", defaultValue = "-nodup -showrules" )
     private String commandArgs;
-    
+
     @Override
     protected String getCommandArgs()
     {
         String params = "- " + commandArgs + " ";
         return params;
     }
-    
+
     /**
      * The Report OutputFile Location.
      * 
@@ -167,12 +171,12 @@ public class VeraxxMojo extends AbstractLaunchMojo
      */
     @Parameter( property = "veraxx.reportIdentifier", defaultValue = "" )
     private String reportIdentifier;
-    
+
     private String getReportFileName()
     {
         return "vera++-result-" + reportIdentifier + ".xml";
     }
-    
+
     @Override
     protected OutputStream getOutputStreamErr()
     {
@@ -183,11 +187,11 @@ public class VeraxxMojo extends AbstractLaunchMojo
         }
         else
         {
-            outputReportName = basedir.getAbsolutePath() + File.separator + reportsfileDir.getPath()
-                + File.separator + getReportFileName();
+            outputReportName = basedir.getAbsolutePath() + File.separator + reportsfileDir.getPath() + File.separator
+                + getReportFileName();
         }
         getLog().info( "Vera++ report location " + outputReportName );
-         
+
         OutputStream output = System.err;
         File file = new File( outputReportName );
         try
@@ -203,7 +207,7 @@ public class VeraxxMojo extends AbstractLaunchMojo
         }
 
         final DataOutputStream out = new DataOutputStream( output );
-        
+
         try
         {
             out.writeBytes( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" );
@@ -213,10 +217,11 @@ public class VeraxxMojo extends AbstractLaunchMojo
         {
             getLog().error( "Vera++ xml report write failure" );
         }
-        
+
         OutputStream outErrFilter = new OutputStream()
         {
             StringBuffer sb = new StringBuffer();
+
             public void write( int b ) throws IOException
             {
                 if ( ( b == '\n' ) || ( b == '\r' ) )
@@ -225,12 +230,12 @@ public class VeraxxMojo extends AbstractLaunchMojo
                     // cleanup for next line
                     sb.delete( 0, sb.length() );
                 }
-                else 
+                else
                 {
                     sb.append( (char) b );
                 }
             }
-            
+
             public void flush() throws IOException
             {
                 transformCurrentLine();
@@ -242,50 +247,51 @@ public class VeraxxMojo extends AbstractLaunchMojo
                 out.writeBytes( "</checkstyle>\n" );
                 out.flush();
             }
-            
+
             String lastfile;
+
             private void transformCurrentLine()
             {
                 if ( sb.length() > 0 )
                 {
                     // parse current line
-                    
+
                     // try to replace ' (RULENumber) ' with 'RULENumber:'
                     String p = "^(.+) \\((.+)\\) (.+)$";
                     Pattern pattern = Pattern.compile( p );
                     Matcher matcher = pattern.matcher( sb );
                     getLog().debug( "match " + sb + " on " + p );
-                    
+
                     boolean bWinPath = false;
                     if ( sb.charAt( 1 ) == ':' )
                     {
                         bWinPath = true;
                         sb.setCharAt( 1, '_' );
                     }
-                    
+
                     if ( matcher.matches() )
                     {
                         String sLine = matcher.group( 1 ) + matcher.group( 2 ) + ":" + matcher.group( 3 );
                         getLog().debug( "rebuild line = " + sLine );
-                        
+
                         // extract informations
                         pattern = Pattern.compile( ":" );
                         String[] items = pattern.split( sLine );
-                        
+
                         String file, line, rule, comment, severity;
                         file = items.length > 0 ? items[0] : "";
                         line = items.length > 1 ? items[1] : "";
                         rule = items.length > 2 ? items[2] : "";
                         comment = items.length > 3 ? items[3] : "";
                         severity = "warning";
-                        
+
                         if ( bWinPath )
                         {
                             StringBuilder s = new StringBuilder( file );
                             s.setCharAt( 1, ':' );
                             file = s.toString();
                         }
-                        
+
                         // output Xml errors
                         try
                         {
@@ -299,8 +305,8 @@ public class VeraxxMojo extends AbstractLaunchMojo
                                 out.writeBytes( "\t<file name=\"" + file + "\">\n" );
                                 lastfile = file;
                             }
-                            out.writeBytes( "\t\t<error line=\"" + line + "\" severity=\"" + severity 
-                                + "\" message=\"" + comment + "\" source=\"" + rule + "\"/>\n" );
+                            out.writeBytes( "\t\t<error line=\"" + line + "\" severity=\"" + severity + "\" message=\""
+                                + comment + "\" source=\"" + rule + "\"/>\n" );
                         }
                         catch ( IOException e )
                         {
@@ -312,44 +318,44 @@ public class VeraxxMojo extends AbstractLaunchMojo
         };
         return outErrFilter;
     }
-    
+
     /**
-     *  Excludes files/folder from analysis (comma separated list of filter)
+     * Excludes files/folder from analysis (comma separated list of filter)
      *
-     *  @since 0.0.5
+     * @since 0.0.5
      */
     @Parameter( property = "veraxx.excludes", defaultValue = "" )
     private String excludes;
-     
+
     /**
      * Directory where vera++ should search for source files
      * 
      * @since 0.0.4
      */
-    @Parameter()
-    private List sourceDirs = new ArrayList();
-    
+    @Parameter( )
+    private List<?> sourceDirs = new ArrayList<Object>();
+
     @Override
     protected InputStream getInputStream()
     {
         StringBuilder sourceListString = new StringBuilder();
-        Iterator it = sourceDirs.iterator();
+        Iterator<?> it = sourceDirs.iterator();
         while ( it.hasNext() )
         {
             FileSet afileSet = new FileSet();
             String dir = it.next().toString();
             afileSet.setDirectory( new File( dir ).getAbsolutePath() );
-            
-            afileSet.setIncludes( Arrays.asList( new String[]{"**/*.cpp", "**/*.h", "**/*.cxx", "**/*.hxx"} ) );
+
+            afileSet.setIncludes( Arrays.asList( new String[] { "**/*.cpp", "**/*.h", "**/*.cxx", "**/*.hxx" } ) );
             if ( StringUtils.isNotEmpty( excludes ) )
             {
                 afileSet.setExcludes( Arrays.asList( excludes.split( "," ) ) );
             }
             getLog().debug( "vera++ excludes are :" + Arrays.toString( afileSet.getExcludes().toArray() ) );
-            
+
             FileSetManager aFileSetManager = new FileSetManager();
             String[] found = aFileSetManager.getIncludedFiles( afileSet );
-            
+
             for ( int i = 0; i < found.length; i++ )
             {
                 sourceListString.append( dir + File.separator + found[i] + "\n" );
@@ -379,11 +385,11 @@ public class VeraxxMojo extends AbstractLaunchMojo
      * 
      * @since 0.0.4
      */
-    @Parameter()
-    private Map environmentVariables = new HashMap();
-    
+    @Parameter( )
+    private Map<?, ?> environmentVariables = new HashMap<Object, Object>();
+
     @Override
-    protected Map getMoreEnvironmentVariables()
+    protected Map<?, ?> getMoreEnvironmentVariables()
     {
         return environmentVariables;
     }
@@ -395,13 +401,14 @@ public class VeraxxMojo extends AbstractLaunchMojo
     }
 
     /**
-     * The current working directory. Optional. If not specified, basedir will be used.
+     * The current working directory. Optional. If not specified, basedir will be
+     * used.
      * 
      * @since 0.0.4
      */
     @Parameter( property = "veraxx.workingdir" )
     private File workingDir;
-    
+
     @Override
     protected File getWorkingDir()
     {
@@ -411,26 +418,27 @@ public class VeraxxMojo extends AbstractLaunchMojo
         }
         return workingDir;
     }
-    
+
     /**
-     * Set this to "true" to skip running tests, but still compile them. Its use is NOT RECOMMENDED, but quite
-     * convenient on occasion.
+     * Set this to "true" to skip running tests, but still compile them. Its use is
+     * NOT RECOMMENDED, but quite convenient on occasion.
      *
      * @since 0.0.5
      */
     @Parameter( property = "skipTests", defaultValue = "false" )
     protected boolean skipTests;
-    
+
     /**
-     * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable
-     * it using the "maven.test.skip" property, because maven.test.skip shall disables both running the tests
-     * and compiling the tests. Consider using the <code>skipTests</code> parameter instead.
+     * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED,
+     * especially if you enable it using the "maven.test.skip" property, because
+     * maven.test.skip shall disables both running the tests and compiling the
+     * tests. Consider using the <code>skipTests</code> parameter instead.
      *
      * @since 0.0.5
      */
     @Parameter( property = "maven.test.skip", defaultValue = "false" )
     protected boolean skip;
-    
+
     @Override
     protected boolean isSkip()
     {

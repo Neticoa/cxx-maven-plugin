@@ -17,16 +17,20 @@ package org.apache.maven.plugin.cxx.utils;
  * limitations under the License.
  *
  */
- 
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
+import java.text.ParseException;
+import java.util.HashMap;
 import java.util.Locale;
-import java.util.Properties;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
-import org.codehaus.plexus.util.cli.CommandLineUtils;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugin.logging.SystemStreamLog;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.ExecuteException;
@@ -40,25 +44,76 @@ import org.codehaus.plexus.util.StringUtils;
  */
 public class ExecutorService
 {
-    public static Properties getSystemEnvVars() throws IOException
+    private ExecutorService()
     {
-        return CommandLineUtils.getSystemEnvVars();
     }
-  
-    public static CommandLine getExecutablePath( String executableName, Properties enviro, File dir )
+
+    /**
+     * Gets the shell environment variables for this process. Note that the returned
+     * mapping from variable names to values will always be case-sensitive
+     * regardless of the platform, i.e. <code>getSystemEnvVars().get("path")</code>
+     * and <code>getSystemEnvVars().get("PATH")</code> will in general return
+     * different values. However, on platforms with case-insensitive environment
+     * variables like Windows, all variable names will be normalized to upper case.
+     *
+     * @return The shell environment variables, can be empty but never
+     *         <code>null</code>.
+     * @throws IOException If the environment variables could not be queried from
+     *                     the shell.
+     * @see System#getenv() System.getenv() API, new in JDK 5.0, to get the same
+     *      result <b>since 2.0.2 System#getenv() will be used if available in the
+     *      current running jvm.</b>
+     */
+    public static Map<String, String> getSystemEnvVars() throws IOException
+    {
+        return getSystemEnvVars( !OS.isFamilyWindows() );
+    }
+
+    /**
+     * Return the shell environment variables. If
+     * <code>caseSensitive == true</code>, then envar keys will all be upper-case.
+     *
+     * @param caseSensitive Whether environment variable keys should be treated
+     *                      case-sensitively.
+     * @return Properties object of (possibly modified) envar keys mapped to their
+     *         values.
+     * @throws IOException .
+     * @see System#getenv() System.getenv() API, new in JDK 5.0, to get the same
+     *      result <b>since 2.0.2 System#getenv() will be used if available in the
+     *      current running jvm.</b>
+     */
+    public static Map<String, String> getSystemEnvVars( boolean caseSensitive )
+    {
+        Map<String, String> envVars = new HashMap<String, String>();
+        Map<String, String> envs = System.getenv();
+        for ( Map.Entry<String, String> entry : envs.entrySet() )
+        {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if ( !caseSensitive )
+            {
+                key = key.toUpperCase( Locale.ENGLISH );
+            }
+            envVars.put( key, value );
+        }
+        return envVars;
+    }
+
+    public static String findExecutablePath( String executableName, Map<String, String> enviro, File dir )
     {
         File execFile = new File( executableName );
         String exec = null;
         if ( execFile.exists() && execFile.isFile() && execFile.canExecute() )
         {
-          //getLog().debug( "Toolchains are ignored, 'executable' parameter is set to " + execFile.getAbsolutePath() );
+            // getLog().debug( "Toolchains are ignored, 'executable' parameter is set to " +
+            // execFile.getAbsolutePath() );
             exec = execFile.getAbsolutePath();
         }
         else
         {
             if ( OS.isFamilyWindows() )
             {
-                String ex = executableName.indexOf( "." ) < 0 ? executableName + ".bat" : executableName;
+                String ex = executableName.indexOf( '.' ) < 0 ? executableName + ".bat" : executableName;
                 File f = new File( dir, ex );
                 if ( f.exists() )
                 {
@@ -85,6 +140,12 @@ public class ExecutorService
                 }
             }
         }
+        return exec;
+    }
+
+    public static CommandLine getExecutablePath( String executableName, Map<String, String> enviro, File dir )
+    {
+        String exec = findExecutablePath( executableName, enviro, dir );
 
         if ( exec == null )
         {
@@ -105,13 +166,110 @@ public class ExecutorService
 
         return toRet;
     }
-        
-    public static int executeCommandLine( Executor exec, CommandLine commandLine, Properties enviro, OutputStream out,
-            OutputStream err,  InputStream in ) throws ExecuteException, IOException
+
+    public static int executeCommandLine( Executor exec, CommandLine commandLine, Map<String, String> enviro,
+        OutputStream out, OutputStream err, InputStream in ) throws ExecuteException, IOException
     {
+        final Log log = new SystemStreamLog();
         exec.setExitValues( null ); // let us decide of exit value
-        exec.setStreamHandler( new PumpStreamHandler( out, err, in ) );
-        return exec.execute( commandLine, enviro );
+        // exec.setStreamHandler(new PumpStreamHandler(out, err, in));
+        if ( in != System.in )
+        {
+            log.debug( "executeCommandLine : full stream handler for InputStream" );
+            exec.setStreamHandler( new PumpStreamHandler( out, err, in ) );
+        }
+        else if ( out != System.out || err != System.err )
+        {
+            log.debug( "executeCommandLine : minimal stream handler for outputstream" );
+            exec.setStreamHandler( new PumpStreamHandler( out, err ) );
+        }
+
+        log.debug( "executeCommandLine in" );
+        int res = exec.execute( commandLine, enviro );
+        log.debug( "executeCommandLine out" );
+        return res;
     }
-    
+
+    public static String[] translateCommandline( String toProcess ) throws ParseException
+    {
+        if ( ( toProcess == null ) || ( toProcess.length() == 0 ) )
+        {
+            return new String[0];
+        }
+
+        // parse with a simple finite state machine
+
+        final int normal = 0;
+        final int inQuote = 1;
+        final int inDoubleQuote = 2;
+        int state = normal;
+        StringTokenizer tok = new StringTokenizer( toProcess, "\"\' ", true );
+        Vector<String> v = new Vector<String>();
+        StringBuilder current = new StringBuilder();
+
+        while ( tok.hasMoreTokens() )
+        {
+            String nextTok = tok.nextToken();
+            switch ( state )
+            {
+            case inQuote:
+                if ( "\'".equals( nextTok ) )
+                {
+                    state = normal;
+                }
+                else
+                {
+                    current.append( nextTok );
+                }
+                break;
+            case inDoubleQuote:
+                if ( "\"".equals( nextTok ) )
+                {
+                    state = normal;
+                }
+                else
+                {
+                    current.append( nextTok );
+                }
+                break;
+            default:
+                if ( "\'".equals( nextTok ) )
+                {
+                    state = inQuote;
+                }
+                else if ( "\"".equals( nextTok ) )
+                {
+                    state = inDoubleQuote;
+                }
+                else if ( " ".equals( nextTok ) )
+                {
+                    if ( current.length() != 0 )
+                    {
+                        v.addElement( current.toString() );
+                        current.setLength( 0 );
+                    }
+                }
+                else
+                {
+                    current.append( nextTok );
+                }
+                break;
+            }
+        }
+
+        if ( current.length() != 0 )
+        {
+            v.addElement( current.toString() );
+        }
+
+        if ( ( state == inQuote ) || ( state == inDoubleQuote ) )
+        {
+            throw new ParseException( "unbalanced quotes in " + toProcess, current.length() );
+        }
+
+        String[] args = new String[v.size()];
+        v.copyInto( args );
+        return args;
+    }
+
 }

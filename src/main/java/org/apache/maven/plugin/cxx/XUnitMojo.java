@@ -22,8 +22,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Properties;
-
+import java.util.Map;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.Executor;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -33,10 +32,10 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 /**
- * Goal which launch unit test using a custom command.
- * This mojo just tell programmer where to produce xUnit reports
+ * Goal which launch unit test using a custom command. This mojo just tell
+ * programmer where to produce xUnit reports
  *
- * @author Franck Bonin 
+ * @author Franck Bonin
  */
 @Mojo( name = "xunit", defaultPhase = LifecyclePhase.TEST )
 public class XUnitMojo extends LaunchMojo
@@ -48,9 +47,10 @@ public class XUnitMojo extends LaunchMojo
      */
     @Parameter( property = "xunit.reportsfilePath", defaultValue = "${project.build.directory}/xunit-reports" )
     private File reportsfileDir;
-    
+
     @Override
-    protected void preExecute( Executor exec, CommandLine commandLine, Properties enviro ) throws MojoExecutionException
+    protected void preExecute( Executor exec, CommandLine commandLine, Map<String, String> enviro )
+        throws MojoExecutionException
     {
         // this
         String outputReportDir = new String();
@@ -73,10 +73,10 @@ public class XUnitMojo extends LaunchMojo
         }
         catch ( IOException e )
         {
-             getLog().info( "Could not write to " + outputReportDir + File.separator + "Readme.txt" );
+            getLog().info( "Could not write to " + outputReportDir + File.separator + "Readme.txt" );
         }
     }
-    
+
     /**
      * The Xunit Legacy Skip feature.
      * 
@@ -84,26 +84,27 @@ public class XUnitMojo extends LaunchMojo
      */
     @Parameter( property = "xunit.skiptests", defaultValue = "false" )
     private boolean skiptests;
-    
+
     /**
-     * Set this to "true" to skip running tests, but still compile them. Its use is NOT RECOMMENDED, but quite
-     * convenient on occasion.
+     * Set this to "true" to skip running tests, but still compile them. Its use is
+     * NOT RECOMMENDED, but quite convenient on occasion.
      *
      * @since 0.0.5
      */
     @Parameter( property = "skipTests", defaultValue = "false" )
     protected boolean skipTests;
-    
+
     /**
-     * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable
-     * it using the "maven.test.skip" property, because maven.test.skip shall disables both running the tests
-     * and compiling the tests. Consider using the <code>skipTests</code> parameter instead.
+     * Set this to "true" to bypass unit tests entirely. Its use is NOT RECOMMENDED,
+     * especially if you enable it using the "maven.test.skip" property, because
+     * maven.test.skip shall disables both running the tests and compiling the
+     * tests. Consider using the <code>skipTests</code> parameter instead.
      *
      * @since 0.0.5
      */
     @Parameter( property = "maven.test.skip", defaultValue = "false" )
     protected boolean skip;
-    
+
     protected boolean isSkip()
     {
         return super.isSkip() || skiptests || skipTests || skip;
