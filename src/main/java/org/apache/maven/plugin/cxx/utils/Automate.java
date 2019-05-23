@@ -31,7 +31,7 @@ public abstract class Automate implements ActionExecutor
          * Etat suivant
          */
         private int nextState = -1;
-        
+
         /**
          * Action à effectuée
          */
@@ -41,7 +41,7 @@ public abstract class Automate implements ActionExecutor
          * @param pINextState
          * @param pIAction
          */
-        public Transition( final int pINextState, final Action pIAction )
+        Transition( final int pINextState, final Action pIAction )
         {
             nextState = pINextState;
             transitionAction = pIAction;
@@ -54,7 +54,7 @@ public abstract class Automate implements ActionExecutor
          */
         public boolean isPossible()
         {
-            return ( transitionAction != null ) && ! transitionAction.equals( impossible );
+            return ( transitionAction != null ) && !transitionAction.equals( impossible );
         }
 
         /**
@@ -64,13 +64,13 @@ public abstract class Automate implements ActionExecutor
          * @param pIParam
          * @throws AutomateException
          */
-        public void passThrough( final ActionExecutor pIExecutor, final Automate pIAutomate,
-                        final Object pIParam ) throws AutomateException
+        public void passThrough( final ActionExecutor pIExecutor, final Automate pIAutomate, final Object pIParam )
+            throws AutomateException
         {
             transitionAction.action( pIExecutor, pIParam );
             pIAutomate.changeState( nextState, pIParam );
         }
-    };
+    }
 
     private static boolean classInititialized = false;
     private static Action empty = new Action()
@@ -90,8 +90,8 @@ public abstract class Automate implements ActionExecutor
     {
         public void action( final ActionExecutor aiExecutor, final Object aiParam ) throws AutomateException
         {
-            throw new AutomateException( "action 'impossible(Object aiParam)' was called for executor "
-                 + aiExecutor.getName() );
+            throw new AutomateException(
+                "action 'impossible(Object aiParam)' was called for executor " + aiExecutor.getName() );
         }
 
         public String getName()
@@ -99,14 +99,14 @@ public abstract class Automate implements ActionExecutor
             return "impossible";
         }
     };
-    
+
     /**
      * 
      */
     private static int labelCount = 0;
-    private static Transition model[][] = null;
-    private static Action stateActions[] = null;
-    
+    private static Transition[][] model = null;
+    private static Action[] stateActions = null;
+
     /**
      * 
      */
@@ -115,9 +115,9 @@ public abstract class Automate implements ActionExecutor
     /**
      * TODO
      * 
-     * @param aiStateCount
-     * @param aiLabelCount
-     * @throws AutomateException
+     * @param aiStateCount number of static states
+     * @param aiLabelCount number of transition label
+     * @throws AutomateException on error
      */
     protected static void initializeAutomate( final int aiStateCount, final int aiLabelCount ) throws AutomateException
     {
@@ -126,7 +126,7 @@ public abstract class Automate implements ActionExecutor
         if ( ( 0 >= stateCount ) || ( 0 >= labelCount ) )
         {
             throw new AutomateException(
-                 "You must provide a positive value for stateCount and labelCount when calling initializeAutomate()" );
+                "You must provide a positive value for stateCount and labelCount when calling initializeAutomate()" );
         }
         model = new Transition[stateCount][labelCount];
         stateActions = new Action[stateCount];
@@ -142,23 +142,28 @@ public abstract class Automate implements ActionExecutor
     }
 
     /**
+     * Initialize state
      * 
-     * @param aiState
-     * @param aiStateAction
+     * @param aiState       State number
+     * @param aiStateAction State action
      */
     protected static void setState( final int aiState, final Action aiStateAction )
     {
         setState( aiState, aiStateAction, -1, null );
-    } 
-    
+    }
+
     /**
-     * @param aiState
-     * @param aiStateAction
-     * @param aiDefaultTargetState
-     * @param aiDefaultAction
+     * Initialize state
+     * 
+     * @param aiState              State number
+     * @param aiStateAction        State action
+     * @param aiDefaultTargetState default next state when any transition label
+     *                             occurs
+     * @param aiDefaultAction      default transition action when any transition
+     *                             label occurs
      */
-    protected static void setState( final int aiState, final Action aiStateAction,
-       final int aiDefaultTargetState, final Action aiDefaultAction )
+    protected static void setState( final int aiState, final Action aiStateAction, final int aiDefaultTargetState,
+        final Action aiDefaultAction )
     {
         if ( null != aiStateAction )
         {
@@ -184,13 +189,13 @@ public abstract class Automate implements ActionExecutor
     /**
      * setTransition wire your automate
      * 
-     * @param aiState
-     * @param aiLabel
-     * @param aiNextState
-     * @param aiAction
+     * @param aiState     from state
+     * @param aiLabel     transition label occurring
+     * @param aiNextState to state
+     * @param aiAction    action performed
      */
     protected static void setTransition( final int aiState, final int aiLabel, final int aiNextState,
-                final Action aiAction )
+        final Action aiAction )
     {
         model[aiState][aiLabel] = new Transition( aiNextState, aiAction );
     }
@@ -199,33 +204,31 @@ public abstract class Automate implements ActionExecutor
      * Etat courant
      */
     private int currentState = -1;
-    
+
     /**
      * 
      */
     private ActionExecutor executor = null;
-    
+
     /**
      * Objet initialisé
      */
     private boolean objectInitialized = false;
-    
 
-    protected Automate( final ActionExecutor aiExecutor, final int aiCurrentState,
-                final Object aioParam ) throws AutomateException
+    protected Automate( final ActionExecutor aiExecutor, final int aiCurrentState, final Object aioParam )
+        throws AutomateException
     {
         initializer( aiExecutor, aiCurrentState, aioParam );
     }
 
-    protected Automate( final int aiCurrentState, final Object aioParam )
-                throws AutomateException 
+    protected Automate( final int aiCurrentState, final Object aioParam ) throws AutomateException
     {
         initializer( this, aiCurrentState, aioParam );
     }
 
     private void changeState( final int aiNextState, final Object aiParam ) throws AutomateException
     {
-        if ( ! objectInitialized || ( currentState != aiNextState ) )
+        if ( !objectInitialized || ( currentState != aiNextState ) )
         {
             currentState = aiNextState;
             notifyCurrentStateChanged();
@@ -237,12 +240,10 @@ public abstract class Automate implements ActionExecutor
     /**
      * event function top inform automate from label to try
      * 
-     * @param aiLabel
-     *            label to try
-     * @param aiParam
-     *            associated data that transition action will receive
-     *            (and next state action too)
-     * @throws AutomateException
+     * @param aiLabel label to try
+     * @param aiParam associated data that transition action will receive (and next
+     *                state action too)
+     * @throws AutomateException when error occurs
      */
     public void event( final int aiLabel, final Object aiParam ) throws AutomateException
     {
@@ -256,9 +257,8 @@ public abstract class Automate implements ActionExecutor
     {
         return currentState;
     }
-    
-    protected void initializer( final int aiCurrentState, final Object aiParam )
-        throws AutomateException
+
+    protected void initializer( final int aiCurrentState, final Object aiParam ) throws AutomateException
     {
         initializer( this, aiCurrentState, aiParam );
     }
@@ -266,13 +266,14 @@ public abstract class Automate implements ActionExecutor
     protected void initializer( final ActionExecutor aiExecutor, final int aiCurrentState, final Object aiParam )
         throws AutomateException
     {
-        //System.out.println("Automate.initializer : " + classInititialized + "," + aiCurrentState
-        //    + "," + isInFinalState() );
+        // System.out.println("Automate.initializer : " + classInititialized + "," +
+        // aiCurrentState
+        // + "," + isInFinalState() );
         if ( classInititialized && ( currentState == -1 || isInFinalState() ) )
         {
             executor = aiExecutor;
             changeState( aiCurrentState, aiParam );
-        } 
+        }
         else
         {
             throw new AutomateException(
@@ -280,9 +281,6 @@ public abstract class Automate implements ActionExecutor
         }
     }
 
-    /**
-     * 
-     */
     protected abstract boolean isInFinalState();
 
     /**
@@ -298,8 +296,5 @@ public abstract class Automate implements ActionExecutor
         return model[currentState][aiLabel].isPossible();
     }
 
-    /**
-     * 
-     */
     protected abstract void notifyCurrentStateChanged();
-};
+}

@@ -18,7 +18,6 @@ package org.apache.maven.plugin.cxx.utils;
  *
  */
 
-
 /**
  * Thrown when a particular action cannot be found.
  * 
@@ -28,8 +27,7 @@ package org.apache.maven.plugin.cxx.utils;
 public class AutomateException extends Exception
 {
     /**
-     * Constructs a <code>ActionNotFoundException</code> without a detail
-     * message.
+     * Constructs a <code>ActionNotFoundException</code> without a detail message.
      */
     public AutomateException()
     {
@@ -37,8 +35,7 @@ public class AutomateException extends Exception
     }
 
     /**
-     * Constructs a <code>ActionNotFoundException</code> with a detail
-     * message.
+     * Constructs a <code>ActionNotFoundException</code> with a detail message.
      * 
      * @param message the detail message.
      */
