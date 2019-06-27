@@ -143,10 +143,10 @@ public class VeraxxMojo extends AbstractLaunchMojo
     }
 
     /**
-     * Arguments for vera++ program. Shall be -nodup -showrules
+     * Arguments for vera++ program. Shall be --no-duplicate -showrules
      * 
      */
-    @Parameter( property = "veraxx.args", defaultValue = "-nodup -showrules" )
+    @Parameter( property = "veraxx.args", defaultValue = "--no-duplicate -showrules" )
     private String commandArgs;
 
     @Override
